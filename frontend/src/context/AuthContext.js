@@ -1,31 +1,35 @@
-import { createContext, useEffect, useState } from 'react';
+import { createContext, useReducer, useEffect } from 'react';
 
 export const AuthContext = createContext();
 
-export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null); // { email, role }
-
-  const fetchUser = async () => {
-    try {
-      const res = await fetch('http://localhost:5000/api/auth/me', {
-        credentials: 'include',
-      });
-      if (res.ok) {
-        const data = await res.json();
-        setUser(data);
-      }
-    } catch (err) {
-      console.log('User not logged in');
+export const authReducer = (state, action) => {
+    switch (action.type) {
+        case 'LOGIN':
+            return { user: action.payload }
+        case 'LOGOUT':
+            return { user: null }
+        default:
+            return state
     }
-  };
+}
 
-  useEffect(() => {
-    fetchUser();
-  }, []);
 
-  return (
-    <AuthContext.Provider value={{ user, setUser }}>
-      {children}
-    </AuthContext.Provider>
-  );
-};
+export const AuthContextProvider = ({ children }) => {
+const [state, dispatch] = useReducer(authReducer , {
+    user: null
+})
+
+useEffect(() => {
+    const user = JSON.parse(localStorage.getItem('user'))
+    if (user) {
+        dispatch({ type: 'LOGIN', payload: user })
+    }
+}, [])
+
+console.log('AuthContext state:', state)
+    return (
+        <AuthContext.Provider value={{ ...state, dispatch }}>
+            { children }
+        </AuthContext.Provider>
+    )
+}

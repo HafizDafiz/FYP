@@ -1,32 +1,34 @@
-const dotenv = require('dotenv').config();
-const express = require('express');
-const cors = require('cors');
-const mongoose = require('mongoose');
-const cookieParser = require('cookie-parser');
+require('dotenv').config()
+const cors = require("cors")
 
-const authRoutes = require('./routes/authRoutes');
+const express =  require('express')
+const mongoose = require('mongoose')
+const inventoryRoutes = require('./routes/inventory');
+const userRoutes = require('./routes/user');
+// express app
+const app = express()
 
-const app = express();
-const PORT = process.env.PORT || 5000;
+// middleware
+app.use(cors());
+app.use(express.json()) 
 
-// Middleware
-app.use(cors({
-  origin: 'http://localhost:3000',
-  credentials: true
-}));
-app.use(express.json());
-app.use(cookieParser());
+app.use((req, res, next) => {
+    console.log(req.path, req.method)
+    next()
+})
+//routes
+app.use('/api/inventory',inventoryRoutes)
+app.use('/api/user',userRoutes)
+// connect to db
+mongoose.connect(process.env.MONGO_URI)
+    .then(() => {
+        // listen for requests
+    app.listen(process.env.PORT, () => {
+    console.log('connected to db & listening on port', process.env.PORT)
+})
 
-// Routes
-app.use('/api/auth', authRoutes);
+    })
+    .catch((error) => {
+        console.log(error)
+    })
 
-// Connect to DB and start server
-mongoose.connect(process.env.MONGODB_URI)
-  .then(() => {
-    app.listen(PORT, () => {
-      console.log(`Server is running on port ${PORT}`);
-    });
-  })
-  .catch((err) => {
-    console.error('Database connection error:', err);
-  });

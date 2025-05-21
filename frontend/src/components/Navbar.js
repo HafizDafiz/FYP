@@ -1,23 +1,35 @@
-import { useContext } from 'react';
-import { AuthContext } from '../context/AuthContext';
-
+import { Link } from 'react-router-dom';
+import { useLogout } from '../hooks/useLogout';
+import { useAuthContext } from '../hooks/useAuthContext';
 const Navbar = () => {
-  const { user } = useContext(AuthContext);
-
-  return (
-    <nav>
-      <h1>Stock Tracker</h1>
-      {user ? (
-        <>
-          <span>Welcome, {user.email}</span>
-          {user.role === 'admin' && <button>Admin Dashboard</button>}
-          {user.role === 'user' && <button>User Dashboard</button>}
-        </>
-      ) : (
-        <span>Please log in</span>
-      )}
-    </nav>
-  );
-};
+    const { logout } = useLogout();
+    const { user } = useAuthContext();
+    const handleClick = () => {
+        logout();
+    }
+    return (
+        <header>
+            <div className="container">
+                <Link to="/">
+                <h1>Inventory Management</h1>
+                </Link>
+                <nav>
+                    {user && (
+                        <div>
+                        <span>{user.email}</span>
+                        <button onClick={handleClick}>Log out</button>
+                    </div>
+                    )}
+                    {!user && (
+                        <div>
+                        <Link to="/login">Login</Link>
+                        <Link to="/signup">Signup</Link>
+                    </div>
+                    )}
+                </nav>
+            </div>
+        </header>
+    )
+    }
 
 export default Navbar;
