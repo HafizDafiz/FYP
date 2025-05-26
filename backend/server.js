@@ -5,12 +5,16 @@ const express =  require('express')
 const mongoose = require('mongoose')
 const inventoryRoutes = require('./routes/inventory');
 const userRoutes = require('./routes/user');
+
+
 // express app
 const app = express()
 
 // middleware
 app.use(cors());
 app.use(express.json()) 
+
+
 
 app.use((req, res, next) => {
     console.log(req.path, req.method)
@@ -20,7 +24,9 @@ app.use((req, res, next) => {
 app.use('/api/inventory',inventoryRoutes)
 app.use('/api/user',userRoutes)
 // connect to db
-mongoose.connect(process.env.MONGO_URI)
+mongoose.connect(process.env.MONGO_URI, {
+
+})
     .then(() => {
         // listen for requests
     app.listen(process.env.PORT, () => {
