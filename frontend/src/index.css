@@ -1,5 +1,6 @@
 /* google font */
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;800&family=VT323&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Baloo+Paaji+2&family=Inter:wght@400;700&display=swap');
 
 /* layout */
 :root {
@@ -129,3 +130,24 @@ form.signup, form.login {
   background: #fff;
   border-radius: 4px;
 }
+
+h1 {
+  font-family: 'Baloo Paaji 2', cursive;
+}
+label, input, button {
+  font-family: 'Inter', sans-serif;
+}
+
+.outlined-text {
+  font-family: 'Baloo Paaji 2', cursive;
+  font-size: 96px;
+  font-weight: 400;
+  color: white;
+  -webkit-text-stroke: 5px #2E3192;
+  position: absolute;
+  width: 364px;
+  height: 113px;
+  left: 663px;
+  top: 149px;
+}
+
