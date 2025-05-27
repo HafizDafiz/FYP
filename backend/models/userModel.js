@@ -4,7 +4,11 @@ const validator = require('validator');
 const Schema = mongoose.Schema
 
  const userSchema = new Schema({
-     email: {
+     name: {
+            type: String,
+            required: true
+     },
+    email: {
          type: String,
          required: true,
          unique: true
@@ -15,15 +19,15 @@ const Schema = mongoose.Schema
      },
      role: {
          type: String,
-         enum: ['admin', 'user'],
-         default: 'user'
+         required: true,
+         enum: ['admin', 'staff'],
      }
  })
 
  // Static signup method
-userSchema.statics.signup = async function (email, password) {
+userSchema.statics.signup = async function (name,email, password, role) {
     // validation
-    if (!email || !password) {
+    if (!email || !password || !name || !role) {
         throw Error('All fields must be filled')
     }
     if (!validator.isEmail(email)) {
@@ -37,11 +41,14 @@ userSchema.statics.signup = async function (email, password) {
     if (exists) {
         throw Error('Email already in use')
     }
+      if (!['admin', 'staff'].includes(role)) {
+    throw Error('Invalid role');
+    }
 
     const salt = await bcrypt.genSalt(10)
     const hash = await bcrypt.hash(password, salt)
 
-    const user = await this.create({ email, password: hash })
+    const user = await this.create({ name, email, password: hash, role })
 
     return user
 }

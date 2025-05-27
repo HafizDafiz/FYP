@@ -1,19 +1,29 @@
 import { useState } from "react";
 import { useLogin } from "../hooks/useLogin";
 import { Link } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+ 
   const { login, error, isLoading } = useLogin();
+  const navigate = useNavigate();
 
-  const handleSubmit = async (e) => {
+ const handleSubmit = async (e) => {
     e.preventDefault();
-    await login(email, password);
+    const user = await login(email, password);
+    if (user) {
+      if (user.role === "admin") {
+        navigate("/admin-dashboard");
+      } else {
+        navigate("/staff-dashboard");
+      }
+    }
   };
 
   return (
-    <div style={{ackground: "#FFCC5D"}}>
+    <div style={{background: "#FFCC5D"}}>
       <img
         style={{ width: 421, height: 237, left: 398, top: 102, position: "absolute" }}
         src="/FYPLOGO_1.png"

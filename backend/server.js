@@ -5,6 +5,7 @@ const express =  require('express')
 const mongoose = require('mongoose')
 const inventoryRoutes = require('./routes/inventory');
 const userRoutes = require('./routes/user');
+const dashboardRoutes = require('./routes/dashboard');
 
 
 // express app
@@ -23,6 +24,7 @@ app.use((req, res, next) => {
 //routes
 app.use('/api/inventory',inventoryRoutes)
 app.use('/api/user',userRoutes)
+app.use('/api/dashboard', dashboardRoutes);
 // connect to db
 mongoose.connect(process.env.MONGO_URI, {
 
@@ -37,4 +39,6 @@ mongoose.connect(process.env.MONGO_URI, {
     .catch((error) => {
         console.log(error)
     })
+
+
 

@@ -14,19 +14,19 @@ const router = express.Router();
 router.use(requireAuth);
 
 //GET all inventory
-router.get('/', getInventories);
+router.get('/inventory/items', getInventories);
 
 //GET a single inventory
-router.get('/:id', getInventory);
+router.get('/inventory/items/:id', getInventory);
 
 
 //POST a new inventory
-router.post('/', createInventory)
+router.post('/inventory/items', createInventory)
     
 //DELETE a inventory
-router.delete('/:id', deleteInventory);
+router.delete('/inventory/items', deleteInventory);
 
 //UPDATE a inventory
-router.patch('/:id', updateInventory);
+router.patch('/inventory/items/:id', updateInventory);
 
 module.exports = router;

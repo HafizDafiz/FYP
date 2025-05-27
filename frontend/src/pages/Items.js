@@ -5,7 +5,7 @@ import { useAuthContext } from '../hooks/useAuthContext';
 //components
 import InventoryDetails from '../components/InventoryDetails';
 import InventoryForm from '../components/InventoryForm';
-const Home = () => {
+const Item = () => {
     const { inventories, dispatch } = useInventoryContext();
     const { user } = useAuthContext();
 
@@ -35,4 +35,4 @@ const Home = () => {
   );
 }
 
-export default Home;
+export default Item;
