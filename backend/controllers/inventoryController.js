@@ -80,6 +80,8 @@ const updateInventory = async (req, res) => {
     res.status(200).json(inventory);
 }
 
+
+
 module.exports = {
     createInventory,
     getInventories,
