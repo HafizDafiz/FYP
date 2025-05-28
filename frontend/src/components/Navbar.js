@@ -18,7 +18,7 @@ const Navbar = () => {
                 {user && (
                     <nav className="user-info">
                         <ul>
-                            <li><Link to="/">Dashboard</Link></li>
+                            <li><Link to="/admin-dashboard">Dashboard</Link></li>
 
                             <li>
                                 <div className="dropdown-toggle" onClick={toggleInventory}>
@@ -32,7 +32,7 @@ const Navbar = () => {
                             </li>
 
                             <li><Link to="/sales">Sales</Link></li>
-                            <li><Link to="/purchases">Purchases</Link></li>
+                            <li><Link to="/purchase">Purchases</Link></li>
                             <li><Link to="/reports">Reports</Link></li>
                             <li><Link to="/documents">Documents</Link></li>
                         </ul>
