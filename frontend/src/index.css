@@ -309,15 +309,18 @@ html, body {
   background-color: #3d566e;
 }
 
+/*
 .topbar {
   position: fixed;
   top: 0;
-  left: 0px; /* match sidebar width */
+  left: 0px; 
   right: 0;
   height: 60px;
-  background-color: rgba(26, 12, 50, 0.5); /* transparent white */
+  background-color: rgba(26, 12, 50, 0.5); 
   z-index: 10;
 }
+*/
+
 
 /*inventory details */
 

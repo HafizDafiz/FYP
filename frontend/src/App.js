@@ -8,6 +8,7 @@ import StaffDashboard from './pages/StaffDashboard';
 import AdminDashboard from './pages/AdminDashboard';
 import Navbar from './components/Navbar';
 import Purchase from './pages/Purchase';
+import { PurchaseContextProvider } from './context/PurchaseContext';
 
 
 function App() {
@@ -40,6 +41,12 @@ function MainContent({ user }) {
             <Route path="/staff-dashboard" element={<StaffDashboard />} />
             <Route path="/admin-dashboard" element={<AdminDashboard />} />
             <Route path="/inventory/items" element={<Item />} />
+            <Route path="/purchases" element={
+              <PurchaseContextProvider>
+                <Purchase />
+              </PurchaseContextProvider>
+            } />
+            {/* Redirect to login if user is not authenticated */}
           </Routes>
         </div>
     </>

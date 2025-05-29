@@ -4,44 +4,79 @@ import { useLogout } from '../hooks/useLogout';
 import { useAuthContext } from '../hooks/useAuthContext';
 
 const Navbar = () => {
-    const { logout } = useLogout();
-    const { user } = useAuthContext();
-    const [showInventoryDropdown, setShowInventoryDropdown] = useState(false);
+  const { logout } = useLogout();
+  const { user } = useAuthContext();
+  const [activeDropdown, setActiveDropdown] = useState(null);
 
-    const handleClick = () => logout();
-    const toggleInventory = () => setShowInventoryDropdown(!showInventoryDropdown);
+  const handleClick = () => logout();
+    const userRole = user?.role || 'staff';
+  const toggleDropdown = (section) => {
+    setActiveDropdown(prev => (prev === section ? null : section));
+  };
 
-    return (
-        <aside className="sidebar">
-            <div className="sidebar-container">
-                <Link to="/"><h1>Quantix</h1></Link>
-                {user && (
-                    <nav className="user-info">
-                        <ul>
-                            <li><Link to="/admin-dashboard">Dashboard</Link></li>
+  return (
+    <aside className="sidebar">
+      <div className="sidebar-container">
+        <Link to="/"><h1>Quantix</h1></Link>
+        {user && (
+          <nav className="user-info">
+            <ul>
+                            {/* Admin Dashboard */}
+                            {userRole === 'admin' && (
+                                <>
+                                    <li><Link to="/admin-dashboard">Admin Dashboard</Link></li>
+                                </>
+                            )}
 
-                            <li>
-                                <div className="dropdown-toggle" onClick={toggleInventory}>
-                                    Inventory
-                                </div>
-                                <ul className={`dropdown-content ${showInventoryDropdown ? 'show' : ''}`}>
-                                    <li><Link to="/inventory/items">Items</Link></li>
-                                    <li><Link to="/inventory/stock-taking">Stock Taking</Link></li>
-                                    <li><Link to="/inventory/stock-level">Stock Level</Link></li>
-                                </ul>
-                            </li>
+                            {/* Staff Dashboard */}
+                            {userRole === 'staff' && (
+                                <li><Link to="/staff-dashboard">Staff Dashboard</Link></li>
+                            )}
 
-                            <li><Link to="/sales">Sales</Link></li>
-                            <li><Link to="/purchase">Purchases</Link></li>
-                            <li><Link to="/reports">Reports</Link></li>
-                            <li><Link to="/documents">Documents</Link></li>
-                        </ul>
-                        <button onClick={handleClick}>Log out</button>
-                    </nav>
-                )}
-            </div>
-        </aside>
-    );
+
+              {/* Inventory Dropdown */}
+              <li>
+                <div className="dropdown-toggle" onClick={() => toggleDropdown('inventory')}>
+                Inventory <span className={`dropdown-arrow ${activeDropdown === 'inventory' ? 'open' : ''}`}>▸</span>
+                </div>
+                <ul className={`dropdown-content ${activeDropdown === 'inventory' ? 'show' : ''}`}>
+                  <li><Link to="/inventory/items">Items</Link></li>
+                  <li><Link to="/inventory/stock-taking">Stock Taking</Link></li>
+                  <li><Link to="/inventory/stock-level">Stock Level</Link></li>
+                </ul>
+              </li>
+
+              {/* Sales Dropdown */}
+              <li>
+                <div className="dropdown-toggle" onClick={() => toggleDropdown('sales')}>
+                Sales <span className={`dropdown-arrow ${activeDropdown === 'sales' ? 'open' : ''}`}>▸</span>
+                </div>
+                <ul className={`dropdown-content ${activeDropdown === 'sales' ? 'show' : ''}`}>
+                  <li><Link to="/sales/orders">Sales Orders</Link></li>
+                  <li><Link to="/sales/shipment">Shipment</Link></li>
+                </ul>
+              </li>
+
+              {/* Purchases Dropdown */}
+              <li>
+                <div className="dropdown-toggle" onClick={() => toggleDropdown('purchases')}>
+                Purchases <span className={`dropdown-arrow ${activeDropdown === 'purchases' ? 'open' : ''}`}>▸</span>
+                </div>
+                <ul className={`dropdown-content ${activeDropdown === 'purchases' ? 'show' : ''}`}>
+                  <li><Link to="/purchases">Purchase Orders</Link></li>
+                  <li><Link to="/purchases/receives">Purchase Receives</Link></li>
+                </ul>
+              </li>
+
+              <li><Link to="/reports">Reports</Link></li>
+              <li><Link to="/documents">Documents</Link></li>
+            </ul>
+            <button onClick={handleClick}>Log out</button>
+          </nav>
+        )}
+      </div>
+    </aside>
+  );
 };
 
 export default Navbar;
