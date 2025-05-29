@@ -7,6 +7,8 @@ import Signup from './pages/Signup';
 import StaffDashboard from './pages/StaffDashboard';
 import AdminDashboard from './pages/AdminDashboard';
 import Navbar from './components/Navbar';
+import Purchase from './pages/Purchase';
+
 
 function App() {
   const { user } = useAuthContext();
