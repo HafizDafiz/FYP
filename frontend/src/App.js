@@ -8,7 +8,6 @@ import StaffDashboard from './pages/StaffDashboard';
 import AdminDashboard from './pages/AdminDashboard';
 import Navbar from './components/Navbar';
 import Purchase from './pages/Purchase';
-import { PurchaseContextProvider } from './context/PurchaseContext';
 
 
 function App() {
