@@ -258,17 +258,16 @@ html, body {
 
 /* Dropdown toggle */
 .dropdown-toggle {
-  background: none;
-  border: none;
-  color: white;
-  font-size: 1rem;
-  padding: 10px 60px;
-  text-align: left;
-  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   cursor: pointer;
+  padding: 10px 60px;
+  width: 100%;
   border-radius: 5px;
   transition: background 0.3s;
 }
+
 
 .dropdown-toggle:hover {
   background-color: #34495e;
@@ -309,6 +308,17 @@ html, body {
   background-color: #3d566e;
 }
 
+.dropdown-arrow {
+  display: inline-block;
+  margin-left: 6px;
+  transition: transform 0.3s ease;
+}
+
+.dropdown-arrow.open {
+  transform: rotate(90deg); /* Turn ▸ into ▾ visually */
+}
+
+
 .topbar {
   position: fixed;
   top: 0;
@@ -320,7 +330,6 @@ html, body {
 }
 
 /*inventory details */
-
 .inventory-table {
   width: 100%;
   border-collapse: collapse;
@@ -330,7 +339,7 @@ html, body {
 .inventory-table th,
 .inventory-table td {
   border: 1px solid #ddd;
-  padding: 12px 16px;
+  padding: 16px 16px;
   text-align: left;
 }
 
@@ -339,13 +348,12 @@ html, body {
   color: white;
 }
 
-.inventory-table tr:nth-child(even) {
-  background-color: #f9f9f9;
+.inventory-table tr {
+  background-color: white;
 }
 
 .inventory-table tr:hover {
   background-color: #f1f1f1;
 }
-
 
 

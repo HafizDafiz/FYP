@@ -1,5 +1,10 @@
 const AdminDashboard = () => {
-  return <h1>Welcome to the Admin Dashboard</h1>;
+
+  return (
+  <main className="main-content">
+  <h1>Welcome to the Admin Dashboard</h1>
+  </main> 
+  );
 };
 
 export default AdminDashboard;
