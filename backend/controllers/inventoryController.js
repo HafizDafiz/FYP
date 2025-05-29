@@ -17,6 +17,7 @@ const getInventory = async (req, res) => {
   try {
     console.log('req.user:', req.user);  // Should print user object
     const user_id = req.user._id;
+    
     const inventory = await Inventory.find({ user_id }).sort({ createdAt: -1 });
     res.status(200).json(inventory);
   } catch (error) {

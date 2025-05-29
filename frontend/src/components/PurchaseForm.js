@@ -157,7 +157,7 @@ const PurchaseForm = () => {
 
       {/* Inventory Table */}
       <hr />
-      <h2>Inventory Items</h2>
+      <h2>Purchased Items</h2>
       <div style={{
         backgroundColor: '#f8c000',
         padding: '20px',
@@ -176,7 +176,10 @@ const PurchaseForm = () => {
                 <th style={{ backgroundColor: '#3b3a63', color: 'white', padding: '12px 15px', border: '1px solid #ddd' }}>Item Name</th>
                 <th style={{ backgroundColor: '#3b3a63', color: 'white', padding: '12px 15px', border: '1px solid #ddd' }}>SKU</th>
                 <th style={{ backgroundColor: '#3b3a63', color: 'white', padding: '12px 15px', border: '1px solid #ddd' }}>Quantity</th>
-                <th style={{ backgroundColor: '#3b3a63', color: 'white', padding: '12px 15px', border: '1px solid #ddd' }}>Location</th>
+                <th style={{ backgroundColor: '#3b3a63', color: 'white', padding: '12px 15px', border: '1px solid #ddd' }}>Price</th>
+                <th style={{ backgroundColor: '#3b3a63', color: 'white', padding: '12px 15px', border: '1px solid #ddd' }}>Total Price</th>
+                <th style={{ backgroundColor: '#3b3a63', color: 'white', padding: '12px 15px', border: '1px solid #ddd' }}>Vendor Name</th>
+                <th style={{ backgroundColor: '#3b3a63', color: 'white', padding: '12px 15px', border: '1px solid #ddd' }}>Created At</th>
               </tr>
             </thead>
             <tbody>
@@ -185,7 +188,10 @@ const PurchaseForm = () => {
                   <td style={{ padding: '10px 15px', border: '1px solid #ddd', color: '#333' }}>{item.itemName}</td>
                   <td style={{ padding: '10px 15px', border: '1px solid #ddd', color: '#333' }}>{item.SKU}</td>
                   <td style={{ padding: '10px 15px', border: '1px solid #ddd', color: '#333' }}>{item.quantity}</td>
-                  <td style={{ padding: '10px 15px', border: '1px solid #ddd', color: '#333' }}>{item.location}</td>
+                  <td style={{ padding: '10px 15px', border: '1px solid #ddd', color: '#333' }}>{item.price}</td>
+                  <td style={{ padding: '10px 15px', border: '1px solid #ddd', color: '#333' }}>{(item.quantity * item.price).toFixed(2)}</td>
+                  <td style={{ padding: '10px 15px', border: '1px solid #ddd', color: '#333' }}>{item.vendorName}</td>
+                  <td style={{ padding: '10px 15px', border: '1px solid #ddd', color: '#333' }}>{new Date(item.createdAt).toLocaleDateString()}</td>
                 </tr>
               ))}
             </tbody>
