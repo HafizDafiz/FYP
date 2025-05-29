@@ -29,16 +29,17 @@ function MainContent({ user }) {
     <>
       {!hideNavbar && <Navbar />}
       {!hideNavbar && <div className="topbar"></div>}
-      <div className="pages">
-         <Routes>
-        <Route path="/" element={<Navigate to="/login" />} />
-        <Route path="/signup" element={<Signup />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/staff-dashboard" element={<StaffDashboard />} />
-        <Route path="/admin-dashboard" element={<AdminDashboard />} />
-        <Route path="/inventory/items" element={<Item/>} />
-      </Routes>
-      </div>
+
+        <div className="pages">
+          <Routes>
+            <Route path="/" element={<Navigate to="/login" />} />
+            <Route path="/signup" element={<Signup />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/staff-dashboard" element={<StaffDashboard />} />
+            <Route path="/admin-dashboard" element={<AdminDashboard />} />
+            <Route path="/inventory/items" element={<Item />} />
+          </Routes>
+        </div>
     </>
   );
 }

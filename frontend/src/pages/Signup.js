@@ -32,7 +32,7 @@ const Signup = () => {
 
       <form onSubmit={handleSubmit} style={{
         width: 522,
-        height: 398,
+        height: 550,
         left: 460,
         top: 313,
         position: "absolute",
@@ -151,7 +151,7 @@ const Signup = () => {
         <Link to="/login" style={{
           position: "absolute",
           left: 896,
-          top: 643,
+          top: 780,
           color: "#262626",
           fontSize: 16,
           fontFamily: "Inter",

@@ -1,38 +1,20 @@
-import { useEffect } from 'react';
-import { useInventoryContext } from '../hooks/useInventoryContext';
-import { useAuthContext } from '../hooks/useAuthContext';
-
-//components
 import InventoryDetails from '../components/InventoryDetails';
-import InventoryForm from '../components/InventoryForm';
-const Item = () => {
-    const { inventories, dispatch } = useInventoryContext();
-    const { user } = useAuthContext();
 
-    useEffect(() => {
-        const fetchInventory = async () => {
-        const response = await fetch('/api/inventory', {
-        headers: {'Authorization': `Bearer ${user.token}`},
-      })
-      const json = await response.json()
-            if (response.ok) {
-                dispatch({ type: 'SET_INVENTORIES', payload: json });
-            }
-        }
-        if (user) {
-        fetchInventory()
-        }
-    }, [dispatch, user]);
+const Item = () => {
+  const mockItems = [
+    { _id: '1', name: 'Laptop', sku: 'LT123', quantity: 10, location: 'Warehouse A' },
+    { _id: '2', name: 'Mouse', sku: 'MS456', quantity: 50, location: 'Warehouse B' },
+    { _id: '3', name: 'Keyboard', sku: 'KB789', quantity: 30, location: 'Warehouse A' }
+  ];
+
   return (
-    <div className="home">
-        <div className="inventory">
-            {inventories && inventories.map((inventory) => (
-                <InventoryDetails key={inventory._id} inventory={inventory} />
-            ))}
+    <main className="main-content">
+        <div>
+        <h2>Inventory Items</h2>
+        <InventoryDetails items={mockItems} />
         </div>
-        <InventoryForm />
-    </div>
+    </main>
   );
-}
+};
 
 export default Item;

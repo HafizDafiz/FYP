@@ -18,7 +18,7 @@ const Navbar = () => {
                 {user && (
                     <nav className="user-info">
                         <ul>
-                            <li><Link to="/">Dashboard</Link></li>
+                            <li><Link to="/admin-dashboard">Dashboard</Link></li>
 
                             <li>
                                 <div className="dropdown-toggle" onClick={toggleInventory}>
