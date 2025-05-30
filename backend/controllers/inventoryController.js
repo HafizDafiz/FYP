@@ -87,15 +87,27 @@ const updateInventory = async (req, res) => {
   }
 
   try {
-    const inventory = await Inventory.findOneAndUpdate({ _id: id }, { ...req.body }, { new: true });
-    if (!inventory) {
+    // Fetch existing inventory first
+    const existingInventory = await Inventory.findById(id);
+    if (!existingInventory) {
       return res.status(400).json({ error: 'Inventory item not found' });
     }
+
+    // Merge existing user_id with req.body so user_id is not lost
+    const updatedData = { ...req.body, user_id: existingInventory.user_id };
+
+    const inventory = await Inventory.findOneAndUpdate(
+      { _id: id },
+      updatedData,
+      { new: true, runValidators: true }
+    );
+
     res.status(200).json(inventory);
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
 };
+
 
 module.exports = {
   createInventory,

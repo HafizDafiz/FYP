@@ -1,4 +1,5 @@
 const Purchase = require('../models/purchaseModel');
+const Inventory = require('../models/inventoryModel')
 const mongoose = require('mongoose');
 
 // GET all purchases
@@ -45,6 +46,25 @@ const createPurchase = async (req, res) => {
   try {
     const user_id = req.user._id;
     const purchase = await Purchase.create({ itemName, SKU, quantity, location, price, vendorName, user_id });
+    const existingItem = await Inventory.findOne({ sku: SKU });
+    
+    if (existingItem) {
+      // Update quantity
+      existingItem.quantity += quantity;
+      await existingItem.save();
+    } else {
+      // Create new inventory item
+      await Inventory.create({
+        name: itemName,
+        sku: SKU,
+        type: 'Apparel', // Optional: or derive from another field
+        description: 'Added from purchase by ${vendorName}',
+        rate: price,
+        quantity,
+        user_id
+      });
+    }
+
     res.status(200).json(purchase);
   } catch (error) {
     res.status(400).json({ error: error.message });
@@ -75,7 +95,7 @@ const updatePurchase = async (req, res) => {
     const { itemName, SKU, quantity, location, price, vendorName } = req.body;
 
     let emptyFields = [];
-    if (!itemName) emptyFields.push('itemName');
+    if (!itemName) emptyFields.push('ItemName');
     if (!SKU) emptyFields.push('SKU');
     if (quantity === undefined) emptyFields.push('quantity');
     if (!location) emptyFields.push('location');

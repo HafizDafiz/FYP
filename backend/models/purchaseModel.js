@@ -7,8 +7,7 @@ const purchaseSchema = new mongoose.Schema({
   },
   SKU: {
     type: String,
-    required: true,
-    unique: true
+    required: true
   },
   quantity: {
     type: Number,

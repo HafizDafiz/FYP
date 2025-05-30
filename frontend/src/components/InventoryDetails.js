@@ -9,6 +9,7 @@ const InventoryDetails = ({ items }) => {
           <th>Type</th>
           <th>Description</th>
           <th>Rate</th>
+          <th>Quantity</th>
         </tr>
       </thead>
       <tbody>
@@ -19,6 +20,7 @@ const InventoryDetails = ({ items }) => {
             <td>{item.type}</td>
             <td>{item.description}</td>
             <td>${item.rate?.toFixed(2)}</td>
+            <td>{item.quantity}</td>
           </tr>
         ))}
       </tbody>
