@@ -1,14 +1,17 @@
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { useAuthContext } from './hooks/useAuthContext';
 // pages & components
-import Item from './pages/Items';
+// import Item from './pages/Items';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
 import StaffDashboard from './pages/StaffDashboard';
 import AdminDashboard from './pages/AdminDashboard';
 import Navbar from './components/Navbar';
-import Purchase from './pages/Purchase';
-import { PurchaseContextProvider } from './context/PurchaseContext';
+// import Purchase from './pages/Purchase';
+import InventoryList from './components/InventoryList';
+import PurchaseForm from './components/PurchaseForm';
+import SalesForm from './components/SaleForm';
+// import { PurchaseContextProvider } from './context/PurchaseContext';
 
 function App() {
   const { user } = useAuthContext();
@@ -39,12 +42,11 @@ function MainContent({ user }) {
             <Route path="/login" element={<Login />} />
             <Route path="/staff-dashboard" element={<StaffDashboard />} />
             <Route path="/admin-dashboard" element={<AdminDashboard />} />
-            <Route path="/inventory/items" element={<Item />} />
-            <Route path="/purchases" element={
-              <PurchaseContextProvider>
-                <Purchase />
-              </PurchaseContextProvider>
-            } />
+            <Route path="/inventory" element={<InventoryList />} />
+            <Route path="/purchase" element={<PurchaseForm />} />
+            <Route path="/sales" element={<SalesForm />} />
+
+
             {/* Redirect to login if user is not authenticated */}
           </Routes>
         </div>

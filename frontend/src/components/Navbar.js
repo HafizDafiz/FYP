@@ -30,7 +30,7 @@ const Navbar = () => {
                 Inventory <span className={`dropdown-arrow ${activeDropdown === 'inventory' ? 'open' : ''}`}>▸</span>
                 </div>
                 <ul className={`dropdown-content ${activeDropdown === 'inventory' ? 'show' : ''}`}>
-                  <li><Link to="/inventory/items">Items</Link></li>
+                  <li><Link to="/inventory">Items</Link></li>
                   <li><Link to="/inventory/stock-taking">Stock Taking</Link></li>
                   <li><Link to="/inventory/stock-level">Stock Level</Link></li>
                 </ul>
@@ -42,7 +42,7 @@ const Navbar = () => {
                 Sales <span className={`dropdown-arrow ${activeDropdown === 'sales' ? 'open' : ''}`}>▸</span>
                 </div>
                 <ul className={`dropdown-content ${activeDropdown === 'sales' ? 'show' : ''}`}>
-                  <li><Link to="/sales/orders">Sales Orders</Link></li>
+                  <li><Link to="/sales">Sales Orders</Link></li>
                   <li><Link to="/sales/shipment">Shipment</Link></li>
                 </ul>
               </li>
@@ -53,7 +53,7 @@ const Navbar = () => {
                 Purchases <span className={`dropdown-arrow ${activeDropdown === 'purchases' ? 'open' : ''}`}>▸</span>
                 </div>
                 <ul className={`dropdown-content ${activeDropdown === 'purchases' ? 'show' : ''}`}>
-                  <li><Link to="/purchases">Purchase Orders</Link></li>
+                  <li><Link to="/purchase">Purchase Orders</Link></li>
                   <li><Link to="/purchases/receives">Purchase Receives</Link></li>
                 </ul>
               </li>
