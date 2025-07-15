@@ -212,16 +212,22 @@ html, body {
 
 /* Sidebar logout button */
 .sidebar button {
-  background-color: #c0392b;
+  background: linear-gradient(135deg, #e53e3e 0%, #c53030 100%);
   color: white;
   border: none;
-  padding: 10px 60px;
+  padding: 12px 16px;
   cursor: pointer;
-  border-radius: 4px;
+  border-radius: 8px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  margin-top: 20px;
+  box-shadow: 0 2px 6px rgba(197, 48, 48, 0.3);
 }
 
 .sidebar button:hover {
-  background-color: #79241b;
+  background: linear-gradient(135deg, #c53030 0%, #9c2626 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(197, 48, 48, 0.4);
 }
 
 /* Prevent content overlap */
@@ -239,21 +245,41 @@ html, body {
 }
 
 .sidebar ul li {
-  margin: 10px 0;
+  margin: 5px 0;
 }
 
 .sidebar ul li a {
   color: rgb(255, 255, 255);
   text-decoration: none;
-  padding: 10px 60px;
+  padding: 12px 16px;
   display: block;
-  border-radius: 5px;
-  transition: background-color 0.2s;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  font-weight: 500;
+  position: relative;
 }
 
-.sidebar ul li a:hover,
+.sidebar ul li a:hover {
+  background-color: #4a5568;
+  transform: translateX(4px);
+}
+
 .sidebar ul li a.active {
-  background-color: #34495e;
+  background-color: #667eea;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+  font-weight: 600;
+}
+
+.sidebar ul li a.active::before {
+  content: '';
+  position: absolute;
+  left: -16px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 4px;
+  height: 100%;
+  background-color: #ffd700;
+  border-radius: 2px;
 }
 
 /* Dropdown toggle */
@@ -262,15 +288,36 @@ html, body {
   align-items: center;
   justify-content: space-between;
   cursor: pointer;
-  padding: 10px 60px;
+  padding: 12px 16px;
   width: 100%;
-  border-radius: 5px;
-  transition: background 0.3s;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  font-weight: 500;
+  position: relative;
+  color: white;
 }
 
-
 .dropdown-toggle:hover {
-  background-color: #34495e;
+  background-color: #4a5568;
+  transform: translateX(4px);
+}
+
+.dropdown-toggle.active {
+  background-color: #667eea;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+  font-weight: 600;
+}
+
+.dropdown-toggle.active::before {
+  content: '';
+  position: absolute;
+  left: -16px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 4px;
+  height: 100%;
+  background-color: #ffd700;
+  border-radius: 2px;
 }
 
 /* Dropdown content */
@@ -280,42 +327,74 @@ html, body {
   opacity: 0;
   transform: translateY(-10px);
   transition: all 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55); /* bouncy */
-  padding-left: 15px;
+  padding-left: 20px;
+  margin-top: 8px;
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  backdrop-filter: blur(10px);
 }
 
 .dropdown-content.show {
   max-height: 600px;
   opacity: 1;
   transform: translateY(0);
+  padding: 12px 20px;
+  border-left: 2px solid #667eea;
 }
 
 /* Dropdown menu items */
 .dropdown-content li {
-  margin: 2px 0;
+  margin: 4px 0;
 }
 
 .dropdown-content li a {
-  color: #ecf0f1;
+  color: #e2e8f0;
   text-decoration: none;
-  font-size: 0.95rem;
-  padding: 4px 8px;
+  font-size: 0.9rem;
+  padding: 8px 12px;
   display: block;
-  border-radius: 4px;
-  transition: background 0.3s;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+  font-weight: 400;
+  position: relative;
 }
 
 .dropdown-content li a:hover {
-  background-color: #3d566e;
+  background-color: #4a5568;
+  color: white;
+  transform: translateX(4px);
+}
+
+.dropdown-content li a.active {
+  background-color: #48bb78;
+  color: white;
+  font-weight: 600;
+  box-shadow: 0 2px 6px rgba(72, 187, 120, 0.3);
+}
+
+.dropdown-content li a.active::before {
+  content: '';
+  position: absolute;
+  left: -12px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 70%;
+  background-color: #ffd700;
+  border-radius: 2px;
 }
 
 .dropdown-arrow {
   display: inline-block;
-  margin-left: 6px;
-  transition: transform 0.3s ease;
+  margin-left: 8px;
+  transition: all 0.3s ease;
+  font-size: 12px;
+  font-weight: bold;
 }
 
 .dropdown-arrow.open {
-  transform: rotate(90deg); /* Turn ▸ into ▾ visually */
+  transform: rotate(0deg);
+  color: #ffd700;
 }
 
 
@@ -354,6 +433,357 @@ html, body {
 
 .inventory-table tr:hover {
   background-color: #f1f1f1;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+  /* Hide sidebar on mobile, show hamburger menu */
+  .sidebar {
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+    z-index: 1000;
+  }
+
+  .sidebar.mobile-open {
+    transform: translateX(0);
+  }
+  /* Mobile hamburger menu */
+  .mobile-menu-toggle {
+    display: block !important;
+    position: fixed;
+    top: 15px;
+    left: 15px;
+    z-index: 1001;
+    background: #312F56;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 10px;
+    cursor: pointer;
+    font-size: 18px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+  }
+
+  .mobile-menu-toggle:hover {
+    background: #4a5568;
+    transform: scale(1.05);
+  }
+
+  /* Mobile overlay */
+  .mobile-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+    display: none;
+  }
+
+  .mobile-overlay.active {
+    display: block;
+  }
+
+  /* Adjust main content for mobile */
+  .main-content {
+    margin-left: 0;
+    padding: 80px 15px 20px 15px;
+  }
+
+  /* Hide topbar on mobile */
+  .topbar {
+    display: none;
+  }
+
+  /* Mobile-specific login/signup forms */
+  .outlined-text {
+    font-size: 48px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 280px;
+    top: 100px;
+  }
+
+  form {
+    width: 90% !important;
+    max-width: 400px !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    top: 200px !important;
+    position: relative !important;
+    margin: 20px auto !important;
+  }
+
+  /* Mobile table responsiveness */
+  .inventory-table {
+    font-size: 12px;
+  }
+
+  .inventory-table th,
+  .inventory-table td {
+    padding: 8px 4px;
+    min-width: 80px;
+  }
+
+  /* Mobile-specific button styles */
+  button {
+    padding: 12px 16px;
+    font-size: 14px;
+    min-height: 44px; /* iOS touch target size */
+  }
+
+  /* Mobile input styles */
+  input, select, textarea {
+    font-size: 16px; /* Prevents zoom on iOS */
+    padding: 12px;
+    min-height: 44px;
+  }
+
+  /* Mobile-specific card layouts */
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+
+  /* Mobile-specific sidebar adjustments */
+  .sidebar {
+    width: 280px;
+    padding: 15px;
+  }
+
+  .sidebar h1 {
+    font-size: 20px;
+    margin-bottom: 20px;
+  }
+
+  .dropdown-content {
+    padding-left: 15px;
+  }
+
+  /* Mobile-specific stock taking table */
+  .stock-table-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .stock-table {
+    min-width: 600px;
+  }
+
+  /* Mobile-specific items page */
+  .items-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 15px;
+  }
+
+  .items-header .search-container {
+    max-width: 100%;
+  }
+
+  .items-actions {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .items-actions button {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  /* Extra small screens */
+  .outlined-text {
+    font-size: 36px;
+    width: 200px;
+    top: 80px;
+  }
+
+  form {
+    width: 95% !important;
+    padding: 20px !important;
+  }
+
+  .main-content {
+    padding: 70px 10px 20px 10px;
+  }
+
+  .inventory-table {
+    font-size: 10px;
+  }
+
+  .inventory-table th,
+  .inventory-table td {
+    padding: 6px 2px;
+    min-width: 60px;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .sidebar {
+    width: 260px;
+  }
+
+  /* Mobile-specific form adjustments */
+  .form-group {
+    margin-bottom: 15px;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+
+  /* Mobile-specific button groups */
+  .button-group {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .button-group button {
+    width: 100%;
+  }
+}
+
+/* Desktop-only styles */
+@media (min-width: 769px) {
+  .mobile-menu-toggle {
+    display: none;
+  }
+
+  .mobile-overlay {
+    display: none !important;
+  }
+}
+
+/* Tablet-specific adjustments */
+@media (min-width: 481px) and (max-width: 768px) {
+  .sidebar {
+    width: 260px;
+  }
+
+  .main-content {
+    padding: 80px 20px 20px 20px;
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .dashboard-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .form-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Enhanced mobile-first approach */
+.container {
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 0 15px;
+}
+
+@media (min-width: 576px) {
+  .container {
+    max-width: 540px;
+  }
+}
+
+@media (min-width: 768px) {
+  .container {
+    max-width: 720px;
+  }
+}
+
+@media (min-width: 992px) {
+  .container {
+    max-width: 960px;
+  }
+}
+
+@media (min-width: 1200px) {
+  .container {
+    max-width: 1140px;
+  }
+}
+
+/* Responsive utilities */
+.d-none {
+  display: none !important;
+}
+
+.d-block {
+  display: block !important;
+}
+
+@media (max-width: 768px) {
+  .d-md-none {
+    display: none !important;
+  }
+  
+  .d-md-block {
+    display: block !important;
+  }
+}
+
+@media (min-width: 769px) {
+  .d-lg-none {
+    display: none !important;
+  }
+  
+  .d-lg-block {
+    display: block !important;
+  }
+}
+
+/* Touch-friendly improvements */
+@media (hover: none) and (pointer: coarse) {
+  /* Touch devices */
+  .sidebar ul li a,
+  .dropdown-toggle {
+    min-height: 48px;
+    display: flex;
+    align-items: center;
+  }
+
+  .dropdown-content li a {
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+  }
+
+  button {
+    min-height: 44px;
+    padding: 12px 16px;
+  }
+
+  input, select, textarea {
+    min-height: 44px;
+    padding: 12px;
+  }
+}
+
+/* High DPI screen adjustments */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .inventory-table {
+    font-size: 14px;
+  }
+  
+  .sidebar {
+    box-shadow: 4px 0 10px rgba(0,0,0,0.1);
+  }
 }
 
 

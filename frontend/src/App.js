@@ -2,6 +2,9 @@ import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-route
 import { useAuthContext } from './hooks/useAuthContext';
 // pages & components
 import Item from './pages/Items';
+import AddItem from './pages/AddItem';
+import StockTaking from './pages/StockTaking';
+import StockLevel from './pages/StockLevel';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
 import StaffDashboard from './pages/StaffDashboard';
@@ -29,16 +32,16 @@ function MainContent({ user }) {
   return (
     <>
       {!hideNavbar && <Navbar />}
-      {!hideNavbar && <div className="topbar"></div>}
-
-        <div className="pages">
-          <Routes>
+      {!hideNavbar && <div className="topbar"></div>}        <div className="pages">          <Routes>
             <Route path="/" element={<Navigate to="/login" />} />
             <Route path="/signup" element={<Signup />} />
             <Route path="/login" element={<Login />} />
             <Route path="/staff-dashboard" element={<StaffDashboard />} />
             <Route path="/admin-dashboard" element={<AdminDashboard />} />
             <Route path="/inventory/items" element={<Item />} />
+            <Route path="/inventory/add-item" element={<AddItem />} />
+            <Route path="/inventory/stock-taking" element={<StockTaking />} />
+            <Route path="/inventory/stock-level" element={<StockLevel />} />
           </Routes>
         </div>
     </>

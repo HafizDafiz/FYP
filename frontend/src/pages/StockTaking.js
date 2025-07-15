@@ -2,15 +2,25 @@ import { useEffect, useState } from 'react';
 import { useAuthContext } from '../hooks/useAuthContext';
 import { useNavigate } from 'react-router-dom';
 
-const Item = () => {
+const StockTaking = () => {
   const { user } = useAuthContext();
+  const navigate = useNavigate();
   const [items, setItems] = useState([]);
+  const [stockAdjustments, setStockAdjustments] = useState({});
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showOptionsDropdown, setShowOptionsDropdown] = useState(false);
   const [sortBy, setSortBy] = useState('name');
   const [sortOrder, setSortOrder] = useState('asc');
-  const navigate = useNavigate();
+  const [isUpdating, setIsUpdating] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+
+  // Check if user is admin
+  useEffect(() => {
+    if (user && user.role !== 'admin') {
+      navigate('/staff-dashboard');
+    }
+  }, [user, navigate]);
 
   useEffect(() => {
     const fetchInventory = async () => {
@@ -50,10 +60,6 @@ const Item = () => {
     fetchInventory();
   }, [user]);
 
-  const handleAddItem = () => {
-    navigate('/inventory/add-item');
-  };
-
   const handleSort = (field) => {
     if (sortBy === field) {
       setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
@@ -64,24 +70,114 @@ const Item = () => {
     setShowOptionsDropdown(false);
   };
 
-  const handleExportCSV = () => {
+  const handleStockAdjustment = (itemId, newQuantity) => {
+    setStockAdjustments(prev => ({
+      ...prev,
+      [itemId]: newQuantity
+    }));
+  };
+
+  const handleUpdateStock = async (itemId, newQuantity) => {
+    if (!user) return;
+
+    setIsUpdating(true);
+    try {
+      const response = await fetch(`/api/inventory/items/${itemId}`, {
+        method: 'PATCH',
+        headers: {
+          'Authorization': `Bearer ${user.token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ quantity: parseInt(newQuantity) })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setError(data.error || 'Failed to update stock.');
+      } else {
+        // Update local state
+        setItems(prev => prev.map(item => 
+          item._id === itemId ? { ...item, quantity: parseInt(newQuantity) } : item
+        ));
+        // Clear adjustment
+        setStockAdjustments(prev => {
+          const newAdjustments = { ...prev };
+          delete newAdjustments[itemId];
+          return newAdjustments;
+        });
+        setError(null);
+      }
+    } catch (err) {
+      console.error('Update error:', err);
+      setError('Something went wrong while updating stock.');
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
+  const handleBulkUpdate = async () => {
+    if (!user || Object.keys(stockAdjustments).length === 0) return;
+
+    setIsUpdating(true);
+    try {
+      const promises = Object.entries(stockAdjustments).map(([itemId, quantity]) =>
+        fetch(`/api/inventory/items/${itemId}`, {
+          method: 'PATCH',
+          headers: {
+            'Authorization': `Bearer ${user.token}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ quantity: parseInt(quantity) })
+        })
+      );
+
+      const responses = await Promise.all(promises);
+      const results = await Promise.all(responses.map(r => r.json()));
+
+      // Update local state for successful updates
+      const updatedItems = items.map(item => {
+        const adjustment = stockAdjustments[item._id];
+        return adjustment !== undefined ? { ...item, quantity: parseInt(adjustment) } : item;
+      });
+
+      setItems(updatedItems);
+      setStockAdjustments({});
+      setError(null);
+    } catch (err) {
+      console.error('Bulk update error:', err);
+      setError('Something went wrong while updating stocks.');
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
+  const handleExportStockReport = () => {
     const csvContent = "data:text/csv;charset=utf-8," + 
-      "Name,SKU,Type,Description,Rate,Quantity\n" +
-      items.map(item => 
-        `"${item.name}","${item.sku}","${item.type}","${item.description || ''}","${item.rate}","${item.quantity}"`
-      ).join("\n");
+      "Name,SKU,Current Stock,Adjusted Stock,Difference,Status\n" +
+      items.map(item => {
+        const adjustment = stockAdjustments[item._id];
+        const difference = adjustment !== undefined ? adjustment - item.quantity : 0;
+        const status = getStockStatus(item.quantity).status;
+        return `"${item.name}","${item.sku}","${item.quantity}","${adjustment || item.quantity}","${difference}","${status}"`;
+      }).join("\n");
 
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement("a");
     link.setAttribute("href", encodedUri);
-    link.setAttribute("download", "inventory_items.csv");
+    link.setAttribute("download", "stock_taking_report.csv");
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
     setShowOptionsDropdown(false);
   };
 
-  const sortedItems = [...items].sort((a, b) => {
+  const filteredItems = items.filter(item =>
+    item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    item.sku.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const sortedItems = [...filteredItems].sort((a, b) => {
     let aValue = a[sortBy];
     let bValue = b[sortBy];
     
@@ -108,11 +204,13 @@ const Item = () => {
     return sortOrder === 'asc' ? '↑' : '↓';
   };
 
+  const hasAdjustments = Object.keys(stockAdjustments).length > 0;
+
   if (loading) {
     return (
       <main className="main-content" style={{ background: '#f8fafc', minHeight: '100vh', padding: '20px' }}>
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '400px' }}>
-          <div style={{ fontSize: '18px', color: '#6b7280' }}>Loading items...</div>
+          <div style={{ fontSize: '18px', color: '#6b7280' }}>Loading stock taking...</div>
         </div>
       </main>
     );
@@ -126,7 +224,8 @@ const Item = () => {
         boxShadow: '0 4px 6px rgba(0, 0, 0, 0.05)', 
         border: '1px solid #e5e7eb',
         overflow: 'hidden'
-      }}>        {/* Header */}
+      }}>
+        {/* Header */}
         <div style={{ 
           padding: '24px', 
           borderBottom: '1px solid #e5e7eb',
@@ -136,25 +235,82 @@ const Item = () => {
           flexWrap: 'wrap',
           gap: '16px'
         }}>
-          <div style={{ flex: '1', minWidth: '250px' }}>
+          <div style={{ flex: '1', minWidth: '300px' }}>
             <h1 style={{ 
-              fontSize: 'clamp(24px, 5vw, 32px)', 
+              fontSize: '32px', 
               fontWeight: '700', 
               color: '#1f2937', 
               margin: '0 0 8px 0' 
             }}>
-              All Items
+              Stock Taking
             </h1>
             <p style={{ 
-              fontSize: 'clamp(14px, 3vw, 16px)', 
+              fontSize: '16px', 
               color: '#6b7280', 
-              margin: 0 
+              margin: '0 0 16px 0' 
             }}>
-              Manage your inventory items
+              Adjust inventory stock levels
             </p>
+            
+            {/* Search Bar */}
+            <div style={{ position: 'relative', maxWidth: '300px' }}>
+              <input
+                type="text"
+                placeholder="Search items..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                style={{
+                  width: '100%',
+                  padding: '8px 12px 8px 36px',
+                  border: '1px solid #d1d5db',
+                  borderRadius: '8px',
+                  fontSize: '14px',
+                  outline: 'none',
+                  transition: 'border-color 0.2s ease',
+                  boxSizing: 'border-box'
+                }}
+                onFocus={(e) => e.target.style.borderColor = '#667eea'}
+                onBlur={(e) => e.target.style.borderColor = '#d1d5db'}
+              />
+              <div style={{
+                position: 'absolute',
+                left: '12px',
+                top: '50%',
+                transform: 'translateY(-50%)',
+                color: '#6b7280',
+                fontSize: '14px'
+              }}>
+                🔍
+              </div>
+            </div>
           </div>
           
           <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
+            {/* Bulk Update Button */}
+            {hasAdjustments && (
+              <button
+                onClick={handleBulkUpdate}
+                disabled={isUpdating}
+                style={{
+                  background: isUpdating ? '#9ca3af' : 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '8px',
+                  padding: '12px 20px',
+                  cursor: isUpdating ? 'not-allowed' : 'pointer',
+                  fontSize: '14px',
+                  fontWeight: '600',
+                  transition: 'all 0.3s ease',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  boxShadow: isUpdating ? 'none' : '0 2px 4px rgba(16, 185, 129, 0.3)'
+                }}
+              >
+                {isUpdating ? 'Updating...' : `Update ${Object.keys(stockAdjustments).length} Items`}
+              </button>
+            )}
+
             {/* Options Dropdown */}
             <div style={{ position: 'relative' }}>
               <button
@@ -172,8 +328,7 @@ const Item = () => {
                   alignItems: 'center',
                   justifyContent: 'center',
                   width: '40px',
-                  height: '40px',
-                  minWidth: '40px'
+                  height: '40px'
                 }}
                 onMouseOver={(e) => e.target.style.background = '#e5e7eb'}
                 onMouseOut={(e) => e.target.style.background = '#f3f4f6'}
@@ -192,8 +347,7 @@ const Item = () => {
                   borderRadius: '8px',
                   boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
                   zIndex: 10,
-                  minWidth: '200px',
-                  maxWidth: '90vw'
+                  minWidth: '200px'
                 }}>
                   <div style={{ padding: '8px 0' }}>
                     <div style={{ 
@@ -258,36 +412,16 @@ const Item = () => {
                         color: '#374151',
                         display: 'flex',
                         justifyContent: 'space-between',
-                        alignItems: 'center'
-                      }}
-                      onMouseOver={(e) => e.target.style.background = '#f3f4f6'}
-                      onMouseOut={(e) => e.target.style.background = 'none'}
-                    >
-                      Quantity <span>{getSortIcon('quantity')}</span>
-                    </button>
-                    <button
-                      onClick={() => handleSort('rate')}
-                      style={{
-                        width: '100%',
-                        padding: '8px 16px',
-                        textAlign: 'left',
-                        background: 'none',
-                        border: 'none',
-                        cursor: 'pointer',
-                        fontSize: '14px',
-                        color: '#374151',
-                        display: 'flex',
-                        justifyContent: 'space-between',
                         alignItems: 'center',
                         borderBottom: '1px solid #e5e7eb'
                       }}
                       onMouseOver={(e) => e.target.style.background = '#f3f4f6'}
                       onMouseOut={(e) => e.target.style.background = 'none'}
                     >
-                      Price <span>{getSortIcon('rate')}</span>
+                      Current Stock <span>{getSortIcon('quantity')}</span>
                     </button>
                     <button
-                      onClick={handleExportCSV}
+                      onClick={handleExportStockReport}
                       style={{
                         width: '100%',
                         padding: '8px 16px',
@@ -304,45 +438,12 @@ const Item = () => {
                       onMouseOver={(e) => e.target.style.background = '#f3f4f6'}
                       onMouseOut={(e) => e.target.style.background = 'none'}
                     >
-                      📥 Export to CSV
+                      📥 Export Report
                     </button>
                   </div>
                 </div>
               )}
             </div>
-
-            {/* Add Item Button */}
-            <button
-              onClick={handleAddItem}
-              style={{
-                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                color: 'white',
-                border: 'none',
-                borderRadius: '8px',
-                padding: '12px 20px',
-                cursor: 'pointer',
-                fontSize: 'clamp(14px, 3vw, 16px)',
-                fontWeight: '600',
-                transition: 'all 0.3s ease',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-                boxShadow: '0 2px 4px rgba(102, 126, 234, 0.3)',
-                minWidth: 'fit-content',
-                whiteSpace: 'nowrap'
-              }}
-              onMouseOver={(e) => {
-                e.target.style.transform = 'translateY(-2px)';
-                e.target.style.boxShadow = '0 4px 8px rgba(102, 126, 234, 0.4)';
-              }}
-              onMouseOut={(e) => {
-                e.target.style.transform = 'translateY(0)';
-                e.target.style.boxShadow = '0 2px 4px rgba(102, 126, 234, 0.3)';
-              }}
-            >
-              <span style={{ fontSize: '18px' }}>+</span>
-              <span style={{ display: window.innerWidth < 480 ? 'none' : 'inline' }}>Add Item</span>
-            </button>
           </div>
         </div>
 
@@ -370,20 +471,20 @@ const Item = () => {
                 <th style={{ padding: '16px 24px', textAlign: 'left', fontWeight: '600', color: '#374151', fontSize: '14px' }}>
                   SKU
                 </th>
-                <th style={{ padding: '16px 24px', textAlign: 'left', fontWeight: '600', color: '#374151', fontSize: '14px' }}>
-                  Type
+                <th style={{ padding: '16px 24px', textAlign: 'center', fontWeight: '600', color: '#374151', fontSize: '14px' }}>
+                  Current Stock
                 </th>
-                <th style={{ padding: '16px 24px', textAlign: 'left', fontWeight: '600', color: '#374151', fontSize: '14px' }}>
-                  Description
+                <th style={{ padding: '16px 24px', textAlign: 'center', fontWeight: '600', color: '#374151', fontSize: '14px' }}>
+                  Adjusted Stock
                 </th>
-                <th style={{ padding: '16px 24px', textAlign: 'right', fontWeight: '600', color: '#374151', fontSize: '14px' }}>
-                  Price
-                </th>
-                <th style={{ padding: '16px 24px', textAlign: 'right', fontWeight: '600', color: '#374151', fontSize: '14px' }}>
-                  Quantity
+                <th style={{ padding: '16px 24px', textAlign: 'center', fontWeight: '600', color: '#374151', fontSize: '14px' }}>
+                  Difference
                 </th>
                 <th style={{ padding: '16px 24px', textAlign: 'center', fontWeight: '600', color: '#374151', fontSize: '14px' }}>
                   Status
+                </th>
+                <th style={{ padding: '16px 24px', textAlign: 'center', fontWeight: '600', color: '#374151', fontSize: '14px' }}>
+                  Actions
                 </th>
               </tr>
             </thead>
@@ -396,21 +497,34 @@ const Item = () => {
                     color: '#6b7280', 
                     fontSize: '16px' 
                   }}>
-                    No items found. Click "Add Item" to get started.
+                    {searchTerm ? `No items found matching "${searchTerm}"` : 'No items available for stock taking.'}
                   </td>
                 </tr>
               ) : (
                 sortedItems.map((item, index) => {
                   const stockStatus = getStockStatus(item.quantity);
+                  const adjustedQuantity = stockAdjustments[item._id];
+                  const difference = adjustedQuantity !== undefined ? adjustedQuantity - item.quantity : 0;
+                  const hasAdjustment = adjustedQuantity !== undefined;
+                  
                   return (
                     <tr 
                       key={item._id} 
                       style={{ 
                         borderBottom: index < sortedItems.length - 1 ? '1px solid #f3f4f6' : 'none',
-                        transition: 'background-color 0.2s ease'
+                        transition: 'background-color 0.2s ease',
+                        backgroundColor: hasAdjustment ? '#f0f9ff' : 'transparent'
                       }}
-                      onMouseOver={(e) => e.target.parentElement.style.backgroundColor = '#f9fafb'}
-                      onMouseOut={(e) => e.target.parentElement.style.backgroundColor = 'transparent'}
+                      onMouseOver={(e) => {
+                        if (!hasAdjustment) {
+                          e.target.parentElement.style.backgroundColor = '#f9fafb';
+                        }
+                      }}
+                      onMouseOut={(e) => {
+                        if (!hasAdjustment) {
+                          e.target.parentElement.style.backgroundColor = 'transparent';
+                        }
+                      }}
                     >
                       <td style={{ padding: '16px 24px', fontSize: '14px', color: '#1f2937', fontWeight: '500' }}>
                         {item.name}
@@ -418,23 +532,41 @@ const Item = () => {
                       <td style={{ padding: '16px 24px', fontSize: '14px', color: '#6b7280' }}>
                         {item.sku}
                       </td>
-                      <td style={{ padding: '16px 24px', fontSize: '14px', color: '#6b7280' }}>
-                        {item.type}
-                      </td>
-                      <td style={{ padding: '16px 24px', fontSize: '14px', color: '#6b7280', maxWidth: '200px' }}>
-                        <div style={{ 
-                          overflow: 'hidden', 
-                          textOverflow: 'ellipsis', 
-                          whiteSpace: 'nowrap' 
-                        }}>
-                          {item.description || '-'}
-                        </div>
-                      </td>
-                      <td style={{ padding: '16px 24px', textAlign: 'right', fontSize: '14px', color: '#1f2937', fontWeight: '500' }}>
-                        ${item.rate?.toFixed(2)}
-                      </td>
-                      <td style={{ padding: '16px 24px', textAlign: 'right', fontSize: '14px', color: '#1f2937', fontWeight: '500' }}>
+                      <td style={{ padding: '16px 24px', textAlign: 'center', fontSize: '14px', color: '#1f2937', fontWeight: '500' }}>
                         {item.quantity}
+                      </td>
+                      <td style={{ padding: '16px 24px', textAlign: 'center' }}>
+                        <input
+                          type="number"
+                          min="0"
+                          value={adjustedQuantity !== undefined ? adjustedQuantity : item.quantity}
+                          onChange={(e) => handleStockAdjustment(item._id, e.target.value)}
+                          style={{
+                            width: '80px',
+                            padding: '6px 8px',
+                            border: hasAdjustment ? '2px solid #3b82f6' : '1px solid #d1d5db',
+                            borderRadius: '6px',
+                            fontSize: '14px',
+                            textAlign: 'center',
+                            outline: 'none',
+                            transition: 'border-color 0.2s ease'
+                          }}
+                          onFocus={(e) => e.target.style.borderColor = '#667eea'}
+                          onBlur={(e) => {
+                            if (!hasAdjustment) {
+                              e.target.style.borderColor = '#d1d5db';
+                            }
+                          }}
+                        />
+                      </td>
+                      <td style={{ padding: '16px 24px', textAlign: 'center' }}>
+                        <span style={{
+                          fontSize: '14px',
+                          fontWeight: '500',
+                          color: difference > 0 ? '#10b981' : difference < 0 ? '#ef4444' : '#6b7280'
+                        }}>
+                          {difference > 0 ? '+' : ''}{difference}
+                        </span>
                       </td>
                       <td style={{ padding: '16px 24px', textAlign: 'center' }}>
                         <span style={{
@@ -448,6 +580,48 @@ const Item = () => {
                         }}>
                           {stockStatus.status}
                         </span>
+                      </td>
+                      <td style={{ padding: '16px 24px', textAlign: 'center' }}>
+                        {hasAdjustment && (
+                          <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
+                            <button
+                              onClick={() => handleUpdateStock(item._id, adjustedQuantity)}
+                              disabled={isUpdating}
+                              style={{
+                                padding: '6px 12px',
+                                background: isUpdating ? '#9ca3af' : '#10b981',
+                                color: 'white',
+                                border: 'none',
+                                borderRadius: '4px',
+                                fontSize: '12px',
+                                cursor: isUpdating ? 'not-allowed' : 'pointer',
+                                transition: 'background-color 0.2s ease'
+                              }}
+                            >
+                              ✓
+                            </button>
+                            <button
+                              onClick={() => setStockAdjustments(prev => {
+                                const newAdjustments = { ...prev };
+                                delete newAdjustments[item._id];
+                                return newAdjustments;
+                              })}
+                              disabled={isUpdating}
+                              style={{
+                                padding: '6px 12px',
+                                background: isUpdating ? '#9ca3af' : '#ef4444',
+                                color: 'white',
+                                border: 'none',
+                                borderRadius: '4px',
+                                fontSize: '12px',
+                                cursor: isUpdating ? 'not-allowed' : 'pointer',
+                                transition: 'background-color 0.2s ease'
+                              }}
+                            >
+                              ✕
+                            </button>
+                          </div>
+                        )}
                       </td>
                     </tr>
                   );
@@ -464,9 +638,22 @@ const Item = () => {
             borderTop: '1px solid #e5e7eb',
             backgroundColor: '#f9fafb',
             fontSize: '14px',
-            color: '#6b7280'
+            color: '#6b7280',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            flexWrap: 'wrap',
+            gap: '16px'
           }}>
-            Showing {sortedItems.length} item{sortedItems.length !== 1 ? 's' : ''}
+            <div>
+              Showing {sortedItems.length} item{sortedItems.length !== 1 ? 's' : ''}
+              {searchTerm && ` matching "${searchTerm}"`}
+            </div>
+            {hasAdjustments && (
+              <div style={{ color: '#3b82f6', fontWeight: '500' }}>
+                {Object.keys(stockAdjustments).length} item{Object.keys(stockAdjustments).length !== 1 ? 's' : ''} pending adjustment
+              </div>
+            )}
           </div>
         )}
       </div>
@@ -489,4 +676,4 @@ const Item = () => {
   );
 };
 
-export default Item;
+export default StockTaking;
