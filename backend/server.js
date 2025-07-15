@@ -26,13 +26,12 @@ app.use((req, res, next) => {
 
 
 // routes
-
 app.use('/api/user', userRoutes);
 app.use(requireAuth);
 
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/purchases', purchaseRoutes);
-app.use('/api/inventories', inventoryRoutes);
+app.use('/api/inventory', inventoryRoutes);  // Changed from /api/inventories to /api/inventory
 app.use('/api/sales', saleRoutes);
 // require auth for all purchase routes
 

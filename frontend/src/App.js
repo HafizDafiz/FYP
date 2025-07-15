@@ -50,8 +50,6 @@ function MainContent({ user }) {
             <Route path="/inventory" element={<InventoryList />} />
             <Route path="/purchase" element={<PurchaseForm />} />
             <Route path="/sales" element={<SalesForm />} />
-
-
             {/* Redirect to login if user is not authenticated */}
           </Routes>
         </div>

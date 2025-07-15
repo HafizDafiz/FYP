@@ -10,6 +10,10 @@ const inventorySchema = new mongoose.Schema({
     unique: true,
     sparse: true,
   },
+  type: {
+    type: String,
+    required: true
+  },
   description: {
     type: String
   },
@@ -21,8 +25,11 @@ const inventorySchema = new mongoose.Schema({
     type: Number,
     required: true
   },
+  user_id: {
+    type: String,
+    required: false
+  }
+}, { timestamps: true });
 
-});
-
-// Bind this schema to the "products" collection
-module.exports = mongoose.model('Inventory', inventorySchema);
+// Bind this schema to the "products" collection explicitly
+module.exports = mongoose.model('Inventory', inventorySchema, 'products');

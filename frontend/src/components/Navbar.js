@@ -152,39 +152,6 @@ const Navbar = () => {
                     </li>
                   </ul>
                 </li>
-              {/* Inventory Dropdown */}
-              <li>
-                <div className="dropdown-toggle" onClick={() => toggleDropdown('inventory')}>
-                Inventory <span className={`dropdown-arrow ${activeDropdown === 'inventory' ? 'open' : ''}`}>▸</span>
-                </div>
-                <ul className={`dropdown-content ${activeDropdown === 'inventory' ? 'show' : ''}`}>
-                  <li><Link to="/inventory">Items</Link></li>
-                  <li><Link to="/inventory/stock-taking">Stock Taking</Link></li>
-                  <li><Link to="/inventory/stock-level">Stock Level</Link></li>
-                </ul>
-              </li>
-
-              {/* Sales Dropdown */}
-              <li>
-                <div className="dropdown-toggle" onClick={() => toggleDropdown('sales')}>
-                Sales <span className={`dropdown-arrow ${activeDropdown === 'sales' ? 'open' : ''}`}>▸</span>
-                </div>
-                <ul className={`dropdown-content ${activeDropdown === 'sales' ? 'show' : ''}`}>
-                  <li><Link to="/sales">Sales Orders</Link></li>
-                  <li><Link to="/sales/shipment">Shipment</Link></li>
-                </ul>
-              </li>
-
-              {/* Purchases Dropdown */}
-              <li>
-                <div className="dropdown-toggle" onClick={() => toggleDropdown('purchases')}>
-                Purchases <span className={`dropdown-arrow ${activeDropdown === 'purchases' ? 'open' : ''}`}>▸</span>
-                </div>
-                <ul className={`dropdown-content ${activeDropdown === 'purchases' ? 'show' : ''}`}>
-                  <li><Link to="/purchase">Purchase Orders</Link></li>
-                  <li><Link to="/purchases/receives">Purchase Receives</Link></li>
-                </ul>
-              </li>
 
                 {/* Sales Dropdown */}
                 <li>
