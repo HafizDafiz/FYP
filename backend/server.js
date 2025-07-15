@@ -5,13 +5,17 @@ const express = require('express');
 const mongoose = require('mongoose');
 
 const inventoryRoutes = require('./routes/inventory');
+const purchaseRoutes = require('./routes/purchase');
+const saleRoutes = require('./routes/sale')
 const userRoutes = require('./routes/user');
 const dashboardRoutes = require('./routes/dashboard');
 
+const requireAuth = require('./middleware/requireAuth');
+
 // express app
 const app = express();
+   
 
-// middleware
 app.use(cors());
 app.use(express.json());
 
@@ -20,10 +24,18 @@ app.use((req, res, next) => {
   next();
 });
 
+
 // routes
-app.use('/api/inventory', inventoryRoutes);
+
 app.use('/api/user', userRoutes);
+app.use(requireAuth);
+
 app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/purchases', purchaseRoutes);
+app.use('/api/inventories', inventoryRoutes);
+app.use('/api/sales', saleRoutes);
+// require auth for all purchase routes
+
 
 
 
