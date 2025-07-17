@@ -14,7 +14,11 @@ import Navbar from './components/Navbar';
 // import Purchase from './pages/Purchase';
 import InventoryList from './components/InventoryList';
 import PurchaseForm from './components/PurchaseForm';
-import SalesForm from './components/SaleForm';
+import PurchaseOrders from './pages/PurchaseOrders';
+import PurchaseReceives from './pages/PurchaseReceives';
+import PurchaseReceivesHistory from './pages/PurchaseReceivesHistory';
+import Sales from './pages/Sales';
+import Shipment from './pages/Shipment';
 // import { PurchaseContextProvider } from './context/PurchaseContext';
 
 function App() {
@@ -49,7 +53,11 @@ function MainContent({ user }) {
             <Route path="/inventory/stock-level" element={<StockLevel />} />
             <Route path="/inventory" element={<InventoryList />} />
             <Route path="/purchase" element={<PurchaseForm />} />
-            <Route path="/sales" element={<SalesForm />} />
+            <Route path="/purchase-orders" element={<PurchaseOrders />} />
+            <Route path="/purchases/receives" element={<PurchaseReceives />} />
+            <Route path="/purchases/receives-history" element={<PurchaseReceivesHistory />} />
+            <Route path="/sales" element={<Sales />} />
+            <Route path="/sales/shipment" element={<Shipment />} />
             {/* Redirect to login if user is not authenticated */}
           </Routes>
         </div>

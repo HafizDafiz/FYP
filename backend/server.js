@@ -6,7 +6,10 @@ const mongoose = require('mongoose');
 
 const inventoryRoutes = require('./routes/inventory');
 const purchaseRoutes = require('./routes/purchase');
+const purchaseOrderRoutes = require('./routes/purchaseOrder');
+const receivingReceiptRoutes = require('./routes/receivingReceipt');
 const saleRoutes = require('./routes/sale')
+const shipmentRoutes = require('./routes/shipment');
 const userRoutes = require('./routes/user');
 const dashboardRoutes = require('./routes/dashboard');
 
@@ -31,8 +34,11 @@ app.use(requireAuth);
 
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/purchases', purchaseRoutes);
+app.use('/api/purchase-orders', purchaseOrderRoutes);
+app.use('/api/receiving-receipts', receivingReceiptRoutes);
 app.use('/api/inventory', inventoryRoutes);  // Changed from /api/inventories to /api/inventory
 app.use('/api/sales', saleRoutes);
+app.use('/api/shipments', shipmentRoutes);
 // require auth for all purchase routes
 
 

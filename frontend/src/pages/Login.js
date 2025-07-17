@@ -57,7 +57,7 @@ const Login = () => {
             textStroke: "3px #2E3192",
             marginTop: "15px"
           }}>
-            uantix
+            Quantix
           </div>
         </div>
 

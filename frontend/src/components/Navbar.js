@@ -208,8 +208,8 @@ const Navbar = () => {
                   <ul className={`dropdown-content ${activeDropdown === 'purchases' ? 'show' : ''}`}>
                     <li>
                       <Link 
-                        to="/purchase" 
-                        className={isActiveRoute('/purchase') ? 'active' : ''}
+                        to="/purchase-orders" 
+                        className={isActiveRoute('/purchase-orders') ? 'active' : ''}
                         onClick={closeMobileMenu}
                       >
                         🛒 Purchase Orders
@@ -222,6 +222,15 @@ const Navbar = () => {
                         onClick={closeMobileMenu}
                       >
                         📥 Purchase Receives
+                      </Link>
+                    </li>
+                    <li>
+                      <Link 
+                        to="/purchases/receives-history" 
+                        className={isActiveRoute('/purchases/receives-history') ? 'active' : ''}
+                        onClick={closeMobileMenu}
+                      >
+                        📋 Receives History
                       </Link>
                     </li>
                   </ul>

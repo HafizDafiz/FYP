@@ -4,6 +4,9 @@ import { useState, useEffect } from 'react';
 const StaffDashboard = () => {
   const { user } = useAuthContext();
   const [currentTime, setCurrentTime] = useState(new Date());
+  const [dashboardData, setDashboardData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -12,6 +15,38 @@ const StaffDashboard = () => {
 
     return () => clearInterval(timer);
   }, []);
+
+  useEffect(() => {
+    fetchDashboardData();
+  }, [user]);
+
+  const fetchDashboardData = async () => {
+    if (!user) return;
+
+    setLoading(true);
+    try {
+      const response = await fetch('http://localhost:4000/api/dashboard/staff', {
+        headers: {
+          'Authorization': `Bearer ${user.token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setError(data.error || 'Failed to fetch dashboard data');
+      } else {
+        setDashboardData(data.data);
+        setError(null);
+      }
+    } catch (err) {
+      console.error('Dashboard fetch error:', err);
+      setError('Something went wrong while fetching dashboard data');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const formatTime = (date) => {
     return date.toLocaleString('en-US', {
@@ -24,31 +59,70 @@ const StaffDashboard = () => {
     });
   };
 
-  // Sample dashboard data for staff - more limited than admin
-  const dashboardData = {
-    todaysTasks: {
-      completed: 8,
-      pending: 4,
-      inProgress: 2
-    },
-    inventoryStats: {
-      itemsProcessed: 45,
-      stockUpdates: 12,
-      lowStockItems: 8
-    },
-    recentTasks: [
-      { id: 1, task: 'Update stock for Wireless Headphones', status: 'completed', time: '2 hours ago' },
-      { id: 2, task: 'Process incoming shipment', status: 'in-progress', time: '1 hour ago' },
-      { id: 3, task: 'Verify product quantities', status: 'pending', time: '30 minutes ago' },
-      { id: 4, task: 'Generate daily report', status: 'pending', time: '15 minutes ago' }
-    ],
-    quickActions: [
-      { title: 'Update Stock', icon: '📦', action: 'update-stock' },
-      { title: 'View Items', icon: '👁️', action: 'view-items' },
-      { title: 'Stock Taking', icon: '📋', action: 'stock-taking' },
-      { title: 'Reports', icon: '📊', action: 'reports' }
-    ]
+  const formatCurrency = (amount) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD'
+    }).format(amount);
   };
+
+  const calculateTrend = (current, previous) => {
+    if (previous === 0) return { trend: 'neutral', percentage: 0 };
+    const change = ((current - previous) / previous) * 100;
+    return {
+      trend: change > 0 ? 'up' : change < 0 ? 'down' : 'neutral',
+      percentage: Math.abs(change).toFixed(1)
+    };
+  };
+
+  if (loading) {
+    return (
+      <div className="staff-dashboard">
+        <div className="dashboard-header">
+          <h1>Staff Dashboard</h1>
+          <div className="time-display">
+            <span>{formatTime(currentTime)}</span>
+          </div>
+        </div>
+        <div className="loading-message">Loading dashboard data...</div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="staff-dashboard">
+        <div className="dashboard-header">
+          <h1>Staff Dashboard</h1>
+          <div className="time-display">
+            <span>{formatTime(currentTime)}</span>
+          </div>
+        </div>
+        <div className="error-message">
+          {error}
+          <button onClick={fetchDashboardData} className="retry-btn">
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (!dashboardData) {
+    return (
+      <div className="staff-dashboard">
+        <div className="dashboard-header">
+          <h1>Staff Dashboard</h1>
+          <div className="time-display">
+            <span>{formatTime(currentTime)}</span>
+          </div>
+        </div>
+        <div className="loading-message">No dashboard data available</div>
+      </div>
+    );
+  }
+
+  const salesTrend = calculateTrend(dashboardData.salesActivity.todaySales, dashboardData.salesActivity.yesterdaySales);
 
   const StatCard = ({ title, value, subtitle, trend, icon }) => (
     <div style={{
