@@ -1320,4 +1320,131 @@ html, body {
   font-size: 16px;
 }
 
+/* Dashboard Loading and Error States */
+.dashboard-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 50vh;
+  gap: 20px;
+}
 
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #e5e7eb;
+  border-top: 4px solid #3b82f6;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.dashboard-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 50vh;
+  gap: 20px;
+  text-align: center;
+  padding: 40px;
+}
+
+.dashboard-error h2 {
+  color: #ef4444;
+  margin: 0;
+  font-size: 24px;
+}
+
+.dashboard-error p {
+  color: #6b7280;
+  margin: 0;
+  font-size: 16px;
+}
+
+.retry-button {
+  background: #3b82f6;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background-color 0.2s;
+}
+
+.retry-button:hover {
+  background: #2563eb;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Dashboard Specific Styles */
+.admin-dashboard, .staff-dashboard {
+  background: #f8fafc;
+  min-height: 100vh;
+  padding: 20px;
+  padding-left: clamp(15px, 3vw, 250px);
+  transition: padding 0.3s ease;
+}
+
+.dashboard-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  gap: 20px;
+}
+
+.dashboard-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  gap: 20px;
+  text-align: center;
+}
+
+.dashboard-error h2 {
+  color: #ef4444;
+  margin: 0;
+}
+
+.dashboard-error p {
+  color: #6b7280;
+  margin: 0;
+}
+
+/* Loading spinner for dashboards */
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #e5e7eb;
+  border-top: 4px solid #3b82f6;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+/* Dashboard responsive grid improvements */
+@media (max-width: 768px) {
+  .admin-dashboard, .staff-dashboard {
+    padding: 15px;
+    padding-left: 15px;
+  }
+  
+  .stats-grid {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+  
+  .dashboard-grid {
+    grid-template-columns: 1fr !important;
+    gap: 20px !important;
+  }
+}

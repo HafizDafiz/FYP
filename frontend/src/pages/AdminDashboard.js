@@ -4,6 +4,9 @@ import { useState, useEffect } from 'react';
 const AdminDashboard = () => {
   const { user } = useAuthContext();
   const [currentTime, setCurrentTime] = useState(new Date());
+  const [dashboardData, setDashboardData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -12,6 +15,38 @@ const AdminDashboard = () => {
 
     return () => clearInterval(timer);
   }, []);
+
+  useEffect(() => {
+    fetchDashboardData();
+  }, [user]);
+
+  const fetchDashboardData = async () => {
+    if (!user) return;
+
+    setLoading(true);
+    try {
+      const response = await fetch('http://localhost:4000/api/dashboard/admin', {
+        headers: {
+          'Authorization': `Bearer ${user.token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setError(data.error || 'Failed to fetch dashboard data');
+      } else {
+        setDashboardData(data.data);
+        setError(null);
+      }
+    } catch (err) {
+      console.error('Dashboard fetch error:', err);
+      setError('Something went wrong while fetching dashboard data');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const formatTime = (date) => {
     return date.toLocaleString('en-US', {
@@ -24,39 +59,39 @@ const AdminDashboard = () => {
     });
   };
 
-  // Sample dashboard data - replace with actual API calls later
-  const dashboardData = {
-    salesActivity: {
-      todaySales: 12450,
-      yesterdaySales: 10200,
-      thisMonth: 345600,
-      lastMonth: 298400
-    },
-    inventoryStats: {
-      totalProducts: 1247,
-      lowStock: 23,
-      outOfStock: 8,
-      totalValue: 2341560
-    },
-    recentProducts: [
-      { id: 1, name: 'Wireless Headphones', sku: 'WH-001', stock: 45, price: 89.99 },
-      { id: 2, name: 'Smartphone Case', sku: 'SC-123', stock: 12, price: 24.99 },
-      { id: 3, name: 'USB Cable', sku: 'UC-456', stock: 3, price: 12.99 },
-      { id: 4, name: 'Bluetooth Speaker', sku: 'BS-789', stock: 67, price: 149.99 }
-    ],
-    quickActions: [
-      { title: 'Add New Product', icon: '📦', action: 'add-product' },
-      { title: 'View Orders', icon: '🛒', action: 'view-orders' },
-      { title: 'Generate Report', icon: '📊', action: 'generate-report' },
-      { title: 'Manage Users', icon: '👥', action: 'manage-users' }
-    ],
-    tasks: [
-      { title: 'Review sales reports', completed: true },
-      { title: 'Update inventory', completed: false },
-      { title: 'Prepare for meeting with suppliers', completed: false },
-      { title: 'Send invoice to client', completed: true }
-    ]
+  const formatCurrency = (amount) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD'
+    }).format(amount);
   };
+
+  if (loading) {
+    return (
+      <div className="admin-dashboard">
+        <div className="dashboard-loading">
+          <div className="loading-spinner"></div>
+          <p>Loading dashboard data...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="admin-dashboard">
+        <div className="dashboard-error">
+          <h2>Error Loading Dashboard</h2>
+          <p>{error}</p>
+          <button onClick={fetchDashboardData} className="retry-button">
+            Try Again
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (!dashboardData) return null;
 
   const StatCard = ({ title, value, subtitle, trend, icon }) => (
     <div style={{
@@ -104,35 +139,6 @@ const AdminDashboard = () => {
           {trend === 'up' && '↗️'} {trend === 'down' && '↘️'} {subtitle}
         </div>
       )}
-    </div>
-  );
-
-  const QuickActionCard = ({ title, icon, onClick }) => (
-    <div
-      style={{
-        background: 'white',
-        borderRadius: '12px',
-        padding: '20px',
-        boxShadow: '0 4px 6px rgba(0, 0, 0, 0.05)',
-        border: '1px solid #e5e7eb',
-        cursor: 'pointer',
-        transition: 'all 0.3s ease',
-        textAlign: 'center'
-      }}
-      onClick={onClick}
-      onMouseOver={(e) => {
-        e.target.style.transform = 'translateY(-2px)';
-        e.target.style.boxShadow = '0 8px 12px rgba(0, 0, 0, 0.1)';
-      }}
-      onMouseOut={(e) => {
-        e.target.style.transform = 'translateY(0)';
-        e.target.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.05)';
-      }}
-    >
-      <div style={{ fontSize: '32px', marginBottom: '12px' }}>{icon}</div>
-      <div style={{ fontSize: '14px', fontWeight: '600', color: '#374151' }}>
-        {title}
-      </div>
     </div>
   );
 
@@ -254,17 +260,23 @@ const AdminDashboard = () => {
               color: '#1f2937',
               marginBottom: '8px'
             }}>
-              ${dashboardData.salesActivity.todaySales.toLocaleString()}
+              {formatCurrency(dashboardData.salesActivity.todaySales)}
             </div>
             <div style={{
               fontSize: '14px',
-              color: dashboardData.salesActivity.todaySales > dashboardData.salesActivity.yesterdaySales ? '#10b981' : '#ef4444',
+              color: dashboardData.salesActivity.yesterdaySales > 0 && dashboardData.salesActivity.todaySales > dashboardData.salesActivity.yesterdaySales ? '#10b981' : '#ef4444',
               display: 'flex',
               alignItems: 'center',
               gap: '4px'
             }}>
-              <span>{dashboardData.salesActivity.todaySales > dashboardData.salesActivity.yesterdaySales ? '↗' : '↘'}</span>
-              {Math.abs(((dashboardData.salesActivity.todaySales - dashboardData.salesActivity.yesterdaySales) / dashboardData.salesActivity.yesterdaySales * 100)).toFixed(1)}% from yesterday
+              {dashboardData.salesActivity.yesterdaySales > 0 ? (
+                <>
+                  <span>{dashboardData.salesActivity.todaySales > dashboardData.salesActivity.yesterdaySales ? '↗' : '↘'}</span>
+                  {Math.abs(((dashboardData.salesActivity.todaySales - dashboardData.salesActivity.yesterdaySales) / dashboardData.salesActivity.yesterdaySales * 100)).toFixed(1)}% from yesterday
+                </>
+              ) : (
+                'No comparison data'
+              )}
             </div>
           </div>
 
@@ -386,17 +398,23 @@ const AdminDashboard = () => {
               color: '#1f2937',
               marginBottom: '8px'
             }}>
-              ${dashboardData.salesActivity.thisMonth.toLocaleString()}
+              {formatCurrency(dashboardData.salesActivity.thisMonth)}
             </div>
             <div style={{
               fontSize: '14px',
-              color: dashboardData.salesActivity.thisMonth > dashboardData.salesActivity.lastMonth ? '#10b981' : '#ef4444',
+              color: dashboardData.salesActivity.lastMonth > 0 && dashboardData.salesActivity.thisMonth > dashboardData.salesActivity.lastMonth ? '#10b981' : '#ef4444',
               display: 'flex',
               alignItems: 'center',
               gap: '4px'
             }}>
-              <span>{dashboardData.salesActivity.thisMonth > dashboardData.salesActivity.lastMonth ? '↗' : '↘'}</span>
-              {Math.abs(((dashboardData.salesActivity.thisMonth - dashboardData.salesActivity.lastMonth) / dashboardData.salesActivity.lastMonth * 100)).toFixed(1)}% from last month
+              {dashboardData.salesActivity.lastMonth > 0 ? (
+                <>
+                  <span>{dashboardData.salesActivity.thisMonth > dashboardData.salesActivity.lastMonth ? '↗' : '↘'}</span>
+                  {Math.abs(((dashboardData.salesActivity.thisMonth - dashboardData.salesActivity.lastMonth) / dashboardData.salesActivity.lastMonth * 100)).toFixed(1)}% from last month
+                </>
+              ) : (
+                'No comparison data'
+              )}
             </div>
           </div>
 
@@ -450,7 +468,7 @@ const AdminDashboard = () => {
               color: '#1f2937',
               marginBottom: '8px'
             }}>
-              ${dashboardData.inventoryStats.totalValue.toLocaleString()}
+              {formatCurrency(dashboardData.inventoryStats.totalValue)}
             </div>
             <div style={{
               fontSize: '14px',
@@ -495,7 +513,7 @@ const AdminDashboard = () => {
             </div>
             <div style={{ padding: '0' }}>
               {dashboardData.recentProducts.map((product, index) => (
-                <div key={product.id} style={{
+                <div key={product._id} style={{
                   padding: '16px 24px',
                   borderBottom: index < dashboardData.recentProducts.length - 1 ? '1px solid #f3f4f6' : 'none',
                   transition: 'background-color 0.2s ease'
@@ -518,7 +536,7 @@ const AdminDashboard = () => {
                       fontWeight: '600',
                       color: '#059669'
                     }}>
-                      ${product.price}
+                      {formatCurrency(product.rate || 0)}
                     </div>
                   </div>
                   <div style={{
@@ -534,18 +552,26 @@ const AdminDashboard = () => {
                     </div>
                     <div style={{
                       fontSize: '12px',
-                      color: product.stock < 10 ? '#ef4444' : '#10b981',
+                      color: product.quantity < 10 ? '#ef4444' : '#10b981',
                       fontWeight: '500'
                     }}>
-                      {product.stock} in stock
+                      {product.quantity} in stock
                     </div>
                   </div>
                 </div>
               ))}
             </div>
           </div>
+        </div>
 
-          {/* Quick Actions */}
+        {/* Admin-specific sections */}
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))',
+          gap: '24px',
+          marginTop: '30px'
+        }}>
+          {/* User Statistics */}
           <div style={{
             background: 'white',
             borderRadius: '16px',
@@ -562,49 +588,248 @@ const AdminDashboard = () => {
               alignItems: 'center',
               gap: '8px'
             }}>
-              <span style={{ fontSize: '20px' }}>⚡</span>
-              Quick Actions
+              <span style={{ fontSize: '20px' }}>👥</span>
+              User Management
             </h3>
-            <div style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))',
-              gap: '16px'
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              <div style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                padding: '12px',
+                background: '#f8fafc',
+                borderRadius: '8px'
+              }}>
+                <span>Total Users</span>
+                <span style={{ fontWeight: '600', color: '#1f2937' }}>
+                  {dashboardData.userStats?.totalUsers || 0}
+                </span>
+              </div>
+              <div style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                padding: '12px',
+                background: '#f0f9ff',
+                borderRadius: '8px'
+              }}>
+                <span>Admin Users</span>
+                <span style={{ fontWeight: '600', color: '#0369a1' }}>
+                  {dashboardData.userStats?.adminUsers || 0}
+                </span>
+              </div>
+              <div style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                padding: '12px',
+                background: '#f0fdf4',
+                borderRadius: '8px'
+              }}>
+                <span>Staff Users</span>
+                <span style={{ fontWeight: '600', color: '#166534' }}>
+                  {dashboardData.userStats?.staffUsers || 0}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Purchase Order Statistics */}
+          <div style={{
+            background: 'white',
+            borderRadius: '16px',
+            boxShadow: '0 4px 6px rgba(0, 0, 0, 0.05)',
+            border: '1px solid #e5e7eb',
+            padding: '24px'
+          }}>
+            <h3 style={{
+              fontSize: '18px',
+              fontWeight: '600',
+              color: '#1f2937',
+              margin: '0 0 20px 0',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px'
             }}>
-              {dashboardData.quickActions.map((action, index) => (
-                <div key={index} style={{
-                  background: 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)',
-                  borderRadius: '12px',
-                  padding: '20px',
-                  textAlign: 'center',
-                  cursor: 'pointer',
-                  transition: 'all 0.3s ease',
-                  border: '1px solid #e5e7eb'
-                }}
-                onMouseOver={(e) => {
-                  e.target.style.transform = 'translateY(-2px)';
-                  e.target.style.boxShadow = '0 8px 16px rgba(0, 0, 0, 0.1)';
-                }}
-                onMouseOut={(e) => {
-                  e.target.style.transform = 'translateY(0)';
-                  e.target.style.boxShadow = 'none';
-                }}
-                >
-                  <div style={{
-                    fontSize: '28px',
-                    marginBottom: '8px'
+              <span style={{ fontSize: '20px' }}>📋</span>
+              Purchase Orders
+            </h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              <div style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                padding: '12px',
+                background: '#f8fafc',
+                borderRadius: '8px'
+              }}>
+                <span>Total POs</span>
+                <span style={{ fontWeight: '600', color: '#1f2937' }}>
+                  {dashboardData.purchaseStats?.totalPOs || 0}
+                </span>
+              </div>
+              <div style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                padding: '12px',
+                background: '#fef3c7',
+                borderRadius: '8px'
+              }}>
+                <span>Pending POs</span>
+                <span style={{ fontWeight: '600', color: '#d97706' }}>
+                  {dashboardData.purchaseStats?.pendingPOs || 0}
+                </span>
+              </div>
+              <div style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                padding: '12px',
+                background: '#f0fdf4',
+                borderRadius: '8px'
+              }}>
+                <span>Completed POs</span>
+                <span style={{ fontWeight: '600', color: '#166534' }}>
+                  {dashboardData.purchaseStats?.completedPOs || 0}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Recent Sales and Top Products */}
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))',
+          gap: '24px',
+          marginTop: '30px'
+        }}>
+          {/* Recent Sales */}
+          <div style={{
+            background: 'white',
+            borderRadius: '16px',
+            boxShadow: '0 4px 6px rgba(0, 0, 0, 0.05)',
+            border: '1px solid #e5e7eb',
+            padding: '24px'
+          }}>
+            <h3 style={{
+              fontSize: '18px',
+              fontWeight: '600',
+              color: '#1f2937',
+              margin: '0 0 20px 0',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px'
+            }}>
+              <span style={{ fontSize: '20px' }}>💳</span>
+              Recent Sales
+            </h3>
+            <div style={{ maxHeight: '300px', overflowY: 'auto' }}>
+              {dashboardData.recentSales?.length > 0 ? (
+                dashboardData.recentSales.map((sale, index) => (
+                  <div key={sale._id} style={{
+                    padding: '12px 0',
+                    borderBottom: index < dashboardData.recentSales.length - 1 ? '1px solid #f3f4f6' : 'none'
                   }}>
-                    {action.icon}
+                    <div style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      marginBottom: '4px'
+                    }}>
+                      <span style={{ fontWeight: '500', color: '#1f2937' }}>
+                        {sale.customerName}
+                      </span>
+                      <span style={{ fontWeight: '600', color: '#059669' }}>
+                        {formatCurrency(sale.total)}
+                      </span>
+                    </div>
+                    <div style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center'
+                    }}>
+                      <span style={{ fontSize: '12px', color: '#6b7280' }}>
+                        {new Date(sale.orderDate).toLocaleDateString()}
+                      </span>
+                      <span style={{
+                        fontSize: '12px',
+                        fontWeight: '500',
+                        color: sale.status === 'completed' ? '#059669' : '#d97706'
+                      }}>
+                        {sale.status}
+                      </span>
+                    </div>
                   </div>
-                  <div style={{
-                    fontSize: '12px',
-                    fontWeight: '500',
-                    color: '#374151',
-                    lineHeight: '1.4'
+                ))
+              ) : (
+                <p style={{ color: '#6b7280', textAlign: 'center', margin: '20px 0' }}>
+                  No recent sales
+                </p>
+              )}
+            </div>
+          </div>
+
+          {/* Top Products */}
+          <div style={{
+            background: 'white',
+            borderRadius: '16px',
+            boxShadow: '0 4px 6px rgba(0, 0, 0, 0.05)',
+            border: '1px solid #e5e7eb',
+            padding: '24px'
+          }}>
+            <h3 style={{
+              fontSize: '18px',
+              fontWeight: '600',
+              color: '#1f2937',
+              margin: '0 0 20px 0',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px'
+            }}>
+              <span style={{ fontSize: '20px' }}>🏆</span>
+              Top Products (This Month)
+            </h3>
+            <div>
+              {dashboardData.topProducts?.length > 0 ? (
+                dashboardData.topProducts.map((product, index) => (
+                  <div key={index} style={{
+                    padding: '12px 0',
+                    borderBottom: index < dashboardData.topProducts.length - 1 ? '1px solid #f3f4f6' : 'none'
                   }}>
-                    {action.title}
+                    <div style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      marginBottom: '4px'
+                    }}>
+                      <span style={{ fontWeight: '500', color: '#1f2937' }}>
+                        {product._id}
+                      </span>
+                      <span style={{ fontSize: '12px', color: '#6b7280' }}>
+                        #{index + 1}
+                      </span>
+                    </div>
+                    <div style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center'
+                    }}>
+                      <span style={{ fontSize: '12px', color: '#6b7280' }}>
+                        Sold: {product.totalQuantity} units
+                      </span>
+                      <span style={{ fontWeight: '600', color: '#059669' }}>
+                        {formatCurrency(product.totalRevenue)}
+                      </span>
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))
+              ) : (
+                <p style={{ color: '#6b7280', textAlign: 'center', margin: '20px 0' }}>
+                  No sales data for this month
+                </p>
+              )}
             </div>
           </div>
         </div>
@@ -615,7 +840,8 @@ const AdminDashboard = () => {
           borderRadius: '16px',
           boxShadow: '0 4px 6px rgba(0, 0, 0, 0.05)',
           border: '1px solid #e5e7eb',
-          padding: '24px'
+          padding: '24px',
+          marginTop: '30px'
         }}>
           <h3 style={{
             fontSize: '18px',
@@ -627,46 +853,69 @@ const AdminDashboard = () => {
             gap: '8px'
           }}>
             <span style={{ fontSize: '20px' }}>📋</span>
-            Today's Tasks
+            Recent Receiving Receipts
           </h3>
           <div style={{
             display: 'grid',
             gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
             gap: '16px'
           }}>
-            {dashboardData.tasks.map((task, index) => (
-              <div key={index} style={{
-                background: task.completed ? '#f0f9f0' : '#fff7ed',
-                borderRadius: '8px',
-                padding: '16px',
-                border: `1px solid ${task.completed ? '#d1fae5' : '#fed7aa'}`,
-                display: 'flex',
-                alignItems: 'center',
-                gap: '12px'
-              }}>
-                <div style={{
-                  width: '20px',
-                  height: '20px',
-                  borderRadius: '50%',
-                  background: task.completed ? '#10b981' : '#f59e0b',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontSize: '12px',
-                  color: 'white'
+            {dashboardData.recentReceivingReceipts?.length > 0 ? (
+              dashboardData.recentReceivingReceipts.map((receipt, index) => (
+                <div key={receipt._id} style={{
+                  background: '#f8fafc',
+                  borderRadius: '8px',
+                  padding: '16px',
+                  border: '1px solid #e5e7eb'
                 }}>
-                  {task.completed ? '✓' : '⏳'}
+                  <div style={{
+                    fontSize: '14px',
+                    fontWeight: '500',
+                    color: '#1f2937',
+                    marginBottom: '8px'
+                  }}>
+                    {receipt.receiptNumber}
+                  </div>
+                  <div style={{
+                    fontSize: '12px',
+                    color: '#6b7280',
+                    marginBottom: '4px'
+                  }}>
+                    PO: {receipt.purchaseOrderId?.poNumber || 'N/A'}
+                  </div>
+                  <div style={{
+                    fontSize: '12px',
+                    color: '#6b7280',
+                    marginBottom: '8px'
+                  }}>
+                    Vendor: {receipt.purchaseOrderId?.vendorName || 'N/A'}
+                  </div>
+                  <div style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center'
+                  }}>
+                    <span style={{
+                      fontSize: '12px',
+                      color: '#6b7280'
+                    }}>
+                      {new Date(receipt.receivedAt).toLocaleDateString()}
+                    </span>
+                    <span style={{
+                      fontSize: '12px',
+                      fontWeight: '500',
+                      color: receipt.status === 'completed' ? '#059669' : '#d97706'
+                    }}>
+                      {receipt.status}
+                    </span>
+                  </div>
                 </div>
-                <div style={{
-                  flex: 1,
-                  fontSize: '14px',
-                  fontWeight: '500',
-                  color: '#374151'
-                }}>
-                  {task.title}
-                </div>
-              </div>
-            ))}
+              ))
+            ) : (
+              <p style={{ color: '#6b7280', textAlign: 'center', margin: '20px 0' }}>
+                No recent receiving receipts
+              </p>
+            )}
           </div>
         </div>
       </div>

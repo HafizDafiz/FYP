@@ -48,7 +48,10 @@ const Navbar = () => {
   };
 
   const isDashboardRoute = () => {
-    return location.pathname === '/admin-dashboard' || location.pathname === '/staff-dashboard';
+    return location.pathname === '/admin-dashboard' || 
+           location.pathname === '/staff-dashboard' || 
+           location.pathname === '/dashboard' ||
+           location.pathname === '/';
   };
 
   return (
@@ -81,7 +84,16 @@ const Navbar = () => {
               color: 'white',
               fontSize: '26px'
             }}>
-              <span style={{ fontSize: '28px' }}>📊</span>
+              <img 
+                src="/FYPLOGO_3.png" 
+                alt="Quantix Logo" 
+                style={{ 
+                  width: '50px', 
+                  height: '50px',
+                  objectFit: 'contain',
+                  alignSelf: 'left'
+                }} 
+              />
               Quantix
             </h1>
           </Link>
@@ -90,7 +102,7 @@ const Navbar = () => {
               <ul>
                 <li>
                   <Link 
-                    to={user.role === 'admin' ? '/admin-dashboard' : '/staff-dashboard'}
+                    to="/dashboard"
                     className={isDashboardRoute() ? 'active' : ''}
                     style={{
                       display: 'flex',

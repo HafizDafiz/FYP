@@ -4,7 +4,6 @@ import { Link, useNavigate } from 'react-router-dom';
 
 const Signup = () => {
   const [name, setName] = useState('');
-  const [role, setRole] = useState('staff');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const { signup, error, isLoading } = useSignup();
@@ -12,12 +11,9 @@ const Signup = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    await signup(name, email, password, role);
-    if (role === 'admin') {
-      navigate('/admin-dashboard');
-    } else {
-      navigate('/staff-dashboard');
-    }
+    await signup(name, email, password, 'staff');
+    // Navigate to dashboard - it will automatically redirect based on user role
+    navigate('/dashboard');
   };
 
   return (
@@ -38,23 +34,16 @@ const Signup = () => {
       }}>
         {/* Logo Section */}
         <div style={{ marginBottom: "30px", textAlign: "center" }}>
-          <img
-            src="/FYPLOGO_1.png"
-            alt="logo"
-            style={{
-              width: "min(200px, 60vw)",
-              height: "auto",
-              marginBottom: "10px"
-            }}
-          />
           <h1 style={{
             fontFamily: 'Poppins',
-            fontSize: "48px",
+            fontSize: "clamp(2.5rem, 10vw, 4.5rem)",
             fontWeight: 600,
             color: "white",
             WebkitTextStroke: "2px #2E3192",
             textShadow: "2px 2px 4px rgba(0,0,0,0.3)",
-            margin: 0
+            margin: 0,
+            lineHeight: "1",
+            letterSpacing: "-1px"
           }}>
             Quantix
           </h1>
@@ -116,20 +105,6 @@ const Signup = () => {
               placeholder="Create a strong password"
               style={inputStyle}
             />
-          </div>
-
-          {/* Role */}
-          <div style={{ marginBottom: "25px" }}>
-            <label style={labelStyle}>Role</label>
-            <select
-              value={role}
-              onChange={(e) => setRole(e.target.value)}
-              required
-              style={{ ...inputStyle, cursor: "pointer" }}
-            >
-              <option value="staff">Staff</option>
-              <option value="admin">Admin</option>
-            </select>
           </div>
 
           {/* Submit Button */}

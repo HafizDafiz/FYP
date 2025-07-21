@@ -10,6 +10,8 @@ import Login from './pages/Login';
 import Signup from './pages/Signup';
 import StaffDashboard from './pages/StaffDashboard';
 import AdminDashboard from './pages/AdminDashboard';
+import Dashboard from './pages/Dashboard';
+import ProtectedRoute from './components/ProtectedRoute';
 import Navbar from './components/Navbar';
 // import Purchase from './pages/Purchase';
 import InventoryList from './components/InventoryList';
@@ -41,24 +43,79 @@ function MainContent({ user }) {
   return (
     <>
       {!hideNavbar && <Navbar />}
-      {!hideNavbar && <div className="topbar"></div>}        <div className="pages">          <Routes>
-            <Route path="/" element={<Navigate to="/login" />} />
+      {!hideNavbar && <div className="topbar"></div>}        <div className="pages">
+          <Routes>
+            <Route path="/" element={<Dashboard />} />
+            <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/signup" element={<Signup />} />
             <Route path="/login" element={<Login />} />
-            <Route path="/staff-dashboard" element={<StaffDashboard />} />
-            <Route path="/admin-dashboard" element={<AdminDashboard />} />
-            <Route path="/inventory/items" element={<Item />} />
-            <Route path="/inventory/add-item" element={<AddItem />} />
-            <Route path="/inventory/stock-taking" element={<StockTaking />} />
-            <Route path="/inventory/stock-level" element={<StockLevel />} />
-            <Route path="/inventory" element={<InventoryList />} />
-            <Route path="/purchase" element={<PurchaseForm />} />
-            <Route path="/purchase-orders" element={<PurchaseOrders />} />
-            <Route path="/purchases/receives" element={<PurchaseReceives />} />
-            <Route path="/purchases/receives-history" element={<PurchaseReceivesHistory />} />
-            <Route path="/sales" element={<Sales />} />
-            <Route path="/sales/shipment" element={<Shipment />} />
-            {/* Redirect to login if user is not authenticated */}
+            <Route path="/staff-dashboard" element={
+              <ProtectedRoute requiredRole="staff">
+                <StaffDashboard />
+              </ProtectedRoute>
+            } />
+            <Route path="/admin-dashboard" element={
+              <ProtectedRoute requiredRole="admin">
+                <AdminDashboard />
+              </ProtectedRoute>
+            } />
+            <Route path="/inventory/items" element={
+              <ProtectedRoute>
+                <Item />
+              </ProtectedRoute>
+            } />
+            <Route path="/inventory/add-item" element={
+              <ProtectedRoute>
+                <AddItem />
+              </ProtectedRoute>
+            } />
+            <Route path="/inventory/stock-taking" element={
+              <ProtectedRoute>
+                <StockTaking />
+              </ProtectedRoute>
+            } />
+            <Route path="/inventory/stock-level" element={
+              <ProtectedRoute>
+                <StockLevel />
+              </ProtectedRoute>
+            } />
+            <Route path="/inventory" element={
+              <ProtectedRoute>
+                <InventoryList />
+              </ProtectedRoute>
+            } />
+            <Route path="/purchase" element={
+              <ProtectedRoute>
+                <PurchaseForm />
+              </ProtectedRoute>
+            } />
+            <Route path="/purchase-orders" element={
+              <ProtectedRoute>
+                <PurchaseOrders />
+              </ProtectedRoute>
+            } />
+            <Route path="/purchases/receives" element={
+              <ProtectedRoute>
+                <PurchaseReceives />
+              </ProtectedRoute>
+            } />
+            <Route path="/purchases/receives-history" element={
+              <ProtectedRoute>
+                <PurchaseReceivesHistory />
+              </ProtectedRoute>
+            } />
+            <Route path="/sales" element={
+              <ProtectedRoute>
+                <Sales />
+              </ProtectedRoute>
+            } />
+            <Route path="/sales/shipment" element={
+              <ProtectedRoute>
+                <Shipment />
+              </ProtectedRoute>
+            } />
+            {/* Redirect unknown routes to dashboard */}
+            <Route path="*" element={<Dashboard />} />
           </Routes>
         </div>
     </>

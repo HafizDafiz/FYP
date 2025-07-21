@@ -18,7 +18,7 @@ const StockTaking = () => {
   // Check if user is admin
   useEffect(() => {
     if (user && user.role !== 'admin') {
-      navigate('/staff-dashboard');
+      navigate('/dashboard');
     }
   }, [user, navigate]);
 
@@ -480,7 +480,14 @@ const StockTaking = () => {
                 <th style={{ padding: '16px 24px', textAlign: 'center', fontWeight: '600', color: '#374151', fontSize: '14px' }}>
                   Difference
                 </th>
-                <th style={{ padding: '16px 24px', textAlign: 'center', fontWeight: '600', color: '#374151', fontSize: '14px' }}>
+                <th style={{ 
+                  padding: '16px 24px', 
+                  textAlign: 'center', 
+                  fontWeight: '600', 
+                  color: '#374151', 
+                  fontSize: '14px',
+                  minWidth: '140px'
+                }}>
                   Status
                 </th>
                 <th style={{ padding: '16px 24px', textAlign: 'center', fontWeight: '600', color: '#374151', fontSize: '14px' }}>

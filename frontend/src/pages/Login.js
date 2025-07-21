@@ -13,11 +13,8 @@ const Login = () => {
     e.preventDefault();
     const user = await login(email, password);
     if (user) {
-      if (user.role === "admin") {
-        navigate("/admin-dashboard");
-      } else {
-        navigate("/staff-dashboard");
-      }
+      // Navigate to dashboard - it will automatically redirect based on user role
+      navigate("/dashboard");
     }
   };
 
@@ -39,23 +36,15 @@ const Login = () => {
       }}>
         {/* Logo Section */}
         <div style={{ marginBottom: "30px", textAlign: "center" }}>
-          <img
-            src="/FYPLOGO_1.png"
-            alt="logo"
-            style={{
-              width: "min(200px, 60vw)",
-              height: "auto",
-              maxWidth: "200px"
-            }}
-          />
           <div style={{
             fontFamily: 'Poppins, sans-serif',
-            fontSize: "clamp(2rem, 8vw, 4rem)",
-            fontWeight: 400,
+            fontSize: "clamp(2.5rem, 10vw, 4.5rem)",
+            fontWeight: 600,
             color: "white",
-            WebkitTextStroke: "3px #2E3192",
-            textStroke: "3px #2E3192",
-            marginTop: "15px"
+            WebkitTextStroke: "2px #2E3192",
+            textStroke: "2px #2E3192",
+            lineHeight: "1",
+            letterSpacing: "-1px"
           }}>
             Quantix
           </div>

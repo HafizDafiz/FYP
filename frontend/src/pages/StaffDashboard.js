@@ -173,35 +173,6 @@ const StaffDashboard = () => {
     </div>
   );
 
-  const QuickActionCard = ({ title, icon, onClick }) => (
-    <div
-      style={{
-        background: 'white',
-        borderRadius: '12px',
-        padding: '20px',
-        boxShadow: '0 4px 6px rgba(0, 0, 0, 0.05)',
-        border: '1px solid #e5e7eb',
-        cursor: 'pointer',
-        transition: 'all 0.3s ease',
-        textAlign: 'center'
-      }}
-      onClick={onClick}
-      onMouseOver={(e) => {
-        e.target.style.transform = 'translateY(-2px)';
-        e.target.style.boxShadow = '0 8px 12px rgba(0, 0, 0, 0.1)';
-      }}
-      onMouseOut={(e) => {
-        e.target.style.transform = 'translateY(0)';
-        e.target.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.05)';
-      }}
-    >
-      <div style={{ fontSize: '32px', marginBottom: '12px' }}>{icon}</div>
-      <div style={{ fontSize: '14px', fontWeight: '600', color: '#374151' }}>
-        {title}
-      </div>
-    </div>
-  );
-
   const getStatusColor = (status) => {
     switch (status) {
       case 'completed': return '#10b981';
@@ -321,14 +292,14 @@ const StaffDashboard = () => {
                   color: '#1f2937', 
                   margin: '0 0 4px 0' 
                 }}>
-                  Tasks Completed
+                  Today's Sales
                 </h3>
                 <p style={{ 
                   fontSize: '14px', 
                   color: '#6b7280', 
                   margin: '0' 
                 }}>
-                  Today's progress
+                  Sales performance
                 </p>
               </div>
             </div>
@@ -338,7 +309,7 @@ const StaffDashboard = () => {
               color: '#1f2937',
               marginBottom: '8px'
             }}>
-              {dashboardData.todaysTasks.completed}
+              {formatCurrency(dashboardData.salesActivity.todaySales)}
             </div>
             <div style={{
               fontSize: '14px',
@@ -347,11 +318,8 @@ const StaffDashboard = () => {
               flexWrap: 'wrap',
               gap: '12px'
             }}>
-              <span style={{ color: '#f59e0b' }}>
-                {dashboardData.todaysTasks.inProgress} In Progress
-              </span>
-              <span style={{ color: '#ef4444' }}>
-                {dashboardData.todaysTasks.pending} Pending
+              <span style={{ color: '#059669' }}>
+                Monthly: {formatCurrency(dashboardData.salesActivity.thisMonth)}
               </span>
             </div>
           </div>
@@ -389,14 +357,14 @@ const StaffDashboard = () => {
                   color: '#1f2937', 
                   margin: '0 0 4px 0' 
                 }}>
-                  Items Processed
+                  Total Products
                 </h3>
                 <p style={{ 
                   fontSize: '14px', 
                   color: '#6b7280', 
                   margin: '0' 
                 }}>
-                  Today's work
+                  Inventory overview
                 </p>
               </div>
             </div>
@@ -406,17 +374,21 @@ const StaffDashboard = () => {
               color: '#1f2937',
               marginBottom: '8px'
             }}>
-              {dashboardData.inventoryStats.itemsProcessed}
+              {dashboardData.inventoryStats.totalProducts}
             </div>
             <div style={{
               fontSize: '14px',
-              color: '#10b981',
+              color: '#6b7280',
               display: 'flex',
               alignItems: 'center',
-              gap: '4px'
+              gap: '8px'
             }}>
-              <span>↗</span>
-              {dashboardData.inventoryStats.stockUpdates} stock updates
+              <span style={{ color: '#ef4444' }}>
+                {dashboardData.inventoryStats.lowStock} Low Stock
+              </span>
+              <span style={{ color: '#dc2626' }}>
+                {dashboardData.inventoryStats.outOfStock} Out of Stock
+              </span>
             </div>
           </div>
 
@@ -470,7 +442,7 @@ const StaffDashboard = () => {
               color: '#1f2937',
               marginBottom: '8px'
             }}>
-              {dashboardData.inventoryStats.lowStockItems}
+              {dashboardData.inventoryStats.lowStock}
             </div>
             <div style={{
               fontSize: '14px',
@@ -509,127 +481,152 @@ const StaffDashboard = () => {
                 alignItems: 'center',
                 gap: '8px'
               }}>
-                <span style={{ fontSize: '20px' }}>📋</span>
-                Recent Tasks
+                <span style={{ fontSize: '20px' }}>�</span>
+                Recent Products
               </h3>
             </div>
             <div style={{ padding: '0' }}>
-              {dashboardData.recentTasks.map((task, index) => (
-                <div key={task.id} style={{
-                  padding: '16px 24px',
-                  borderBottom: index < dashboardData.recentTasks.length - 1 ? '1px solid #f3f4f6' : 'none',
-                  transition: 'background-color 0.2s ease'
-                }}>
-                  <div style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'flex-start',
-                    marginBottom: '8px'
+              {dashboardData.recentProducts && dashboardData.recentProducts.length > 0 ? (
+                dashboardData.recentProducts.map((product, index) => (
+                  <div key={product._id} style={{
+                    padding: '16px 24px',
+                    borderBottom: index < dashboardData.recentProducts.length - 1 ? '1px solid #f3f4f6' : 'none',
+                    transition: 'background-color 0.2s ease'
                   }}>
                     <div style={{
-                      fontSize: '14px',
-                      fontWeight: '500',
-                      color: '#1f2937',
-                      flex: 1,
-                      marginRight: '12px'
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'flex-start',
+                      marginBottom: '8px'
                     }}>
-                      {task.task}
+                      <div style={{
+                        fontSize: '14px',
+                        fontWeight: '500',
+                        color: '#1f2937',
+                        flex: 1,
+                        marginRight: '12px'
+                      }}>
+                        {product.name}
+                      </div>
+                      <div style={{
+                        fontSize: '12px',
+                        color: '#6b7280',
+                        whiteSpace: 'nowrap'
+                      }}>
+                        {formatCurrency(product.rate || 0)}
+                      </div>
                     </div>
                     <div style={{
-                      fontSize: '12px',
-                      color: '#6b7280',
-                      whiteSpace: 'nowrap'
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between'
                     }}>
-                      {task.time}
+                      <span style={{
+                        fontSize: '12px',
+                        color: '#6b7280'
+                      }}>
+                        SKU: {product.sku}
+                      </span>
+                      <span style={{
+                        fontSize: '12px',
+                        fontWeight: '500',
+                        color: product.quantity < 10 ? '#ef4444' : '#10b981'
+                      }}>
+                        {product.quantity} in stock
+                      </span>
                     </div>
                   </div>
-                  <div style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '6px'
-                  }}>
-                    <div style={{
-                      width: '8px',
-                      height: '8px',
-                      borderRadius: '50%',
-                      background: task.status === 'completed' ? '#10b981' : 
-                                task.status === 'in-progress' ? '#f59e0b' : '#ef4444'
-                    }} />
-                    <div style={{
-                      fontSize: '12px',
-                      color: task.status === 'completed' ? '#10b981' : 
-                            task.status === 'in-progress' ? '#f59e0b' : '#ef4444',
-                      fontWeight: '500',
-                      textTransform: 'capitalize'
-                    }}>
-                      {task.status.replace('-', ' ')}
-                    </div>
-                  </div>
+                ))
+              ) : (
+                <div style={{ padding: '24px', textAlign: 'center', color: '#6b7280' }}>
+                  No recent products available
                 </div>
-              ))}
+              )}
             </div>
           </div>
 
-          {/* Quick Actions */}
+          {/* My Purchase Orders */}
           <div style={{
             background: 'white',
             borderRadius: '16px',
             boxShadow: '0 4px 6px rgba(0, 0, 0, 0.05)',
-            border: '1px solid #e5e7eb',
-            padding: '24px'
+            border: '1px solid #e5e7eb'
           }}>
-            <h3 style={{
-              fontSize: '18px',
-              fontWeight: '600',
-              color: '#1f2937',
-              margin: '0 0 20px 0',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px'
-            }}>
-              <span style={{ fontSize: '20px' }}>⚡</span>
-              Quick Actions
-            </h3>
             <div style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))',
-              gap: '16px'
+              padding: '20px 24px',
+              borderBottom: '1px solid #e5e7eb'
             }}>
-              {dashboardData.quickActions.map((action, index) => (
-                <div key={index} style={{
-                  background: 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)',
-                  borderRadius: '12px',
-                  padding: '20px',
-                  textAlign: 'center',
-                  cursor: 'pointer',
-                  transition: 'all 0.3s ease',
-                  border: '1px solid #e5e7eb'
-                }}
-                onMouseOver={(e) => {
-                  e.target.style.transform = 'translateY(-2px)';
-                  e.target.style.boxShadow = '0 8px 16px rgba(0, 0, 0, 0.1)';
-                }}
-                onMouseOut={(e) => {
-                  e.target.style.transform = 'translateY(0)';
-                  e.target.style.boxShadow = 'none';
-                }}
-                >
-                  <div style={{
-                    fontSize: '28px',
-                    marginBottom: '8px'
+              <h3 style={{
+                fontSize: '18px',
+                fontWeight: '600',
+                color: '#1f2937',
+                margin: '0',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px'
+              }}>
+                <span style={{ fontSize: '20px' }}>📋</span>
+                My Purchase Orders
+              </h3>
+            </div>
+            <div style={{ padding: '0' }}>
+              {dashboardData.myPurchaseOrders && dashboardData.myPurchaseOrders.length > 0 ? (
+                dashboardData.myPurchaseOrders.map((po, index) => (
+                  <div key={po._id} style={{
+                    padding: '16px 24px',
+                    borderBottom: index < dashboardData.myPurchaseOrders.length - 1 ? '1px solid #f3f4f6' : 'none',
+                    transition: 'background-color 0.2s ease'
                   }}>
-                    {action.icon}
+                    <div style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'flex-start',
+                      marginBottom: '8px'
+                    }}>
+                      <div style={{
+                        fontSize: '14px',
+                        fontWeight: '500',
+                        color: '#1f2937',
+                        flex: 1,
+                        marginRight: '12px'
+                      }}>
+                        {po.poNumber}
+                      </div>
+                      <div style={{
+                        fontSize: '12px',
+                        color: '#6b7280',
+                        whiteSpace: 'nowrap'
+                      }}>
+                        {formatCurrency(po.total)}
+                      </div>
+                    </div>
+                    <div style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between'
+                    }}>
+                      <span style={{
+                        fontSize: '12px',
+                        color: '#6b7280'
+                      }}>
+                        Vendor: {po.vendorName}
+                      </span>
+                      <span style={{
+                        fontSize: '12px',
+                        fontWeight: '500',
+                        color: po.status === 'Received' ? '#10b981' : 
+                              po.status === 'Sent' ? '#f59e0b' : '#6b7280'
+                      }}>
+                        {po.status}
+                      </span>
+                    </div>
                   </div>
-                  <div style={{
-                    fontSize: '12px',
-                    fontWeight: '500',
-                    color: '#374151',
-                    lineHeight: '1.4'
-                  }}>
-                    {action.title}
-                  </div>
+                ))
+              ) : (
+                <div style={{ padding: '24px', textAlign: 'center', color: '#6b7280' }}>
+                  No purchase orders assigned
                 </div>
-              ))}
+              )}
             </div>
           </div>
         </div>
@@ -693,14 +690,14 @@ const StaffDashboard = () => {
                 color: '#1e40af',
                 marginBottom: '4px'
               }}>
-                {dashboardData.inventoryStats.itemsProcessed}
+                {dashboardData.recentProducts?.length || 0}
               </div>
               <div style={{
                 fontSize: '14px',
                 color: '#1d4ed8',
                 fontWeight: '500'
               }}>
-                Items Processed
+                Recent Products
               </div>
             </div>
             <div style={{
@@ -715,14 +712,14 @@ const StaffDashboard = () => {
                 color: '#92400e',
                 marginBottom: '4px'
               }}>
-                {dashboardData.inventoryStats.stockUpdates}
+                {dashboardData.myPurchaseOrders?.length || 0}
               </div>
               <div style={{
                 fontSize: '14px',
                 color: '#b45309',
                 fontWeight: '500'
               }}>
-                Stock Updates
+                My Purchase Orders
               </div>
             </div>
           </div>

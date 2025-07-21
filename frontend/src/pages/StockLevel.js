@@ -563,7 +563,14 @@ const StockLevel = () => {
                 <th style={{ padding: '16px 24px', textAlign: 'center', fontWeight: '600', color: '#374151', fontSize: '14px' }}>
                   Reorder Point
                 </th>
-                <th style={{ padding: '16px 24px', textAlign: 'center', fontWeight: '600', color: '#374151', fontSize: '14px' }}>
+                <th style={{ 
+                  padding: '16px 24px', 
+                  textAlign: 'center', 
+                  fontWeight: '600', 
+                  color: '#374151', 
+                  fontSize: '14px',
+                  minWidth: '140px'
+                }}>
                   Status
                 </th>
                 <th style={{ padding: '16px 24px', textAlign: 'center', fontWeight: '600', color: '#374151', fontSize: '14px' }}>

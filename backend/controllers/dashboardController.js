@@ -19,20 +19,20 @@ const getAdminDashboardData = async (req, res) => {
     // Sales Activity
     const [todaySales, yesterdaySales, thisMonthSales, lastMonthSales] = await Promise.all([
       Sale.aggregate([
-        { $match: { saleDate: { $gte: startOfToday } } },
-        { $group: { _id: null, total: { $sum: '$totalAmount' } } }
+        { $match: { orderDate: { $gte: startOfToday } } },
+        { $group: { _id: null, total: { $sum: '$total' } } }
       ]),
       Sale.aggregate([
-        { $match: { saleDate: { $gte: startOfYesterday, $lt: startOfToday } } },
-        { $group: { _id: null, total: { $sum: '$totalAmount' } } }
+        { $match: { orderDate: { $gte: startOfYesterday, $lt: startOfToday } } },
+        { $group: { _id: null, total: { $sum: '$total' } } }
       ]),
       Sale.aggregate([
-        { $match: { saleDate: { $gte: startOfThisMonth } } },
-        { $group: { _id: null, total: { $sum: '$totalAmount' } } }
+        { $match: { orderDate: { $gte: startOfThisMonth } } },
+        { $group: { _id: null, total: { $sum: '$total' } } }
       ]),
       Sale.aggregate([
-        { $match: { saleDate: { $gte: startOfLastMonth, $lt: startOfThisMonth } } },
-        { $group: { _id: null, total: { $sum: '$totalAmount' } } }
+        { $match: { orderDate: { $gte: startOfLastMonth, $lt: startOfThisMonth } } },
+        { $group: { _id: null, total: { $sum: '$total' } } }
       ])
     ]);
 
@@ -42,7 +42,7 @@ const getAdminDashboardData = async (req, res) => {
       Inventory.countDocuments({ quantity: { $lt: 20, $gt: 0 } }), // Low stock threshold
       Inventory.countDocuments({ quantity: 0 }),
       Inventory.aggregate([
-        { $group: { _id: null, total: { $sum: { $multiply: ['$quantity', '$price'] } } } }
+        { $group: { _id: null, total: { $sum: { $multiply: ['$quantity', '$rate'] } } } }
       ])
     ]);
 
@@ -50,7 +50,7 @@ const getAdminDashboardData = async (req, res) => {
     const recentProducts = await Inventory.find()
       .sort({ createdAt: -1 })
       .limit(10)
-      .select('name sku quantity price createdAt');
+      .select('name sku quantity rate createdAt');
 
     // Purchase Order Statistics
     const [totalPOs, pendingPOs, completedPOs] = await Promise.all([
@@ -61,9 +61,9 @@ const getAdminDashboardData = async (req, res) => {
 
     // Recent Sales (last 10)
     const recentSales = await Sale.find()
-      .sort({ saleDate: -1 })
+      .sort({ orderDate: -1 })
       .limit(10)
-      .select('saleDate customerName totalAmount status items');
+      .select('orderDate customerName total status items');
 
     // User Statistics
     const [totalUsers, adminUsers, staffUsers] = await Promise.all([
@@ -81,12 +81,12 @@ const getAdminDashboardData = async (req, res) => {
 
     // Top Selling Products (this month)
     const topProducts = await Sale.aggregate([
-      { $match: { saleDate: { $gte: startOfThisMonth } } },
+      { $match: { orderDate: { $gte: startOfThisMonth } } },
       { $unwind: '$items' },
       { $group: { 
         _id: '$items.productName', 
         totalQuantity: { $sum: '$items.quantity' },
-        totalRevenue: { $sum: { $multiply: ['$items.quantity', '$items.price'] } }
+        totalRevenue: { $sum: { $multiply: ['$items.quantity', '$items.unitPrice'] } }
       }},
       { $sort: { totalQuantity: -1 } },
       { $limit: 5 }
@@ -119,13 +119,7 @@ const getAdminDashboardData = async (req, res) => {
       recentProducts: recentProducts || [],
       recentSales: recentSales || [],
       recentReceivingReceipts: recentReceivingReceipts || [],
-      topProducts: topProducts || [],
-      quickActions: [
-        { title: 'Add New Product', icon: '📦', action: 'add-product', path: '/items/add' },
-        { title: 'View Orders', icon: '🛒', action: 'view-orders', path: '/purchase' },
-        { title: 'Generate Report', icon: '📊', action: 'generate-report', path: '/reports' },
-        { title: 'Manage Users', icon: '👥', action: 'manage-users', path: '/users' }
-      ]
+      topProducts: topProducts || []
     };
 
     res.status(200).json({
@@ -151,12 +145,12 @@ const getStaffDashboardData = async (req, res) => {
     // Sales Activity (limited for staff)
     const [todaySales, thisMonthSales] = await Promise.all([
       Sale.aggregate([
-        { $match: { saleDate: { $gte: startOfToday } } },
-        { $group: { _id: null, total: { $sum: '$totalAmount' } } }
+        { $match: { orderDate: { $gte: startOfToday } } },
+        { $group: { _id: null, total: { $sum: '$total' } } }
       ]),
       Sale.aggregate([
-        { $match: { saleDate: { $gte: startOfThisMonth } } },
-        { $group: { _id: null, total: { $sum: '$totalAmount' } } }
+        { $match: { orderDate: { $gte: startOfThisMonth } } },
+        { $group: { _id: null, total: { $sum: '$total' } } }
       ])
     ]);
 
@@ -171,13 +165,13 @@ const getStaffDashboardData = async (req, res) => {
     const recentProducts = await Inventory.find()
       .sort({ createdAt: -1 })
       .limit(5)
-      .select('name sku quantity price');
+      .select('name sku quantity rate');
 
     // Recent Sales (last 5)
     const recentSales = await Sale.find()
-      .sort({ saleDate: -1 })
+      .sort({ orderDate: -1 })
       .limit(5)
-      .select('saleDate customerName totalAmount status');
+      .select('orderDate customerName total status');
 
     // Purchase Orders assigned to this staff member
     const myPOs = await PurchaseOrder.find({ createdBy: req.user._id })
@@ -197,13 +191,7 @@ const getStaffDashboardData = async (req, res) => {
       },
       recentProducts: recentProducts || [],
       recentSales: recentSales || [],
-      myPurchaseOrders: myPOs || [],
-      quickActions: [
-        { title: 'Add New Product', icon: '📦', action: 'add-product', path: '/items/add' },
-        { title: 'Create Sale', icon: '🛒', action: 'create-sale', path: '/sales' },
-        { title: 'Stock Taking', icon: '📋', action: 'stock-taking', path: '/stock-taking' },
-        { title: 'View Inventory', icon: '📊', action: 'view-inventory', path: '/items' }
-      ]
+      myPurchaseOrders: myPOs || []
     };
 
     res.status(200).json({
