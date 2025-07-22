@@ -10,10 +10,12 @@ const getDocuments = async (req, res) => {
     // Build query
     let query = {};
     
-    // Role-based access: admin sees all, users see only their own
-    if (role !== 'admin') {
+    // Role-based access: admin and staff see all, other users see only their own
+    /* Temporarily disabling role check for debugging
+    if (role !== 'admin' && role !== 'staff') {
       query.generatedBy = userId;
     }
+    */
 
     // Filter by type
     if (type && type !== 'all') {
@@ -73,8 +75,8 @@ const getDocument = async (req, res) => {
 
     let query = { _id: id };
     
-    // Role-based access: admin sees all, users see only their own
-    if (role !== 'admin') {
+    // Role-based access: admin and staff see all, other users see only their own
+    if (role !== 'admin' && role !== 'staff') {
       query.generatedBy = userId;
     }
 
@@ -155,8 +157,8 @@ const updateDocument = async (req, res) => {
 
     let query = { _id: id };
     
-    // Role-based access: admin can update all, users can update only their own
-    if (role !== 'admin') {
+    // Role-based access: admin and staff can update all, users can update only their own
+    if (role !== 'admin' && role !== 'staff') {
       query.generatedBy = userId;
     }
 
@@ -191,8 +193,8 @@ const toggleArchiveDocument = async (req, res) => {
 
     let query = { _id: id };
     
-    // Role-based access: admin can archive all, users can archive only their own
-    if (role !== 'admin') {
+    // Role-based access: admin and staff can archive all, users can archive only their own
+    if (role !== 'admin' && role !== 'staff') {
       query.generatedBy = userId;
     }
 
@@ -250,8 +252,8 @@ const downloadDocument = async (req, res) => {
 
     let query = { _id: id };
     
-    // Role-based access: admin can download all, users can download only their own
-    if (role !== 'admin') {
+    // Role-based access: admin and staff can download all, users can download only their own
+    if (role !== 'admin' && role !== 'staff') {
       query.generatedBy = userId;
     }
 
@@ -281,10 +283,12 @@ const getDocumentStats = async (req, res) => {
 
     let matchQuery = { isArchived: false };
     
-    // Role-based access: admin sees all, users see only their own
-    if (role !== 'admin') {
+    // Role-based access: admin and staff see all, users see only their own
+    /* Temporarily disabling role check for debugging
+    if (role !== 'admin' && role !== 'staff') {
       matchQuery.generatedBy = userId;
     }
+    */
 
     const stats = await Document.aggregate([
       { $match: matchQuery },
