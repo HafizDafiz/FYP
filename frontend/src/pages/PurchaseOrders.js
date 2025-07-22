@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuthContext } from '../hooks/useAuthContext';
+import Modal from 'react-modal';
 
 const PurchaseOrders = () => {
   const { user } = useAuthContext();
@@ -45,6 +46,13 @@ const PurchaseOrders = () => {
 
   // Receive items state
   const [receivingItems, setReceivingItems] = useState([]);
+
+  // Add these state for detail modal
+  const [selectedOrderId, setSelectedOrderId] = useState(null);
+  const [orderDetail, setOrderDetail] = useState(null);
+  const [detailLoading, setDetailLoading] = useState(false);
+  const [detailError, setDetailError] = useState(null);
+  const [scrollPosition, setScrollPosition] = useState(0);
 
   useEffect(() => {
     fetchPurchaseOrders();
@@ -328,6 +336,49 @@ const PurchaseOrders = () => {
       return aValue > bValue ? -1 : aValue < bValue ? 1 : 0;
     }
   });
+
+  // Fetch order detail by ID
+  const fetchOrderDetail = async (orderId) => {
+    setDetailLoading(true);
+    setDetailError(null);
+    setOrderDetail(null);
+    try {
+      const response = await fetch(`http://localhost:4000/api/purchase-orders/${orderId}`, {
+        headers: {
+          'Authorization': `Bearer ${user.token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        setDetailError(data.error || 'Failed to fetch order details.');
+      } else {
+        setOrderDetail(data);
+      }
+    } catch (err) {
+      setDetailError('Something went wrong while fetching order details.');
+    } finally {
+      setDetailLoading(false);
+    }
+  };
+
+  // Handle row click
+  const handleRowClick = (orderId) => {
+    setScrollPosition(window.scrollY);
+    setSelectedOrderId(orderId);
+    fetchOrderDetail(orderId);
+  };
+
+  // Handle modal close
+  const handleCloseModal = () => {
+    setSelectedOrderId(null);
+    setOrderDetail(null);
+    setDetailError(null);
+    setDetailLoading(false);
+    setTimeout(() => {
+      window.scrollTo(0, scrollPosition);
+    }, 0);
+  };
 
   if (loading) {
     return (
@@ -615,10 +666,12 @@ const PurchaseOrders = () => {
                 {filteredAndSortedOrders.map((po, index) => (
                   <tr key={po._id} style={{ 
                     borderBottom: index < filteredAndSortedOrders.length - 1 ? '1px solid #f3f4f6' : 'none',
-                    transition: 'background-color 0.2s'
+                    transition: 'background-color 0.2s',
+                    cursor: 'pointer',
                   }}
                   onMouseOver={(e) => e.currentTarget.style.background = '#f9fafb'}
                   onMouseOut={(e) => e.currentTarget.style.background = 'transparent'}
+                  onClick={() => handleRowClick(po._id)}
                   >
                     <td style={{ padding: '16px', fontSize: '14px', color: '#1f2937', fontWeight: '500' }}>
                       {po.poNumber || 'N/A'}
@@ -1390,6 +1443,86 @@ const PurchaseOrders = () => {
           </div>
         </div>
       )}
+
+      {/* Purchase Order Details Modal */}
+      <Modal
+        isOpen={!!selectedOrderId}
+        onRequestClose={handleCloseModal}
+        contentLabel="Purchase Order Details"
+        style={{
+          overlay: { backgroundColor: 'rgba(0,0,0,0.5)', zIndex: 1000 },
+          content: {
+            maxWidth: '700px',
+            margin: 'auto',
+            borderRadius: '8px',
+            padding: '32px',
+            inset: '40px',
+            overflow: 'auto',
+          },
+        }}
+        ariaHideApp={false}
+      >
+        <button onClick={handleCloseModal} style={{ float: 'right', fontSize: 24, background: 'none', border: 'none', cursor: 'pointer', color: '#6b7280' }}>&times;</button>
+        <h2 style={{ fontSize: '22px', fontWeight: 600, marginBottom: 16 }}>Purchase Order Details</h2>
+        {detailLoading ? (
+          <div style={{ textAlign: 'center', padding: '40px 0' }}>
+            <div style={{ width: 40, height: 40, border: '4px solid #e5e7eb', borderTop: '4px solid #3b82f6', borderRadius: '50%', animation: 'spin 1s linear infinite', margin: '0 auto' }} />
+            <div style={{ color: '#6b7280', marginTop: 12 }}>Loading order details...</div>
+          </div>
+        ) : detailError ? (
+          <div style={{ background: '#fef2f2', border: '1px solid #fecaca', color: '#dc2626', padding: 16, borderRadius: 6 }}>
+            {detailError}
+          </div>
+        ) : orderDetail ? (
+          <div>
+            <div style={{ marginBottom: 16 }}>
+              <strong>PO Number:</strong> {orderDetail.poNumber || 'N/A'}<br />
+              <strong>Date:</strong> {orderDetail.createdAt ? new Date(orderDetail.createdAt).toLocaleString() : 'N/A'}<br />
+              <strong>Status:</strong> {orderDetail.status || 'N/A'}<br />
+              <strong>Total:</strong> ${orderDetail.total ? orderDetail.total.toFixed(2) : '0.00'}
+            </div>
+            <div style={{ marginBottom: 16 }}>
+              <strong>Supplier:</strong> {orderDetail.vendorName || 'N/A'}<br />
+              <strong>Email:</strong> {orderDetail.vendorEmail || 'N/A'}<br />
+              <strong>Phone:</strong> {orderDetail.vendorPhone || 'N/A'}<br />
+              <strong>Address:</strong> {orderDetail.vendorAddress || 'N/A'}
+            </div>
+            <div style={{ marginBottom: 16 }}>
+              <strong>Items:</strong>
+              <table style={{ width: '100%', marginTop: 8, borderCollapse: 'collapse' }}>
+                <thead>
+                  <tr style={{ background: '#f9fafb' }}>
+                    <th style={{ padding: 8, textAlign: 'left' }}>Product</th>
+                    <th style={{ padding: 8, textAlign: 'right' }}>Qty</th>
+                    <th style={{ padding: 8, textAlign: 'right' }}>Unit Cost</th>
+                    <th style={{ padding: 8, textAlign: 'right' }}>Subtotal</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {orderDetail.items && orderDetail.items.map((item, idx) => (
+                    <tr key={idx}>
+                      <td style={{ padding: 8 }}>{item.productName || (item.productId && item.productId.name) || 'N/A'}</td>
+                      <td style={{ padding: 8, textAlign: 'right' }}>{item.quantity}</td>
+                      <td style={{ padding: 8, textAlign: 'right' }}>${item.unitPrice ? item.unitPrice.toFixed(2) : '0.00'}</td>
+                      <td style={{ padding: 8, textAlign: 'right' }}>${item.totalPrice ? item.totalPrice.toFixed(2) : (item.quantity && item.unitPrice ? (item.quantity * item.unitPrice).toFixed(2) : '0.00')}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <div style={{ marginBottom: 16 }}>
+              <strong>Subtotal:</strong> ${orderDetail.subtotal ? orderDetail.subtotal.toFixed(2) : '0.00'}<br />
+              <strong>Tax:</strong> ${orderDetail.tax ? orderDetail.tax.toFixed(2) : '0.00'}<br />
+              <strong>Discount:</strong> ${orderDetail.discount ? orderDetail.discount.toFixed(2) : '0.00'}<br />
+              <strong>Shipping:</strong> ${orderDetail.shippingCost ? orderDetail.shippingCost.toFixed(2) : '0.00'}<br />
+              <strong>Total:</strong> ${orderDetail.total ? orderDetail.total.toFixed(2) : '0.00'}
+            </div>
+            <div style={{ marginBottom: 16 }}>
+              <strong>Notes:</strong> {orderDetail.notes || 'N/A'}
+            </div>
+          </div>
+        ) : null}
+      </Modal>
     </main>
   );
 };
