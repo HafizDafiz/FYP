@@ -94,47 +94,59 @@ const AdminDashboard = () => {
   if (!dashboardData) return null;
 
   const StatCard = ({ title, value, subtitle, trend, icon }) => (
-    <div style={{
+    <div className="dashboard-card" style={{
       background: 'white',
       borderRadius: '12px',
-      padding: '24px',
+      padding: 'clamp(16px, 3vw, 24px)',
       boxShadow: '0 4px 6px rgba(0, 0, 0, 0.05)',
       border: '1px solid #e5e7eb',
       position: 'relative',
-      overflow: 'hidden'
+      overflow: 'hidden',
+      transition: 'transform 0.2s ease, box-shadow 0.2s ease',
+      cursor: 'default'
+    }}
+    onMouseEnter={(e) => {
+      e.currentTarget.style.transform = 'translateY(-2px)';
+      e.currentTarget.style.boxShadow = '0 8px 15px rgba(0, 0, 0, 0.1)';
+    }}
+    onMouseLeave={(e) => {
+      e.currentTarget.style.transform = 'translateY(0)';
+      e.currentTarget.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.05)';
     }}>
       <div style={{
         position: 'absolute',
-        top: '16px',
-        right: '16px',
-        fontSize: '24px',
+        top: 'clamp(12px, 2vw, 16px)',
+        right: 'clamp(12px, 2vw, 16px)',
+        fontSize: 'clamp(20px, 3vw, 24px)',
         opacity: 0.3
       }}>
         {icon}
       </div>
-      <div style={{
-        fontSize: '14px',
+      <div className="card-subtitle" style={{
+        fontSize: 'clamp(12px, 2vw, 14px)',
         color: '#6b7280',
         marginBottom: '8px',
         fontWeight: '500'
       }}>
         {title}
       </div>
-      <div style={{
-        fontSize: '28px',
+      <div className="card-value" style={{
+        fontSize: 'clamp(20px, 4vw, 28px)',
         fontWeight: '700',
         color: '#1f2937',
-        marginBottom: '4px'
+        marginBottom: '4px',
+        lineHeight: '1.2'
       }}>
         {value}
       </div>
       {subtitle && (
         <div style={{
-          fontSize: '12px',
+          fontSize: 'clamp(10px, 1.5vw, 12px)',
           color: trend === 'up' ? '#10b981' : trend === 'down' ? '#ef4444' : '#6b7280',
           display: 'flex',
           alignItems: 'center',
-          gap: '4px'
+          gap: '4px',
+          fontWeight: '500'
         }}>
           {trend === 'up' && '↗️'} {trend === 'down' && '↘️'} {subtitle}
         </div>
@@ -165,9 +177,9 @@ const AdminDashboard = () => {
             flexWrap: 'wrap',
             gap: '20px'
           }}>
-            <div>
+            <div style={{ flex: '1', minWidth: '250px' }}>
               <h1 style={{ 
-                fontSize: 'clamp(1.8rem, 4vw, 2.5rem)', 
+                fontSize: 'clamp(1.5rem, 4vw, 2.5rem)', 
                 fontWeight: '700', 
                 color: '#1f2937', 
                 margin: '0 0 8px 0',
@@ -176,7 +188,7 @@ const AdminDashboard = () => {
                 Welcome back, {user?.name || 'Admin'}! 👋
               </h1>
               <p style={{ 
-                fontSize: 'clamp(0.9rem, 2vw, 1.1rem)', 
+                fontSize: 'clamp(0.8rem, 2vw, 1.1rem)', 
                 color: '#6b7280', 
                 margin: '0',
                 fontWeight: '500'
@@ -188,14 +200,15 @@ const AdminDashboard = () => {
             <div style={{
               background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
               color: 'white',
-              padding: '12px 20px',
+              padding: 'clamp(10px, 2vw, 12px) clamp(16px, 3vw, 20px)',
               borderRadius: '12px',
-              fontSize: '14px',
+              fontSize: 'clamp(12px, 2vw, 14px)',
               fontWeight: '600',
               boxShadow: '0 4px 12px rgba(102, 126, 234, 0.3)',
               display: 'flex',
               alignItems: 'center',
-              gap: '8px'
+              gap: '8px',
+              minWidth: 'fit-content'
             }}>
               <span style={{ fontSize: '16px' }}>🎯</span>
               Admin Dashboard

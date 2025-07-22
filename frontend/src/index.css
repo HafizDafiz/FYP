@@ -698,6 +698,300 @@ html, body {
   padding: 0 15px;
 }
 
+/* Mobile-first dashboard improvements */
+@media (max-width: 1024px) {
+  /* Large tablets and small laptops */
+  .stats-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+  }
+  
+  .dashboard-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+  }
+}
+
+@media (max-width: 768px) {
+  /* Enhanced mobile dashboard cards */
+  .dashboard-card {
+    padding: 16px !important;
+    margin-bottom: 12px;
+  }
+  
+  .dashboard-card h3 {
+    font-size: 16px !important;
+    margin-bottom: 8px;
+  }
+  
+  .dashboard-card .card-value {
+    font-size: 24px !important;
+    font-weight: 600;
+  }
+  
+  .dashboard-card .card-subtitle {
+    font-size: 12px !important;
+    opacity: 0.7;
+  }
+  
+  /* Better mobile table handling */
+  .table-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  }
+  
+  .table-container table {
+    min-width: 600px;
+    white-space: nowrap;
+  }
+  
+  .table-container th,
+  .table-container td {
+    padding: 12px 8px;
+    font-size: 13px;
+  }
+  
+  /* Mobile-optimized buttons */
+  .btn-mobile {
+    width: 100%;
+    padding: 14px 20px;
+    font-size: 16px;
+    border-radius: 8px;
+    margin-bottom: 12px;
+    min-height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  /* Mobile-friendly search and filter bars */
+  .mobile-search-container {
+    position: sticky;
+    top: 70px;
+    background: white;
+    padding: 15px;
+    border-bottom: 1px solid #e0e0e0;
+    z-index: 100;
+  }
+  
+  .mobile-search-input {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid #e0e0e0;
+    border-radius: 25px;
+    font-size: 16px;
+    background: #f8f9fa;
+  }
+  
+  .mobile-search-input:focus {
+    border-color: #312F56;
+    outline: none;
+    background: white;
+  }
+  
+  /* Mobile-specific status badges */
+  .status-badge {
+    font-size: 11px !important;
+    padding: 4px 8px !important;
+    border-radius: 12px !important;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  
+  /* Better mobile form spacing */
+  .form-mobile {
+    padding: 20px 15px;
+  }
+  
+  .form-mobile .form-group {
+    margin-bottom: 20px;
+  }
+  
+  .form-mobile label {
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 8px;
+    display: block;
+  }
+  
+  .form-mobile input,
+  .form-mobile select,
+  .form-mobile textarea {
+    width: 100%;
+    padding: 14px 16px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 16px;
+    transition: border-color 0.3s ease;
+  }
+  
+  .form-mobile input:focus,
+  .form-mobile select:focus,
+  .form-mobile textarea:focus {
+    border-color: #312F56;
+    outline: none;
+  }
+}
+
+@media (max-width: 480px) {
+  /* Extra mobile optimizations */
+  .dashboard-card {
+    padding: 12px !important;
+  }
+  
+  .table-container th,
+  .table-container td {
+    padding: 10px 6px;
+    font-size: 12px;
+  }
+  
+  .mobile-search-input {
+    padding: 10px 14px;
+    font-size: 16px;
+  }
+  
+  /* Compact mobile navigation */
+  .sidebar {
+    width: 280px !important;
+    font-size: 14px;
+  }
+  
+  .sidebar h1 {
+    font-size: 18px !important;
+  }
+}
+
+/* Mobile touch and performance optimizations */
+@media (max-width: 768px) {
+  /* Touch-friendly scrollbars */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 4px;
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+  }
+  
+  /* Improve touch scrolling */
+  .table-container,
+  .mobile-scroll {
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+  }
+  
+  /* Remove iOS bounce effect where needed */
+  .no-bounce {
+    overscroll-behavior: contain;
+  }
+  
+  /* Better mobile loading states */
+  .mobile-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 20px;
+    gap: 16px;
+  }
+  
+  .mobile-loading-spinner {
+    width: 32px;
+    height: 32px;
+    border: 3px solid #e5e7eb;
+    border-top: 3px solid #312F56;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+  
+  /* Mobile-optimized error states */
+  .mobile-error {
+    padding: 20px;
+    background: #fee2e2;
+    border-radius: 8px;
+    margin: 16px;
+    border-left: 4px solid #ef4444;
+  }
+  
+  .mobile-error h3 {
+    color: #991b1b;
+    font-size: 16px;
+    margin: 0 0 8px 0;
+  }
+  
+  .mobile-error p {
+    color: #7f1d1d;
+    font-size: 14px;
+    margin: 0;
+    line-height: 1.4;
+  }
+  
+  /* Mobile-specific animations */
+  @keyframes mobileSlideIn {
+    from {
+      transform: translateY(20px);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+  
+  .mobile-slide-in {
+    animation: mobileSlideIn 0.3s ease-out;
+  }
+  
+  /* Reduce motion for users who prefer it */
+  @media (prefers-reduced-motion: reduce) {
+    * {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+  
+  /* Better mobile focus states */
+  .mobile-focus:focus {
+    outline: 2px solid #312F56;
+    outline-offset: 2px;
+    border-color: #312F56;
+  }
+  
+  /* Mobile-specific utility classes */
+  .mobile-only {
+    display: block;
+  }
+  
+  .desktop-only {
+    display: none;
+  }
+  
+  .mobile-text-center {
+    text-align: center;
+  }
+  
+  .mobile-full-width {
+    width: 100% !important;
+  }
+  
+  .mobile-spacing {
+    margin: 12px 0;
+  }
+}
+
 @media (min-width: 576px) {
   .container {
     max-width: 540px;
@@ -1446,5 +1740,16 @@ html, body {
   .dashboard-grid {
     grid-template-columns: 1fr !important;
     gap: 20px !important;
+  }
+}
+
+/* Desktop-only styles */
+@media (min-width: 769px) {
+  .mobile-only {
+    display: none;
+  }
+  
+  .desktop-only {
+    display: block;
   }
 }

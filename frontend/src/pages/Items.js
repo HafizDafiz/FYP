@@ -135,19 +135,21 @@ const Item = () => {
     <main className="main-content" style={{ background: '#f8fafc', minHeight: '100vh', padding: '20px' }}>
       <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
         {/* Header Section */}
-        <div style={{ 
+        <div className="items-header" style={{ 
           display: 'flex', 
           justifyContent: 'space-between', 
-          alignItems: 'center',
+          alignItems: 'flex-start',
           marginBottom: '24px',
           background: 'white',
-          padding: '20px',
+          padding: 'clamp(16px, 3vw, 20px)',
           borderRadius: '8px',
-          boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)'
+          boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
+          flexWrap: 'wrap',
+          gap: '16px'
         }}>
-          <div>
+          <div style={{ flex: '1', minWidth: '200px' }}>
             <h1 style={{ 
-              fontSize: '24px', 
+              fontSize: 'clamp(20px, 4vw, 24px)', 
               fontWeight: '600', 
               color: '#1f2937',
               margin: '0 0 8px 0'
