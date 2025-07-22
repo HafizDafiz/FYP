@@ -746,7 +746,11 @@ const Sales = () => {
                     <td style={{ padding: '16px', textAlign: 'center' }}>
                       <select
                         value={order.status || 'Pending'}
-                        onChange={(e) => updateOrderStatus(order._id, e.target.value)}
+                        onClick={(e) => e.stopPropagation()}
+                        onChange={(e) => {
+                          e.stopPropagation();
+                          updateOrderStatus(order._id, e.target.value);
+                        }}
                         style={{
                           padding: '4px 8px',
                           border: '1px solid #d1d5db',
