@@ -237,6 +237,6 @@ receivingReceiptSchema.index({ poNumber: 1 });
 receivingReceiptSchema.index({ vendorName: 1 });
 receivingReceiptSchema.index({ receivedAt: -1 });
 receivingReceiptSchema.index({ status: 1 });
-receivingReceiptSchema.index({ receiptNumber: 1 });
+// receiptNumber index is already created by unique: true
 
 module.exports = mongoose.model('ReceivingReceipt', receivingReceiptSchema, 'receiving_receipts');

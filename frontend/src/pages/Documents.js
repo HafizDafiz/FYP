@@ -256,93 +256,114 @@ const Documents = () => {
   }
 
   return (
-    <div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}>
-      {/* Header */}
-      <div style={{ marginBottom: '30px' }}>
-        <h1 style={{ 
-          fontSize: '28px', 
-          fontWeight: 'bold', 
-          color: '#2d3748',
-          marginBottom: '10px'
+    <main className="main-content" style={{ background: '#f8fafc', minHeight: '100vh', padding: '20px' }}>
+      <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+        {/* Header Section */}
+        <div style={{ 
+          display: 'flex', 
+          justifyContent: 'space-between', 
+          alignItems: 'flex-start',
+          marginBottom: '24px',
+          background: 'white',
+          padding: 'clamp(16px, 3vw, 20px)',
+          borderRadius: '12px',
+          boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
+          flexWrap: 'wrap',
+          gap: '16px'
         }}>
-          📄 Documents
-        </h1>
-        <p style={{ color: '#718096', fontSize: '16px' }}>
-          {user.role === 'admin' 
-            ? 'Manage all generated documents and reports' 
-            : 'Access your generated documents and reports'
-          }
-        </p>
-      </div>
-
-      {/* Statistics Cards */}
-      {stats && (
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-          gap: '20px',
-          marginBottom: '30px'
-        }}>
-          <div style={{
-            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-            color: 'white',
-            padding: '20px',
-            borderRadius: '12px',
-            boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)'
-          }}>
-            <h3 style={{ fontSize: '14px', opacity: 0.9, marginBottom: '8px' }}>
-              Total Documents
-            </h3>
-            <p style={{ fontSize: '24px', fontWeight: 'bold', margin: 0 }}>
-              {stats.totalDocuments}
-            </p>
-          </div>
-          
-          <div style={{
-            background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
-            color: 'white',
-            padding: '20px',
-            borderRadius: '12px',
-            boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)'
-          }}>
-            <h3 style={{ fontSize: '14px', opacity: 0.9, marginBottom: '8px' }}>
-              Total Size
-            </h3>
-            <p style={{ fontSize: '24px', fontWeight: 'bold', margin: 0 }}>
-              {formatFileSize(stats.totalSize)}
-            </p>
-          </div>
-
-          {stats.typeBreakdown.map((type, index) => (
-            <div key={type.type} style={{
-              background: index % 2 === 0 
-                ? 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)'
-                : 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
-              color: 'white',
-              padding: '20px',
-              borderRadius: '12px',
-              boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)'
+          <div style={{ flex: '1', minWidth: '200px' }}>
+            <h1 style={{ 
+              fontSize: 'clamp(20px, 4vw, 28px)', 
+              fontWeight: '600', 
+              color: '#1f2937',
+              margin: '0 0 8px 0',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '12px'
             }}>
-              <h3 style={{ fontSize: '14px', opacity: 0.9, marginBottom: '8px' }}>
-                {type.type.charAt(0).toUpperCase() + type.type.slice(1)}s
-              </h3>
-              <p style={{ fontSize: '20px', fontWeight: 'bold', margin: 0 }}>
-                {type.count}
-              </p>
-            </div>
-          ))}
+              📄 Documents
+            </h1>
+            <p style={{ 
+              fontSize: '14px', 
+              color: '#6b7280',
+              margin: '0'
+            }}>
+              {user.role === 'admin' 
+                ? 'Manage all generated documents and reports' 
+                : 'Access your generated documents and reports'
+              }
+            </p>
+          </div>
         </div>
-      )}
 
-      {/* Filters */}
-      <div style={{
-        background: 'white',
-        padding: '20px',
-        borderRadius: '12px',
-        boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
-        marginBottom: '20px'
-      }}>
-        <h3 style={{ marginBottom: '15px', color: '#2d3748' }}>Filters</h3>
+        {/* Statistics Cards */}
+        {stats && (
+          <div className="documents-grid" style={{
+            marginBottom: '24px'
+          }}>
+            <div style={{
+              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+              color: 'white',
+              padding: 'clamp(16px, 3vw, 20px)',
+              borderRadius: '12px',
+              boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)'
+            }}>
+              <h3 style={{ fontSize: '14px', opacity: 0.9, marginBottom: '8px', margin: '0 0 8px 0' }}>
+                Total Documents
+              </h3>
+              <p style={{ fontSize: 'clamp(20px, 4vw, 24px)', fontWeight: '600', margin: 0 }}>
+                {stats.totalDocuments}
+              </p>
+              <small style={{ opacity: 0.8, fontSize: '12px' }}>documents</small>
+            </div>
+            
+            <div style={{
+              background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+              color: 'white',
+              padding: 'clamp(16px, 3vw, 20px)',
+              borderRadius: '12px',
+              boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)'
+            }}>
+              <h3 style={{ fontSize: '14px', opacity: 0.9, marginBottom: '8px', margin: '0 0 8px 0' }}>
+                Total Size
+              </h3>
+              <p style={{ fontSize: 'clamp(20px, 4vw, 24px)', fontWeight: '600', margin: 0 }}>
+                {formatFileSize(stats.totalSize)}
+              </p>
+              <small style={{ opacity: 0.8, fontSize: '12px' }}>storage</small>
+            </div>
+
+            {stats.typeBreakdown.map((type, index) => (
+              <div key={type.type} style={{
+                background: index % 2 === 0 
+                  ? 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)'
+                  : 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
+                color: 'white',
+                padding: 'clamp(16px, 3vw, 20px)',
+                borderRadius: '12px',
+                boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)'
+              }}>
+                <h3 style={{ fontSize: '14px', opacity: 0.9, marginBottom: '8px', margin: '0 0 8px 0' }}>
+                  {type.type.charAt(0).toUpperCase() + type.type.slice(1)} Files
+                </h3>
+                <p style={{ fontSize: 'clamp(20px, 4vw, 24px)', fontWeight: '600', margin: 0 }}>
+                  {type.count}
+                </p>
+                <small style={{ opacity: 0.8, fontSize: '12px' }}>files</small>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Filters */}
+        <div style={{
+          background: 'white',
+          padding: 'clamp(16px, 3vw, 20px)',
+          borderRadius: '12px',
+          boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
+          marginBottom: '24px'
+        }}>
+          <h3 style={{ marginBottom: '15px', color: '#1f2937', fontSize: '16px', fontWeight: '500' }}>Filters</h3>
         
         <div style={{
           display: 'grid',
@@ -481,20 +502,43 @@ const Documents = () => {
         </div>
       )}
 
-      {/* Documents List */}
-      {loading ? (
-        <div style={{ textAlign: 'center', padding: '40px' }}>
-          <div style={{ fontSize: '18px', color: '#718096' }}>Loading documents...</div>
-        </div>
-      ) : documents.length === 0 && !error ? (
-        <div style={{
-          background: 'white',
-          padding: '40px',
-          borderRadius: '12px',
-          boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
-          textAlign: 'center',
-          color: '#4a5568'
-        }}>
+        {/* Documents List */}
+        {loading ? (
+          <div style={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            minHeight: '200px',
+            background: 'white',
+            borderRadius: '12px',
+            boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)'
+          }}>
+            <div style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: '16px'
+            }}>
+              <div style={{
+                width: '40px',
+                height: '40px',
+                border: '4px solid #e5e7eb',
+                borderTop: '4px solid #3b82f6',
+                borderRadius: '50%',
+                animation: 'spin 1s linear infinite'
+              }} />
+              <div style={{ fontSize: '16px', color: '#6b7280' }}>Loading documents...</div>
+            </div>
+          </div>
+        ) : documents.length === 0 && !error ? (
+          <div style={{
+            background: 'white',
+            padding: '40px',
+            borderRadius: '12px',
+            boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
+            textAlign: 'center',
+            color: '#6b7280'
+          }}>
           <div style={{ fontSize: '48px', marginBottom: '16px' }}>📄</div>
           <div style={{ fontSize: '20px', fontWeight: 'bold', marginBottom: '8px' }}>No documents found</div>
           <div style={{ fontSize: '16px', marginBottom: '16px' }}>
@@ -517,10 +561,10 @@ const Documents = () => {
           </div>
         </div>
       ) : (
-        <div style={{
+        <div className="table-container" style={{
           background: 'white',
           borderRadius: '12px',
-          boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+          boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
           overflow: 'hidden'
         }}>
           {/* Documents Table */}
@@ -696,7 +740,8 @@ const Documents = () => {
           )}
         </div>
       )}
-    </div>
+      </div>
+    </main>
   );
 };
 

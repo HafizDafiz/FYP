@@ -567,7 +567,11 @@ const Sales = () => {
               )}
             </div>
           ) : (
-            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+            <div className="table-container" style={{ 
+              overflowX: 'auto',
+              WebkitOverflowScrolling: 'touch'
+            }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '1000px' }}>
               <thead>
                 <tr style={{ background: '#f9fafb', borderBottom: '1px solid #e5e7eb' }}>
                   <th style={{ 
@@ -710,6 +714,7 @@ const Sales = () => {
                 ))}
               </tbody>
             </table>
+            </div>
           )}
         </div>
       </div>

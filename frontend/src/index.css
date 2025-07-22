@@ -1753,3 +1753,84 @@ html, body {
     display: block;
   }
 }
+
+/* Reports and Documents page specific styles */
+.reports-grid, .documents-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+}
+
+/* Enhanced table container for scrolling */
+.table-container {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: #c1c1c1 #f1f1f1;
+}
+
+.table-container::-webkit-scrollbar {
+  height: 8px;
+}
+
+.table-container::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.table-container::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 4px;
+}
+
+.table-container::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+@media (max-width: 768px) {
+  /* Reports and Documents mobile responsiveness */
+  .reports-grid, .documents-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+  }
+  
+  /* Reports date selection mobile */
+  .reports-date-selection {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 10px !important;
+  }
+  
+  .reports-date-selection > div {
+    width: 100% !important;
+  }
+  
+  .reports-date-selection button {
+    width: 100% !important;
+    margin-top: 10px !important;
+  }
+  
+  /* Purchase Orders table mobile optimizations */
+  .table-container {
+    border-radius: 8px !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1) !important;
+  }
+  
+  .table-container table {
+    font-size: 13px !important;
+    white-space: nowrap !important;
+  }
+  
+  .table-container th,
+  .table-container td {
+    padding: 10px 8px !important;
+    min-width: 100px !important;
+  }
+  
+  .table-container th {
+    position: sticky !important;
+    top: 0 !important;
+    background: #f9fafb !important;
+    z-index: 10 !important;
+  }
+}

@@ -305,36 +305,66 @@ const Reports = () => {
   };
 
   return (
-    <div className="reports-container" style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}>
-      <div style={{ 
-        backgroundColor: 'white', 
-        borderRadius: '8px', 
-        boxShadow: '0 2px 10px rgba(0,0,0,0.1)', 
-        padding: '30px' 
-      }}>
-        <h2 style={{ 
-          color: '#333', 
-          marginBottom: '30px', 
-          fontSize: '28px', 
-          fontWeight: 'bold' 
-        }}>
-          📊 Business Reports
-        </h2>
-
-        {/* Date Range Selection */}
+    <main className="main-content" style={{ background: '#f8fafc', minHeight: '100vh', padding: '20px' }}>
+      <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+        {/* Header Section */}
         <div style={{ 
-          backgroundColor: '#f8f9fa', 
-          padding: '20px', 
-          borderRadius: '8px', 
-          marginBottom: '20px' 
+          display: 'flex', 
+          justifyContent: 'space-between', 
+          alignItems: 'flex-start',
+          marginBottom: '24px',
+          background: 'white',
+          padding: 'clamp(16px, 3vw, 20px)',
+          borderRadius: '12px',
+          boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
+          flexWrap: 'wrap',
+          gap: '16px'
         }}>
-          <h3 style={{ marginBottom: '15px', color: '#495057' }}>Select Report Period</h3>
+          <div style={{ flex: '1', minWidth: '200px' }}>
+            <h1 style={{ 
+              fontSize: 'clamp(20px, 4vw, 28px)', 
+              fontWeight: '600', 
+              color: '#1f2937',
+              margin: '0 0 8px 0',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '12px'
+            }}>
+              📊 Business Reports
+            </h1>
+            <p style={{ 
+              fontSize: '14px', 
+              color: '#6b7280',
+              margin: '0'
+            }}>
+              Generate comprehensive business reports and analytics
+            </p>
+          </div>
+        </div>
+
+        {/* Main Content Section */}
+        <div style={{ 
+          backgroundColor: 'white', 
+          borderRadius: '12px', 
+          boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)', 
+          padding: 'clamp(16px, 3vw, 24px)',
+          marginBottom: '24px'
+        }}>
+
+          {/* Date Range Selection */}
           <div style={{ 
-            display: 'flex', 
-            gap: '15px', 
-            alignItems: 'center', 
-            flexWrap: 'wrap' 
+            backgroundColor: '#f8f9fa', 
+            padding: 'clamp(16px, 3vw, 20px)', 
+            borderRadius: '8px', 
+            marginBottom: '20px' 
           }}>
+            <h3 style={{ marginBottom: '15px', color: '#495057', fontSize: '16px', fontWeight: '500' }}>Select Report Period</h3>
+            <div className="reports-date-selection" style={{ 
+              display: 'flex', 
+              gap: '15px', 
+              alignItems: 'center', 
+              flexWrap: 'wrap' 
+            }}>
             <div>
               <label style={{ display: 'block', marginBottom: '5px', fontWeight: '500' }}>
                 Start Date:
@@ -406,22 +436,20 @@ const Reports = () => {
         {/* Report Content */}
         {reportData && (
           <div>
-            {/* Summary Cards */}
-            <div style={{ 
-              display: 'grid', 
-              gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', 
-              gap: '20px', 
-              marginBottom: '30px' 
+              {/* Summary Cards */}
+            <div className="reports-grid" style={{ 
+              marginBottom: '24px' 
             }}>
               <div style={{
                 background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
                 color: 'white',
-                padding: '20px',
-                borderRadius: '10px',
-                textAlign: 'center'
+                padding: 'clamp(16px, 3vw, 20px)',
+                borderRadius: '12px',
+                textAlign: 'center',
+                boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)'
               }}>
                 <h3 style={{ margin: '0 0 10px 0', fontSize: '14px', opacity: 0.9 }}>Total Stock Added</h3>
-                <p style={{ margin: 0, fontSize: '24px', fontWeight: 'bold' }}>
+                <p style={{ margin: 0, fontSize: 'clamp(20px, 4vw, 24px)', fontWeight: '600' }}>
                   {reportData.summary.totalStockAdded}
                 </p>
                 <small style={{ opacity: 0.8 }}>items</small>
@@ -430,12 +458,13 @@ const Reports = () => {
               <div style={{
                 background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
                 color: 'white',
-                padding: '20px',
-                borderRadius: '10px',
-                textAlign: 'center'
+                padding: 'clamp(16px, 3vw, 20px)',
+                borderRadius: '12px',
+                textAlign: 'center',
+                boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)'
               }}>
                 <h3 style={{ margin: '0 0 10px 0', fontSize: '14px', opacity: 0.9 }}>Total Sales</h3>
-                <p style={{ margin: 0, fontSize: '24px', fontWeight: 'bold' }}>
+                <p style={{ margin: 0, fontSize: 'clamp(20px, 4vw, 24px)', fontWeight: '600' }}>
                   {formatCurrency(reportData.summary.totalSalesAmount)}
                 </p>
                 <small style={{ opacity: 0.8 }}>revenue</small>
@@ -444,12 +473,13 @@ const Reports = () => {
               <div style={{
                 background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
                 color: 'white',
-                padding: '20px',
-                borderRadius: '10px',
-                textAlign: 'center'
+                padding: 'clamp(16px, 3vw, 20px)',
+                borderRadius: '12px',
+                textAlign: 'center',
+                boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)'
               }}>
                 <h3 style={{ margin: '0 0 10px 0', fontSize: '14px', opacity: 0.9 }}>Items Sold</h3>
-                <p style={{ margin: 0, fontSize: '24px', fontWeight: 'bold' }}>
+                <p style={{ margin: 0, fontSize: 'clamp(20px, 4vw, 24px)', fontWeight: '600' }}>
                   {reportData.summary.totalItemsSold}
                 </p>
                 <small style={{ opacity: 0.8 }}>units</small>
@@ -458,12 +488,13 @@ const Reports = () => {
               <div style={{
                 background: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
                 color: 'white',
-                padding: '20px',
-                borderRadius: '10px',
-                textAlign: 'center'
+                padding: 'clamp(16px, 3vw, 20px)',
+                borderRadius: '12px',
+                textAlign: 'center',
+                boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)'
               }}>
                 <h3 style={{ margin: '0 0 10px 0', fontSize: '14px', opacity: 0.9 }}>Orders</h3>
-                <p style={{ margin: 0, fontSize: '24px', fontWeight: 'bold' }}>
+                <p style={{ margin: 0, fontSize: 'clamp(20px, 4vw, 24px)', fontWeight: '600' }}>
                   {reportData.summary.numberOfOrders}
                 </p>
                 <small style={{ opacity: 0.8 }}>completed</small>
@@ -635,8 +666,9 @@ const Reports = () => {
             )}
           </div>
         )}
+        </div>
       </div>
-    </div>
+    </main>
   );
 };
 

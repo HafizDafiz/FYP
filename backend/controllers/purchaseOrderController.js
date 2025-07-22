@@ -1,5 +1,6 @@
 const PurchaseOrder = require('../models/purchaseOrderModel');
 const Inventory = require('../models/inventoryModel');
+const ReceivingReceipt = require('../models/receivingReceiptModel');
 const mongoose = require('mongoose');
 
 // GET all purchase orders
@@ -332,6 +333,45 @@ const receiveItems = async (req, res) => {
         
         await purchaseOrder.save({ session });
         
+        // Create receiving receipt
+        const receiptData = {
+            purchaseOrderId: purchaseOrder._id,
+            poNumber: purchaseOrder.poNumber,
+            vendorName: purchaseOrder.vendorName,
+            vendorEmail: purchaseOrder.vendorEmail,
+            receivedAt: new Date(),
+            receivedBy: req.user._id,
+            items: receivedItems.map(receivedItem => {
+                const orderItem = purchaseOrder.items.id(receivedItem.itemId);
+                return {
+                    purchaseOrderId: purchaseOrder._id,
+                    purchaseOrderItemId: receivedItem.itemId,
+                    productId: orderItem.productId,
+                    productName: orderItem.productName,
+                    sku: orderItem.sku,
+                    quantityOrdered: orderItem.quantity,
+                    quantityReceived: receivedItem.quantityReceived,
+                    unitPrice: orderItem.unitPrice,
+                    totalValue: orderItem.unitPrice * receivedItem.quantityReceived,
+                    condition: receivedItem.condition || 'Good',
+                    notes: receivedItem.notes || ''
+                };
+            }),
+            trackingNumber: trackingNumber || '',
+            carrier: carrier || '',
+            deliveryDate: actualDelivery ? new Date(actualDelivery) : new Date(),
+            status: 'Received',
+            totalValue: receivedItems.reduce((sum, receivedItem) => {
+                const orderItem = purchaseOrder.items.id(receivedItem.itemId);
+                return sum + (orderItem.unitPrice * receivedItem.quantityReceived);
+            }, 0),
+            notes: req.body.notes || '',
+            createdBy: req.user._id
+        };
+        
+        const receivingReceipt = new ReceivingReceipt(receiptData);
+        await receivingReceipt.save({ session });
+        
         await session.commitTransaction();
         
         const updatedOrder = await PurchaseOrder.findById(id)
@@ -340,7 +380,12 @@ const receiveItems = async (req, res) => {
             .populate('approvedBy', 'email name');
         
         console.log('Received items for purchase order:', updatedOrder.poNumber);
-        res.status(200).json(updatedOrder);
+        console.log('Created receiving receipt:', receivingReceipt.receiptNumber);
+        res.status(200).json({ 
+            purchaseOrder: updatedOrder, 
+            receivingReceipt: receivingReceipt,
+            message: 'Items received successfully and receipt created'
+        });
     } catch (error) {
         await session.abortTransaction();
         console.error('Error receiving items:', error);
