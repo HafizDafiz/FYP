@@ -21,6 +21,8 @@ import PurchaseReceives from './pages/PurchaseReceives';
 import PurchaseReceivesHistory from './pages/PurchaseReceivesHistory';
 import Sales from './pages/Sales';
 import Shipment from './pages/Shipment';
+import Reports from './pages/Reports';
+import Documents from './pages/Documents';
 // import { PurchaseContextProvider } from './context/PurchaseContext';
 
 function App() {
@@ -112,6 +114,16 @@ function MainContent({ user }) {
             <Route path="/sales/shipment" element={
               <ProtectedRoute>
                 <Shipment />
+              </ProtectedRoute>
+            } />
+            <Route path="/reports" element={
+              <ProtectedRoute requiredRole="admin">
+                <Reports />
+              </ProtectedRoute>
+            } />
+            <Route path="/documents" element={
+              <ProtectedRoute>
+                <Documents />
               </ProtectedRoute>
             } />
             {/* Redirect unknown routes to dashboard */}
