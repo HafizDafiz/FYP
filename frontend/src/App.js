@@ -5,7 +5,6 @@ import Item from './pages/Items';
 import AddItem from './pages/AddItem';
 import StockTaking from './pages/StockTaking';
 import StockLevel from './pages/StockLevel';
-// import Item from './pages/Items';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
 import StaffDashboard from './pages/StaffDashboard';
@@ -13,7 +12,6 @@ import AdminDashboard from './pages/AdminDashboard';
 import Dashboard from './pages/Dashboard';
 import ProtectedRoute from './components/ProtectedRoute';
 import Navbar from './components/Navbar';
-// import Purchase from './pages/Purchase';
 import InventoryList from './components/InventoryList';
 import PurchaseForm from './components/PurchaseForm';
 import PurchaseOrders from './pages/PurchaseOrders';
@@ -23,7 +21,6 @@ import Sales from './pages/Sales';
 import Shipment from './pages/Shipment';
 import Reports from './pages/Reports';
 import Documents from './pages/Documents';
-// import { PurchaseContextProvider } from './context/PurchaseContext';
 
 function App() {
   const { user } = useAuthContext();

@@ -23,13 +23,18 @@ const InventoryDetails = ({ items }) => {
   }
 
   return (
-    <div style={{ 
-      background: 'white', 
-      borderRadius: '8px', 
-      overflow: 'hidden',
-      boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)'
+    <div className="table-container" style={{ 
+      overflowX: 'auto',
+      WebkitOverflowScrolling: 'touch',
+      borderRadius: '8px',
+      boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+      background: 'white'
     }}>
-      <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+      <table style={{ 
+        width: '100%', 
+        borderCollapse: 'collapse',
+        minWidth: '800px'
+      }}>
         <thead>
           <tr style={{ background: '#f9fafb', borderBottom: '1px solid #e5e7eb' }}>
             <th style={{ 

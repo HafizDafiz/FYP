@@ -58,13 +58,17 @@ const Navbar = () => {
     <>
       {/* Mobile menu toggle button */}
       <button 
-        className="mobile-menu-toggle d-lg-none"
+        className="mobile-menu-toggle d-lg-none vibrate-on-tap"
         onClick={toggleMobileMenu}
         style={{
           display: 'none'
         }}
+        aria-label={isMobileMenuOpen ? 'Close menu' : 'Open menu'}
+        type="button"
       >
-        {isMobileMenuOpen ? '✕' : '☰'}
+        <span className="hamburger-icon">
+          {isMobileMenuOpen ? '✕' : '☰'}
+        </span>
       </button>
 
       {/* Mobile overlay */}

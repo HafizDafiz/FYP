@@ -4,7 +4,9 @@ const {
   getInventories,
   getInventory,
   deleteInventory,
-  updateInventory
+  updateInventory,
+  updateLocationStock,
+  getInventoryByLocation
 } = require('../controllers/inventoryController');
 const requireAuth = require('../middleware/requireAuth');
 
@@ -15,6 +17,9 @@ router.use(requireAuth);
 
 // GET all inventory items
 router.get('/items', getInventories);
+
+// GET inventory by location
+router.get('/location/:locationId', getInventoryByLocation);
 
 // GET a single inventory item
 router.get('/items/:id', getInventory);
@@ -27,5 +32,8 @@ router.delete('/items/:id', deleteInventory);
 
 // UPDATE an inventory item
 router.patch('/items/:id', updateInventory);
+
+// UPDATE inventory at specific location
+router.patch('/items/:id/location', updateLocationStock);
 
 module.exports = router;

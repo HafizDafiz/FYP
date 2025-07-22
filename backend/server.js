@@ -40,13 +40,9 @@ app.use('/api/documents', documentsRoutes);
 app.use('/api/purchases', purchaseRoutes);
 app.use('/api/purchase-orders', purchaseOrderRoutes);
 app.use('/api/receiving-receipts', receivingReceiptRoutes);
-app.use('/api/inventory', inventoryRoutes);  // Changed from /api/inventories to /api/inventory
+app.use('/api/inventory', inventoryRoutes);
 app.use('/api/sales', saleRoutes);
 app.use('/api/shipments', shipmentRoutes);
-// require auth for all purchase routes
-
-
-
 
 // connect to db
 mongoose.connect(process.env.MONGO_URI)

@@ -132,6 +132,86 @@ const updateInventory = async (req, res) => {
   }
 };
 
+// UPDATE inventory at specific location
+const updateLocationStock = async (req, res) => {
+  const { id } = req.params;
+  const { locationId, locationName, quantity, operation = 'set' } = req.body;
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(400).json({ error: 'Invalid inventory item ID' });
+  }
+
+  try {
+    const inventory = await Inventory.findById(id);
+    if (!inventory) {
+      return res.status(404).json({ error: 'Inventory item not found' });
+    }
+
+    if (!locationId || !locationName || quantity === undefined) {
+      return res.status(400).json({ error: 'Location ID, name, and quantity are required' });
+    }
+
+    // Find or create location stock entry
+    let locationStock = inventory.locationStock.find(stock => stock.locationId === locationId);
+    
+    if (locationStock) {
+      // Update existing location stock
+      if (operation === 'add') {
+        locationStock.quantity += parseInt(quantity);
+      } else if (operation === 'subtract') {
+        locationStock.quantity = Math.max(0, locationStock.quantity - parseInt(quantity));
+      } else {
+        locationStock.quantity = parseInt(quantity);
+      }
+    } else {
+      // Create new location stock entry
+      inventory.locationStock.push({
+        locationId,
+        locationName,
+        quantity: parseInt(quantity)
+      });
+    }
+
+    await inventory.save();
+    res.status(200).json(inventory);
+  } catch (error) {
+    console.error('Error updating location stock:', error);
+    res.status(400).json({ error: error.message });
+  }
+};
+
+// GET inventory by location
+const getInventoryByLocation = async (req, res) => {
+  try {
+    const { locationId } = req.params;
+    
+    if (!locationId) {
+      return res.status(400).json({ error: 'Location ID is required' });
+    }
+
+    // Find all inventory items that have stock at the specified location
+    const inventoryItems = await Inventory.find({
+      'locationStock.locationId': locationId,
+      'locationStock.quantity': { $gt: 0 }
+    });
+
+    // Transform to include only the location-specific data
+    const locationInventory = inventoryItems.map(item => {
+      const locationStock = item.locationStock.find(stock => stock.locationId === locationId);
+      return {
+        ...item.toObject(),
+        locationQuantity: locationStock?.quantity || 0,
+        locationStock: locationStock
+      };
+    });
+
+    res.status(200).json(locationInventory);
+  } catch (error) {
+    console.error('Error fetching inventory by location:', error);
+    res.status(500).json({ error: error.message });
+  }
+};
+
 
 module.exports = {
   createInventory,
@@ -139,5 +219,7 @@ module.exports = {
   getInventory,
   deleteInventory,
   updateInventory,
+  updateLocationStock,
+  getInventoryByLocation,
 };
 

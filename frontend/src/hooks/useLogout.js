@@ -1,21 +1,18 @@
-import { useAuthContext } from './useAuthContext'
-import { useInventoryContext } from './useInventoryContext'
+import { useAuthContext } from './useAuthContext';
 import { useNavigate } from 'react-router-dom';
 
 export const useLogout = () => {
-  const { dispatch } = useAuthContext()
-  const { dispatch: dispatchInventory } = useInventoryContext()
+  const { dispatch } = useAuthContext();
   const navigate = useNavigate();
 
   const logout = () => {
     // remove user from storage
-    localStorage.removeItem('user')
+    localStorage.removeItem('user');
 
     // dispatch logout action
-    dispatch({ type: 'LOGOUT' })
-    dispatchInventory({ type: 'SET_INVENTORIES', payload: null })
+    dispatch({ type: 'LOGOUT' });
     navigate('/login');
-  }
+  };
 
-  return { logout }
-}
+  return { logout };
+};
