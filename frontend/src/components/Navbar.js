@@ -248,22 +248,24 @@ const Navbar = () => {
                   </ul>
                 </li>
 
-                <li>
-                  <Link 
-                    to="/reports" 
-                    className={isActiveRoute('/reports') ? 'active' : ''}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '12px',
-                      fontSize: '16px'
-                    }}
-                    onClick={closeMobileMenu}
-                  >
-                    <span style={{ fontSize: '20px' }}>📊</span>
-                    Reports
-                  </Link>
-                </li>
+                {user.role === 'admin' && (
+                  <li>
+                    <Link 
+                      to="/reports" 
+                      className={isActiveRoute('/reports') ? 'active' : ''}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '12px',
+                        fontSize: '16px'
+                      }}
+                      onClick={closeMobileMenu}
+                    >
+                      <span style={{ fontSize: '20px' }}>📊</span>
+                      Reports
+                    </Link>
+                  </li>
+                )}
                 <li>
                   <Link 
                     to="/documents" 
