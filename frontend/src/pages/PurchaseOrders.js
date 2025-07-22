@@ -717,7 +717,10 @@ const PurchaseOrders = () => {
                       <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
                         {po.status === 'Draft' && (
                           <button
-                            onClick={() => approvePO(po._id)}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              approvePO(po._id);
+                            }}
                             style={{
                               background: '#10b981',
                               color: 'white',
@@ -733,7 +736,10 @@ const PurchaseOrders = () => {
                         )}
                         {(po.status === 'Sent' || po.status === 'Acknowledged' || po.status === 'Partially Received') && (
                           <button
-                            onClick={() => openReceiveModal(po)}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              openReceiveModal(po);
+                            }}
                             style={{
                               background: '#3b82f6',
                               color: 'white',
@@ -749,7 +755,11 @@ const PurchaseOrders = () => {
                         )}
                         <select
                           value={po.status || 'Draft'}
-                          onChange={(e) => updatePOStatus(po._id, e.target.value)}
+                          onClick={(e) => e.stopPropagation()}
+                          onChange={(e) => {
+                            e.stopPropagation();
+                            updatePOStatus(po._id, e.target.value);
+                          }}
                           style={{
                             padding: '4px 8px',
                             border: '1px solid #d1d5db',
