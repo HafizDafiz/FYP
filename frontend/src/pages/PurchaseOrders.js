@@ -67,7 +67,8 @@ const PurchaseOrders = () => {
     }
 
     try {
-      const response = await fetch('http://localhost:4000/api/purchase-orders', {
+      const apiUrl = process.env.REACT_APP_API_URL;
+      const response = await fetch(`${apiUrl}/api/purchase-orders`, {
         headers: {
           'Authorization': `Bearer ${user.token}`,
           'Content-Type': 'application/json',
@@ -94,7 +95,8 @@ const PurchaseOrders = () => {
 
   const fetchProducts = async () => {
     try {
-      const response = await fetch('http://localhost:4000/api/inventory/items', {
+      const apiUrl = process.env.REACT_APP_API_URL;
+      const response = await fetch(`${apiUrl}/api/inventory/items`, {
         headers: {
           'Authorization': `Bearer ${user.token}`,
           'Content-Type': 'application/json',
@@ -119,7 +121,8 @@ const PurchaseOrders = () => {
     }
 
     try {
-      const response = await fetch('http://localhost:4000/api/purchase-orders', {
+      const apiUrl = process.env.REACT_APP_API_URL;
+      const response = await fetch(`${apiUrl}/api/purchase-orders`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${user.token}`,
@@ -207,7 +210,8 @@ const PurchaseOrders = () => {
 
   const updatePOStatus = async (poId, status) => {
     try {
-      const response = await fetch(`http://localhost:4000/api/purchase-orders/${poId}/status`, {
+      const apiUrl = process.env.REACT_APP_API_URL;
+      const response = await fetch(`${apiUrl}/api/purchase-orders/${poId}/status`, {
         method: 'PATCH',
         headers: {
           'Authorization': `Bearer ${user.token}`,
@@ -226,7 +230,8 @@ const PurchaseOrders = () => {
 
   const approvePO = async (poId) => {
     try {
-      const response = await fetch(`http://localhost:4000/api/purchase-orders/${poId}/approve`, {
+      const apiUrl = process.env.REACT_APP_API_URL;
+      const response = await fetch(`${apiUrl}/api/purchase-orders/${poId}/approve`, {
         method: 'PATCH',
         headers: {
           'Authorization': `Bearer ${user.token}`,
@@ -252,7 +257,8 @@ const PurchaseOrders = () => {
     }
 
     try {
-      const response = await fetch(`http://localhost:4000/api/purchase-orders/${selectedPO._id}/receive`, {
+      const apiUrl = process.env.REACT_APP_API_URL;
+      const response = await fetch(`${apiUrl}/api/purchase-orders/${selectedPO._id}/receive`, {
         method: 'PATCH',
         headers: {
           'Authorization': `Bearer ${user.token}`,
@@ -343,7 +349,8 @@ const PurchaseOrders = () => {
     setDetailError(null);
     setOrderDetail(null);
     try {
-      const response = await fetch(`http://localhost:4000/api/purchase-orders/${orderId}`, {
+      const apiUrl = process.env.REACT_APP_API_URL;
+      const response = await fetch(`${apiUrl}/api/purchase-orders/${orderId}`, {
         headers: {
           'Authorization': `Bearer ${user.token}`,
           'Content-Type': 'application/json',

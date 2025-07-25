@@ -231,7 +231,8 @@ const PurchaseForm = () => {
     }
 
     try {
-      const res = await fetch('http://localhost:3000/api/purchases', {
+      const apiUrl = process.env.REACT_APP_API_URL;
+      const res = await fetch(`${apiUrl}/api/purchases`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

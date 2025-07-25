@@ -26,7 +26,8 @@ const PurchaseReceivesHistory = () => {
     }
 
     try {
-      const response = await fetch('http://localhost:4000/api/receiving-receipts', {
+      const apiUrl = process.env.REACT_APP_API_URL;
+      const response = await fetch(`${apiUrl}/api/receiving-receipts`, {
         headers: {
           'Authorization': `Bearer ${user.token}`,
           'Content-Type': 'application/json',

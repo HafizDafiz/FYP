@@ -41,7 +41,8 @@ const InventoryList = () => {
   useEffect(() => {
     const fetchInventories = async () => {
       try {
-        const res = await fetch('http://localhost:3000/api/inventories', {
+        const apiUrl = process.env.REACT_APP_API_URL;
+        const res = await fetch(`${apiUrl}/api/inventories`, {
           headers: {
             'Authorization': `Bearer ${user?.token}`
           }

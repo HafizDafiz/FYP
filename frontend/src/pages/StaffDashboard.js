@@ -25,7 +25,8 @@ const StaffDashboard = () => {
 
     setLoading(true);
     try {
-      const response = await fetch('http://localhost:4000/api/dashboard/staff', {
+      const apiUrl = process.env.REACT_APP_API_URL;
+      const response = await fetch(`${apiUrl}/api/dashboard/staff`, {
         headers: {
           'Authorization': `Bearer ${user.token}`,
           'Content-Type': 'application/json',

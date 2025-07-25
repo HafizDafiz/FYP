@@ -24,7 +24,8 @@ const StockLevel = () => {
       }
 
       try {
-        const response = await fetch('/api/inventory/items', {
+        const apiUrl = process.env.REACT_APP_API_URL;
+        const response = await fetch(`${apiUrl}/api/inventory/items`, {
           headers: {
             'Authorization': `Bearer ${user.token}`,
             'Content-Type': 'application/json',

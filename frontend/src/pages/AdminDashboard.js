@@ -25,7 +25,8 @@ const AdminDashboard = () => {
 
     setLoading(true);
     try {
-      const response = await fetch('http://localhost:4000/api/dashboard/admin', {
+      const apiUrl = process.env.REACT_APP_API_URL;
+      const response = await fetch(`${apiUrl}/api/dashboard/admin`, {
         headers: {
           'Authorization': `Bearer ${user.token}`,
           'Content-Type': 'application/json',

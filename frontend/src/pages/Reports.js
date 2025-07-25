@@ -36,7 +36,8 @@ const Reports = () => {
     setError('');
 
     try {
-      const response = await fetch(`/api/reports?startDate=${startDate}&endDate=${endDate}`, {
+      const apiUrl = process.env.REACT_APP_API_URL;
+      const response = await fetch(`${apiUrl}/api/reports?startDate=${startDate}&endDate=${endDate}`, {
         headers: {
           'Authorization': `Bearer ${user.token}`
         }
@@ -251,7 +252,8 @@ const Reports = () => {
 
       // Save document to backend
       try {
-        const saveResponse = await fetch('/api/documents', {
+        const apiUrl = process.env.REACT_APP_API_URL;
+        const saveResponse = await fetch(`${apiUrl}/api/documents`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

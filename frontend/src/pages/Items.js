@@ -25,7 +25,8 @@ const Item = () => {
       }
 
       try {
-        const response = await fetch('http://localhost:4000/api/inventory/items', {
+        const apiUrl = process.env.REACT_APP_API_URL;
+        const response = await fetch(`${apiUrl}/api/inventory/items`, {
           headers: {
             'Authorization': `Bearer ${user.token}`,
             'Content-Type': 'application/json',

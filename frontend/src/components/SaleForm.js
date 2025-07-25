@@ -11,9 +11,9 @@ const SaleForm = () => {
     const fetchInventory = async () => {
       setLoading(true);
       const user = JSON.parse(localStorage.getItem('user'));
-
+      const apiUrl = process.env.REACT_APP_API_URL;
       try {
-        const res = await fetch('http://localhost:4000/api/inventories', {
+        const res = await fetch(`${apiUrl}/api/inventories`, {
           headers: {
             'Authorization': `Bearer ${user?.token}`,
           },
@@ -37,9 +37,9 @@ const SaleForm = () => {
     e.preventDefault();
     setSubmitting(true);
     const user = JSON.parse(localStorage.getItem('user'));
-
+    const apiUrl = process.env.REACT_APP_API_URL;
     try {
-      const res = await fetch('http://localhost:3000/api/sales', {
+      const res = await fetch(`${apiUrl}/api/sales`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -35,7 +35,8 @@ const Documents = () => {
       console.log('Fetching documents with URL:', `/api/documents?${queryParams}`);
       console.log('User token:', user.token ? 'Present' : 'Missing');
 
-      const response = await fetch(`/api/documents?${queryParams}`, {
+      const apiUrl = process.env.REACT_APP_API_URL;
+      const response = await fetch(`${apiUrl}/api/documents?${queryParams}`, {
         headers: {
           'Authorization': `Bearer ${user.token}`
         }
@@ -67,7 +68,8 @@ const Documents = () => {
   const testAPIConnection = async () => {
     try {
       console.log('Testing API connection...');
-      const response = await fetch('/api/user/test', {
+      const apiUrl = process.env.REACT_APP_API_URL;
+      const response = await fetch(`${apiUrl}/api/user/test`, {
         headers: {
           'Authorization': `Bearer ${user.token}`
         }
@@ -89,7 +91,8 @@ const Documents = () => {
     if (!user) return;
 
     try {
-      const response = await fetch('/api/documents/stats', {
+      const apiUrl = process.env.REACT_APP_API_URL;
+      const response = await fetch(`${apiUrl}/api/documents/stats`, {
         headers: {
           'Authorization': `Bearer ${user.token}`
         }
@@ -109,7 +112,8 @@ const Documents = () => {
     if (!user) return;
 
     try {
-      const response = await fetch(`/api/documents/${documentId}/download`, {
+      const apiUrl = process.env.REACT_APP_API_URL;
+      const response = await fetch(`${apiUrl}/api/documents/${documentId}/download`, {
         headers: {
           'Authorization': `Bearer ${user.token}`
         }
@@ -150,7 +154,8 @@ const Documents = () => {
 
     if (window.confirm('Are you sure you want to permanently delete this document?')) {
       try {
-        const response = await fetch(`/api/documents/${documentId}`, {
+        const apiUrl = process.env.REACT_APP_API_URL;
+        const response = await fetch(`${apiUrl}/api/documents/${documentId}`, {
           method: 'DELETE',
           headers: {
             'Authorization': `Bearer ${user.token}`
@@ -175,7 +180,8 @@ const Documents = () => {
     if (!user) return;
 
     try {
-      const response = await fetch(`/api/documents/${documentId}/archive`, {
+      const apiUrl = process.env.REACT_APP_API_URL;
+      const response = await fetch(`${apiUrl}/api/documents/${documentId}/archive`, {
         method: 'PATCH',
         headers: {
           'Authorization': `Bearer ${user.token}`

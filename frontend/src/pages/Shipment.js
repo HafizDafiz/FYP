@@ -41,6 +41,8 @@ const Shipment = () => {
     }
   });
 
+  const apiUrl = process.env.REACT_APP_API_URL;
+
   useEffect(() => {
     if (!user) {
       navigate('/login');
@@ -53,7 +55,7 @@ const Shipment = () => {
   const fetchShipments = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/shipments', {
+      const response = await fetch(`${apiUrl}/api/shipments`, {
         headers: {
           'Authorization': `Bearer ${user.token}`,
           'Content-Type': 'application/json',
@@ -80,7 +82,7 @@ const Shipment = () => {
 
   const fetchSalesOrders = async () => {
     try {
-      const response = await fetch('/api/sales', {
+      const response = await fetch(`${apiUrl}/api/sales`, {
         headers: {
           'Authorization': `Bearer ${user.token}`,
           'Content-Type': 'application/json',
@@ -105,7 +107,7 @@ const Shipment = () => {
     e.preventDefault();
     
     try {
-      const response = await fetch('/api/shipments', {
+      const response = await fetch(`${apiUrl}/api/shipments`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${user.token}`,
@@ -137,7 +139,7 @@ const Shipment = () => {
 
   const handleUpdateStatus = async (shipmentId, newStatus, location = '', notes = '') => {
     try {
-      const response = await fetch(`/api/shipments/${shipmentId}/status`, {
+      const response = await fetch(`${apiUrl}/api/shipments/${shipmentId}/status`, {
         method: 'PATCH',
         headers: {
           'Authorization': `Bearer ${user.token}`,
@@ -171,7 +173,7 @@ const Shipment = () => {
     }
 
     try {
-      const response = await fetch(`/api/shipments/tracking/${trackingNumber}`, {
+      const response = await fetch(`${apiUrl}/api/shipments/tracking/${trackingNumber}`, {
         headers: {
           'Authorization': `Bearer ${user.token}`,
           'Content-Type': 'application/json',

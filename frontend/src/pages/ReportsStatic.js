@@ -36,7 +36,8 @@ const Reports = () => {
     setError('');
 
     try {
-      const response = await fetch(`/api/reports?startDate=${startDate}&endDate=${endDate}`, {
+      const apiUrl = process.env.REACT_APP_API_URL;
+      const response = await fetch(`${apiUrl}/api/reports?startDate=${startDate}&endDate=${endDate}`, {
         headers: {
           'Authorization': `Bearer ${user.token}`
         }

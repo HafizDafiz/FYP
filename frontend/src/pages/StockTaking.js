@@ -32,7 +32,8 @@ const StockTaking = () => {
       }
 
       try {
-        const response = await fetch('/api/inventory/items', {
+        const apiUrl = process.env.REACT_APP_API_URL;
+        const response = await fetch(`${apiUrl}/api/inventory/items`, {
           headers: {
             'Authorization': `Bearer ${user.token}`,
             'Content-Type': 'application/json',
@@ -82,7 +83,8 @@ const StockTaking = () => {
 
     setIsUpdating(true);
     try {
-      const response = await fetch(`/api/inventory/items/${itemId}`, {
+      const apiUrl = process.env.REACT_APP_API_URL;
+      const response = await fetch(`${apiUrl}/api/inventory/items/${itemId}`, {
         method: 'PATCH',
         headers: {
           'Authorization': `Bearer ${user.token}`,
@@ -121,8 +123,9 @@ const StockTaking = () => {
 
     setIsUpdating(true);
     try {
+      const apiUrl = process.env.REACT_APP_API_URL;
       const promises = Object.entries(stockAdjustments).map(([itemId, quantity]) =>
-        fetch(`/api/inventory/items/${itemId}`, {
+        fetch(`${apiUrl}/api/inventory/items/${itemId}`, {
           method: 'PATCH',
           headers: {
             'Authorization': `Bearer ${user.token}`,

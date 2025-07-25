@@ -55,7 +55,8 @@ const Sales = () => {
     }
 
     try {
-      const response = await fetch('http://localhost:4000/api/sales', {
+      const apiUrl = process.env.REACT_APP_API_URL;
+      const response = await fetch(`${apiUrl}/api/sales`, {
         headers: {
           'Authorization': `Bearer ${user.token}`,
           'Content-Type': 'application/json',
@@ -82,7 +83,8 @@ const Sales = () => {
 
   const fetchProducts = async () => {
     try {
-      const response = await fetch('http://localhost:4000/api/inventory/items', {
+      const apiUrl = process.env.REACT_APP_API_URL;
+      const response = await fetch(`${apiUrl}/api/inventory/items`, {
         headers: {
           'Authorization': `Bearer ${user.token}`,
           'Content-Type': 'application/json',
@@ -107,7 +109,8 @@ const Sales = () => {
     }
 
     try {
-      const response = await fetch('http://localhost:4000/api/sales', {
+      const apiUrl = process.env.REACT_APP_API_URL;
+      const response = await fetch(`${apiUrl}/api/sales`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${user.token}`,
@@ -185,7 +188,8 @@ const Sales = () => {
 
   const updateOrderStatus = async (orderId, status) => {
     try {
-      const response = await fetch(`http://localhost:4000/api/sales/${orderId}/status`, {
+      const apiUrl = process.env.REACT_APP_API_URL;
+      const response = await fetch(`${apiUrl}/api/sales/${orderId}/status`, {
         method: 'PATCH',
         headers: {
           'Authorization': `Bearer ${user.token}`,
@@ -213,6 +217,7 @@ const Sales = () => {
   };
 
   const handleExportCSV = () => {
+    const apiUrl = process.env.REACT_APP_API_URL;
     const csvContent = "data:text/csv;charset=utf-8," + 
       "Order Number,Customer Name,Customer Email,Status,Total,Order Date\n" +
       filteredAndSortedOrders.map(order => 
@@ -285,7 +290,8 @@ const Sales = () => {
     setDetailError(null);
     setOrderDetail(null);
     try {
-      const response = await fetch(`http://localhost:4000/api/sales/${orderId}`, {
+      const apiUrl = process.env.REACT_APP_API_URL;
+      const response = await fetch(`${apiUrl}/api/sales/${orderId}`, {
         headers: {
           'Authorization': `Bearer ${user.token}`,
           'Content-Type': 'application/json',

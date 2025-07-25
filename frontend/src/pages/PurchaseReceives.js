@@ -34,7 +34,8 @@ const PurchaseReceives = () => {
     }
 
     try {
-      const response = await fetch('http://localhost:4000/api/purchase-orders', {
+      const apiUrl = process.env.REACT_APP_API_URL;
+      const response = await fetch(`${apiUrl}/api/purchase-orders`, {
         headers: {
           'Authorization': `Bearer ${user.token}`,
           'Content-Type': 'application/json',
@@ -103,7 +104,8 @@ const PurchaseReceives = () => {
     }
 
     try {
-      const response = await fetch(`http://localhost:4000/api/purchase-orders/${selectedOrder._id}/receive`, {
+      const apiUrl = process.env.REACT_APP_API_URL;
+      const response = await fetch(`${apiUrl}/api/purchase-orders/${selectedOrder._id}/receive`, {
         method: 'PATCH',
         headers: {
           'Authorization': `Bearer ${user.token}`,
