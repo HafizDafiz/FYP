@@ -102,7 +102,7 @@ const shipmentSchema = new mongoose.Schema({
         country: {
             type: String,
             required: true,
-            default: 'United States'
+            default: 'Singapore'
         }
     },
     items: [shipmentItemSchema],

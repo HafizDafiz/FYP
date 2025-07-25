@@ -295,7 +295,6 @@ const receiveItems = async (req, res) => {
                     description: orderItem.description || '',
                     quantity: receivedItem.quantityReceived,
                     rate: orderItem.unitPrice,
-                    category: 'General',
                     createdBy: req.user._id
                 });
                 
