@@ -416,19 +416,21 @@ const PurchaseOrders = () => {
     <main className="main-content" style={{ background: '#f8fafc', minHeight: '100vh', padding: '20px' }}>
       <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
         {/* Header Section */}
-        <div style={{ 
+        <div className="purchase-orders-header" style={{ 
           display: 'flex', 
           justifyContent: 'space-between', 
-          alignItems: 'center',
+          alignItems: 'flex-start',
           marginBottom: '24px',
           background: 'white',
-          padding: '20px',
+          padding: 'clamp(16px, 3vw, 20px)',
           borderRadius: '8px',
-          boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)'
+          boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
+          flexWrap: 'wrap',
+          gap: '16px'
         }}>
-          <div>
+          <div style={{ flex: '1', minWidth: '200px' }}>
             <h1 style={{ 
-              fontSize: '24px', 
+              fontSize: 'clamp(20px, 4vw, 24px)', 
               fontWeight: '600', 
               color: '#1f2937',
               margin: '0 0 8px 0'
@@ -443,22 +445,27 @@ const PurchaseOrders = () => {
               Manage supplier orders and track procurement
             </p>
           </div>
-          <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+          <div className="purchase-orders-actions" style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
             <button
               onClick={() => setShowCreateForm(true)}
               style={{
                 background: '#3b82f6',
                 color: 'white',
                 border: 'none',
-                padding: '10px 20px',
-                borderRadius: '6px',
-                fontSize: '14px',
-                fontWeight: '500',
+                padding: '12px 20px',
+                borderRadius: '8px',
+                fontSize: '16px',
+                fontWeight: '600',
                 cursor: 'pointer',
                 display: 'flex',
                 alignItems: 'center',
-                gap: '8px'
+                gap: '8px',
+                transition: 'all 0.2s ease',
+                minHeight: '44px',
+                boxShadow: '0 2px 4px rgba(59, 130, 246, 0.2)'
               }}
+              onMouseOver={(e) => e.target.style.transform = 'translateY(-1px)'}
+              onMouseOut={(e) => e.target.style.transform = 'translateY(0)'}
             >
               <span style={{ fontSize: '16px' }}>+</span>
               New Purchase Order
@@ -469,13 +476,13 @@ const PurchaseOrders = () => {
         {/* Search and Filter Section */}
         <div style={{ 
           background: 'white',
-          padding: '20px',
+          padding: '16px 20px',
           borderRadius: '8px',
           boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
           marginBottom: '20px'
         }}>
-          <div style={{ display: 'flex', gap: '16px', alignItems: 'center', marginBottom: '16px' }}>
-            <div style={{ flex: 1, minWidth: '250px' }}>
+          <div style={{ display: 'flex', gap: '16px', alignItems: 'center', flexWrap: 'wrap' }}>
+            <div style={{ flex: 1, minWidth: '200px' }}>
               <input
                 type="text"
                 placeholder="Search purchase orders..."
@@ -483,12 +490,16 @@ const PurchaseOrders = () => {
                 onChange={(e) => setSearchTerm(e.target.value)}
                 style={{
                   width: '100%',
-                  padding: '8px 12px',
-                  border: '1px solid #d1d5db',
-                  borderRadius: '6px',
-                  fontSize: '14px',
-                  outline: 'none'
+                  padding: '12px 16px',
+                  border: '2px solid #d1d5db',
+                  borderRadius: '8px',
+                  fontSize: '16px',
+                  outline: 'none',
+                  minHeight: '44px',
+                  transition: 'border-color 0.3s ease'
                 }}
+                onFocus={(e) => e.target.style.borderColor = '#312F56'}
+                onBlur={(e) => e.target.style.borderColor = '#d1d5db'}
               />
             </div>
             <div>
@@ -496,12 +507,17 @@ const PurchaseOrders = () => {
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
                 style={{
-                  padding: '8px 12px',
-                  border: '1px solid #d1d5db',
-                  borderRadius: '6px',
-                  fontSize: '14px',
-                  outline: 'none'
+                  padding: '12px 16px',
+                  border: '2px solid #d1d5db',
+                  borderRadius: '8px',
+                  fontSize: '16px',
+                  outline: 'none',
+                  minHeight: '44px',
+                  minWidth: '150px',
+                  transition: 'border-color 0.3s ease'
                 }}
+                onFocus={(e) => e.target.style.borderColor = '#312F56'}
+                onBlur={(e) => e.target.style.borderColor = '#d1d5db'}
               >
                 <option value="all">All Status</option>
                 <option value="Draft">Draft</option>
@@ -513,7 +529,7 @@ const PurchaseOrders = () => {
                 <option value="Closed">Closed</option>
               </select>
             </div>
-            <div style={{ fontSize: '14px', color: '#6b7280' }}>
+            <div style={{ fontSize: '14px', color: '#6b7280', minWidth: 'fit-content' }}>
               {filteredAndSortedOrders.length} purchase orders found
             </div>
           </div>

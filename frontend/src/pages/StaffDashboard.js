@@ -78,48 +78,83 @@ const StaffDashboard = () => {
 
   if (loading) {
     return (
-      <div className="staff-dashboard">
-        <div className="dashboard-header">
-          <h1>Staff Dashboard</h1>
-          <div className="time-display">
-            <span>{formatTime(currentTime)}</span>
+      <main className="main-content" style={{ background: '#f8fafc', minHeight: '100vh', padding: '20px' }}>
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '400px' }}>
+          <div style={{ 
+            display: 'flex', 
+            flexDirection: 'column', 
+            alignItems: 'center', 
+            gap: '16px' 
+          }}>
+            <div style={{ 
+              width: '40px', 
+              height: '40px', 
+              border: '4px solid #e5e7eb', 
+              borderTop: '4px solid #3b82f6', 
+              borderRadius: '50%',
+              animation: 'spin 1s linear infinite' 
+            }} />
+            <div style={{ fontSize: '16px', color: '#6b7280' }}>Loading dashboard data...</div>
           </div>
         </div>
-        <div className="loading-message">Loading dashboard data...</div>
-      </div>
+      </main>
     );
   }
 
   if (error) {
     return (
-      <div className="staff-dashboard">
-        <div className="dashboard-header">
-          <h1>Staff Dashboard</h1>
-          <div className="time-display">
-            <span>{formatTime(currentTime)}</span>
-          </div>
-        </div>
-        <div className="error-message">
-          {error}
-          <button onClick={fetchDashboardData} className="retry-btn">
-            Retry
+      <main className="main-content" style={{ background: '#f8fafc', minHeight: '100vh', padding: '20px' }}>
+        <div style={{ 
+          background: '#fef2f2', 
+          border: '1px solid #fecaca', 
+          color: '#dc2626',
+          padding: '20px',
+          borderRadius: '8px',
+          textAlign: 'center'
+        }}>
+          <h2 style={{ margin: '0 0 16px 0' }}>Error Loading Dashboard</h2>
+          <p style={{ margin: '0 0 16px 0' }}>{error}</p>
+          <button 
+            onClick={fetchDashboardData} 
+            style={{
+              background: '#3b82f6',
+              color: 'white',
+              border: 'none',
+              padding: '12px 24px',
+              borderRadius: '8px',
+              fontSize: '16px',
+              fontWeight: '500',
+              cursor: 'pointer',
+              minHeight: '44px'
+            }}
+          >
+            Try Again
           </button>
         </div>
-      </div>
+      </main>
     );
   }
 
   if (!dashboardData) {
     return (
-      <div className="staff-dashboard">
-        <div className="dashboard-header">
-          <h1>Staff Dashboard</h1>
-          <div className="time-display">
-            <span>{formatTime(currentTime)}</span>
-          </div>
+      <main className="main-content" style={{ background: '#f8fafc', minHeight: '100vh', padding: '20px' }}>
+        <div style={{ 
+          background: '#f9fafb', 
+          border: '1px solid #e5e7eb', 
+          color: '#6b7280',
+          padding: '40px',
+          borderRadius: '8px',
+          textAlign: 'center'
+        }}>
+          <div style={{ fontSize: '48px', marginBottom: '16px' }}>📊</div>
+          <h3 style={{ fontSize: '18px', fontWeight: '500', marginBottom: '8px' }}>
+            No dashboard data available
+          </h3>
+          <p style={{ fontSize: '14px' }}>
+            Dashboard data is not available at the moment.
+          </p>
         </div>
-        <div className="loading-message">No dashboard data available</div>
-      </div>
+      </main>
     );
   }
 
@@ -197,7 +232,7 @@ const StaffDashboard = () => {
       background: '#f8fafc', 
       minHeight: '100vh', 
       padding: '20px',
-      paddingLeft: 'clamp(15px, 3vw, 250px)',
+      paddingLeft: 'clamp(15px, 3vw, 20px)',
       transition: 'padding 0.3s ease'
     }}>
       <div className="container">

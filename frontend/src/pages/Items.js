@@ -165,23 +165,28 @@ const Item = () => {
               Manage your inventory items and stock levels
             </p>
           </div>
-          <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+          
+          <div className="items-actions" style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
             <button
               onClick={handleAddItem}
               style={{
                 background: '#3b82f6',
                 color: 'white',
                 border: 'none',
-                padding: '10px 20px',
-                borderRadius: '6px',
-                fontSize: '14px',
-                fontWeight: '500',
+                padding: '12px 20px',
+                borderRadius: '8px',
+                fontSize: '16px',
+                fontWeight: '600',
                 cursor: 'pointer',
                 display: 'flex',
                 alignItems: 'center',
                 gap: '8px',
-                transition: 'background-color 0.2s'
+                transition: 'all 0.2s ease',
+                minHeight: '44px',
+                boxShadow: '0 2px 4px rgba(59, 130, 246, 0.2)'
               }}
+              onMouseOver={(e) => e.target.style.transform = 'translateY(-1px)'}
+              onMouseOut={(e) => e.target.style.transform = 'translateY(0)'}
             >
               <span style={{ fontSize: '16px' }}>+</span>
               Add Item
@@ -192,17 +197,21 @@ const Item = () => {
                 style={{
                   background: '#f3f4f6',
                   border: '1px solid #d1d5db',
-                  padding: '10px',
-                  borderRadius: '6px',
+                  padding: '12px',
+                  borderRadius: '8px',
                   cursor: 'pointer',
-                  fontSize: '16px',
+                  fontSize: '18px',
                   color: '#374151',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  width: '40px',
-                  height: '40px'
+                  width: '44px',
+                  height: '44px',
+                  minHeight: '44px',
+                  transition: 'all 0.2s ease'
                 }}
+                onMouseOver={(e) => e.target.style.background = '#e5e7eb'}
+                onMouseOut={(e) => e.target.style.background = '#f3f4f6'}
               >
                 ⋯
               </button>
@@ -333,12 +342,16 @@ const Item = () => {
                 onChange={(e) => setSearchTerm(e.target.value)}
                 style={{
                   width: '100%',
-                  padding: '8px 12px',
-                  border: '1px solid #d1d5db',
-                  borderRadius: '6px',
-                  fontSize: '14px',
-                  outline: 'none'
+                  padding: '12px 16px',
+                  border: '2px solid #d1d5db',
+                  borderRadius: '8px',
+                  fontSize: '16px',
+                  outline: 'none',
+                  minHeight: '44px',
+                  transition: 'border-color 0.3s ease'
                 }}
+                onFocus={(e) => e.target.style.borderColor = '#312F56'}
+                onBlur={(e) => e.target.style.borderColor = '#d1d5db'}
               />
             </div>
             <div style={{ fontSize: '14px', color: '#6b7280' }}>

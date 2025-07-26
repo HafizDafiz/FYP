@@ -160,7 +160,7 @@ const AdminDashboard = () => {
       background: '#f8fafc', 
       minHeight: '100vh', 
       padding: '20px',
-      paddingLeft: 'clamp(15px, 3vw, 250px)',
+      paddingLeft: 'clamp(15px, 3vw, 20px)',
       transition: 'padding 0.3s ease'
     }}>
       <div className="container">

@@ -263,84 +263,221 @@ const PurchaseReceives = () => {
   }
 
   return (
-    <main className="main-content purchase-receives-container">
-      <div className="purchase-receives-content">
-        {/* Header */} </div>
-        <div className="purchase-receives-header">
-          <div className="purchase-receives-header-content">
-            <div>
-              <h1 className="purchase-receives-title">
-                <span className="purchase-receives-title-icon">📥</span>
-                Purchase Receives
-              </h1>
-              <p className="purchase-receives-subtitle">
-                Receive and inspect items from purchase orders
-              </p>
-            </div>
-            <div className="purchase-receives-header-actions">
-              <Link 
-                to="/purchases/receives-history" 
-                className="purchase-receives-history-link"
+    <main className="main-content" style={{ background: '#f8fafc', minHeight: '100vh', padding: '20px' }}>
+      <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+        {/* Header Section */}
+        <div className="purchase-receives-header" style={{ 
+          display: 'flex', 
+          justifyContent: 'space-between', 
+          alignItems: 'flex-start',
+          marginBottom: '24px',
+          background: 'white',
+          padding: 'clamp(16px, 3vw, 20px)',
+          borderRadius: '8px',
+          boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
+          flexWrap: 'wrap',
+          gap: '16px'
+        }}>
+          <div style={{ flex: '1', minWidth: '200px' }}>
+            <h1 style={{ 
+              fontSize: 'clamp(20px, 4vw, 24px)', 
+              fontWeight: '600', 
+              color: '#1f2937',
+              margin: '0 0 8px 0',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px'
+            }}>
+              <span style={{ fontSize: '20px' }}>📥</span>
+              Purchase Receives
+            </h1>
+            <p style={{ 
+              fontSize: '14px', 
+              color: '#6b7280',
+              margin: '0'
+            }}>
+              Receive and inspect items from purchase orders
+            </p>
+          </div>
+          <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
+            <Link 
+              to="/purchases/receives-history" 
+              style={{
+                background: '#f3f4f6',
+                color: '#374151',
+                border: '1px solid #d1d5db',
+                padding: '12px 16px',
+                borderRadius: '8px',
+                fontSize: '16px',
+                fontWeight: '500',
+                textDecoration: 'none',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                transition: 'all 0.2s ease',
+                minHeight: '44px'
+              }}
+              onMouseOver={(e) => e.target.style.background = '#e5e7eb'}
+              onMouseOut={(e) => e.target.style.background = '#f3f4f6'}
+            >
+              <span style={{ fontSize: '16px' }}>📋</span>
+              View History
+            </Link>
+            <div style={{ position: 'relative' }}>
+              <button
+                onClick={() => setShowOptionsDropdown(!showOptionsDropdown)}
+                style={{
+                  background: '#f3f4f6',
+                  border: '1px solid #d1d5db',
+                  padding: '12px',
+                  borderRadius: '8px',
+                  cursor: 'pointer',
+                  fontSize: '18px',
+                  color: '#374151',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  width: '44px',
+                  height: '44px',
+                  minHeight: '44px',
+                  transition: 'all 0.2s ease'
+                }}
+                onMouseOver={(e) => e.target.style.background = '#e5e7eb'}
+                onMouseOut={(e) => e.target.style.background = '#f3f4f6'}
               >
-                📋 View History
-              </Link>
-              <div className="purchase-receives-options-container">
-                <button
-                  onClick={() => setShowOptionsDropdown(!showOptionsDropdown)}
-                  className="purchase-receives-options-button"
-                >
-                  ⚙️ Options
-                </button>
-                {showOptionsDropdown && (
-                  <div className="purchase-receives-options-dropdown">
+                ⚙️
+              </button>
+              {showOptionsDropdown && (
+                <div style={{
+                  position: 'absolute',
+                  top: '100%',
+                  right: '0',
+                  background: 'white',
+                  border: '1px solid #d1d5db',
+                  borderRadius: '6px',
+                  boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
+                  zIndex: 10,
+                  minWidth: '180px',
+                  marginTop: '4px'
+                }}>
+                  <div style={{ padding: '8px 0' }}>
                     <button
                       onClick={() => handleSort('orderDate')}
-                      className="purchase-receives-dropdown-item"
+                      style={{
+                        width: '100%',
+                        padding: '8px 16px',
+                        border: 'none',
+                        background: sortBy === 'orderDate' ? '#f3f4f6' : 'transparent',
+                        textAlign: 'left',
+                        cursor: 'pointer',
+                        fontSize: '14px',
+                        color: '#374151'
+                      }}
                     >
-                      📅 Sort by Date
+                      📅 Sort by Date {sortBy === 'orderDate' && (sortOrder === 'asc' ? '↑' : '↓')}
                     </button>
                     <button
                       onClick={() => handleSort('vendorName')}
-                      className="purchase-receives-dropdown-item"
+                      style={{
+                        width: '100%',
+                        padding: '8px 16px',
+                        border: 'none',
+                        background: sortBy === 'vendorName' ? '#f3f4f6' : 'transparent',
+                        textAlign: 'left',
+                        cursor: 'pointer',
+                        fontSize: '14px',
+                        color: '#374151'
+                      }}
                     >
-                      🏢 Sort by Vendor
+                      🏢 Sort by Vendor {sortBy === 'vendorName' && (sortOrder === 'asc' ? '↑' : '↓')}
                     </button>
                     <button
                       onClick={() => handleSort('priority')}
-                      className="purchase-receives-dropdown-item"
+                      style={{
+                        width: '100%',
+                        padding: '8px 16px',
+                        border: 'none',
+                        background: sortBy === 'priority' ? '#f3f4f6' : 'transparent',
+                        textAlign: 'left',
+                        cursor: 'pointer',
+                        fontSize: '14px',
+                        color: '#374151'
+                      }}
                     >
-                      🚨 Sort by Priority
+                      🚨 Sort by Priority {sortBy === 'priority' && (sortOrder === 'asc' ? '↑' : '↓')}
                     </button>
-                    <hr className="purchase-receives-dropdown-divider" />
+                    <hr style={{ margin: '8px 0', border: 'none', borderTop: '1px solid #f3f4f6' }} />
                     <button
                       onClick={handleExportCSV}
-                      className="purchase-receives-dropdown-item"
+                      style={{
+                        width: '100%',
+                        padding: '8px 16px',
+                        border: 'none',
+                        background: 'transparent',
+                        textAlign: 'left',
+                        cursor: 'pointer',
+                        fontSize: '14px',
+                        color: '#374151',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '8px'
+                      }}
                     >
-                      📊 Export CSV
+                      <span>📊</span>
+                      Export CSV
                     </button>
                   </div>
-                )}
+                </div>
+              )}
             </div>
           </div>
         </div>
 
-        {/* Filters */}
-        <div className="purchase-receives-filters">
-          <div className="purchase-receives-filters-content">
-            <div className="purchase-receives-search-container">
+        {/* Search and Filters */}
+        <div style={{ 
+          background: 'white',
+          padding: '16px 20px',
+          borderRadius: '8px',
+          boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
+          marginBottom: '20px'
+        }}>
+          <div style={{ display: 'flex', gap: '16px', alignItems: 'center', flexWrap: 'wrap' }}>
+            <div style={{ flex: 1, minWidth: '200px' }}>
               <input
                 type="text"
                 placeholder="Search by PO number, vendor name, or email..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="purchase-receives-search-input"
+                style={{
+                  width: '100%',
+                  padding: '12px 16px',
+                  border: '2px solid #d1d5db',
+                  borderRadius: '8px',
+                  fontSize: '16px',
+                  outline: 'none',
+                  minHeight: '44px',
+                  transition: 'border-color 0.3s ease'
+                }}
+                onFocus={(e) => e.target.style.borderColor = '#312F56'}
+                onBlur={(e) => e.target.style.borderColor = '#d1d5db'}
               />
             </div>
             <div>
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
-                className="purchase-receives-select"
+                style={{
+                  padding: '12px 16px',
+                  border: '2px solid #d1d5db',
+                  borderRadius: '8px',
+                  fontSize: '16px',
+                  outline: 'none',
+                  minHeight: '44px',
+                  minWidth: '150px',
+                  transition: 'border-color 0.3s ease'
+                }}
+                onFocus={(e) => e.target.style.borderColor = '#312F56'}
+                onBlur={(e) => e.target.style.borderColor = '#d1d5db'}
               >
                 <option value="all">All Status</option>
                 <option value="Sent">Sent</option>
@@ -348,12 +485,22 @@ const PurchaseReceives = () => {
                 <option value="Partially Received">Partially Received</option>
               </select>
             </div>
+            <div style={{ fontSize: '14px', color: '#6b7280', minWidth: 'fit-content' }}>
+              {filteredAndSortedOrders.length} orders found
+            </div>
           </div>
         </div>
 
-        {/* Error Display */}
+        {/* Error Message */}
         {error && (
-          <div className="purchase-receives-error">
+          <div style={{ 
+            background: '#fef2f2', 
+            border: '1px solid #fecaca', 
+            color: '#dc2626',
+            padding: '12px 16px',
+            borderRadius: '6px',
+            marginBottom: '20px'
+          }}>
             {error}
           </div>
         )}

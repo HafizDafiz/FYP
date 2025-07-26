@@ -230,7 +230,7 @@ const StockTaking = () => {
       }}>
         {/* Header */}
         <div style={{ 
-          padding: '24px', 
+          padding: 'clamp(16px, 3vw, 24px)', 
           borderBottom: '1px solid #e5e7eb',
           display: 'flex',
           justifyContent: 'space-between',
@@ -238,9 +238,9 @@ const StockTaking = () => {
           flexWrap: 'wrap',
           gap: '16px'
         }}>
-          <div style={{ flex: '1', minWidth: '300px' }}>
+          <div style={{ flex: '1', minWidth: '200px' }}>
             <h1 style={{ 
-              fontSize: '32px', 
+              fontSize: 'clamp(20px, 4vw, 32px)', 
               fontWeight: '700', 
               color: '#1f2937', 
               margin: '0 0 8px 0' 
@@ -248,7 +248,7 @@ const StockTaking = () => {
               Stock Taking
             </h1>
             <p style={{ 
-              fontSize: '16px', 
+              fontSize: 'clamp(12px, 2vw, 16px)', 
               color: '#6b7280', 
               margin: '0 0 16px 0' 
             }}>
@@ -264,24 +264,25 @@ const StockTaking = () => {
                 onChange={(e) => setSearchTerm(e.target.value)}
                 style={{
                   width: '100%',
-                  padding: '8px 12px 8px 36px',
-                  border: '1px solid #d1d5db',
+                  padding: '12px 16px 12px 44px',
+                  border: '2px solid #d1d5db',
                   borderRadius: '8px',
-                  fontSize: '14px',
+                  fontSize: '16px',
                   outline: 'none',
-                  transition: 'border-color 0.2s ease',
-                  boxSizing: 'border-box'
+                  transition: 'border-color 0.3s ease',
+                  boxSizing: 'border-box',
+                  minHeight: '44px'
                 }}
-                onFocus={(e) => e.target.style.borderColor = '#667eea'}
+                onFocus={(e) => e.target.style.borderColor = '#312F56'}
                 onBlur={(e) => e.target.style.borderColor = '#d1d5db'}
               />
               <div style={{
                 position: 'absolute',
-                left: '12px',
+                left: '16px',
                 top: '50%',
                 transform: 'translateY(-50%)',
                 color: '#6b7280',
-                fontSize: '14px'
+                fontSize: '16px'
               }}>
                 🔍
               </div>
@@ -301,13 +302,14 @@ const StockTaking = () => {
                   borderRadius: '8px',
                   padding: '12px 20px',
                   cursor: isUpdating ? 'not-allowed' : 'pointer',
-                  fontSize: '14px',
+                  fontSize: '16px',
                   fontWeight: '600',
                   transition: 'all 0.3s ease',
                   display: 'flex',
                   alignItems: 'center',
                   gap: '8px',
-                  boxShadow: isUpdating ? 'none' : '0 2px 4px rgba(16, 185, 129, 0.3)'
+                  boxShadow: isUpdating ? 'none' : '0 2px 4px rgba(16, 185, 129, 0.3)',
+                  minHeight: '44px'
                 }}
               >
                 {isUpdating ? 'Updating...' : `Update ${Object.keys(stockAdjustments).length} Items`}
@@ -322,7 +324,7 @@ const StockTaking = () => {
                   background: '#f3f4f6',
                   border: '1px solid #d1d5db',
                   borderRadius: '8px',
-                  padding: '10px 12px',
+                  padding: '12px',
                   cursor: 'pointer',
                   fontSize: '18px',
                   color: '#374151',
@@ -330,8 +332,9 @@ const StockTaking = () => {
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  width: '40px',
-                  height: '40px'
+                  width: '44px',
+                  height: '44px',
+                  minHeight: '44px'
                 }}
                 onMouseOver={(e) => e.target.style.background = '#e5e7eb'}
                 onMouseOut={(e) => e.target.style.background = '#f3f4f6'}
