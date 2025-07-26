@@ -291,7 +291,7 @@ const StaffDashboard = () => {
         {/* Stats Grid */}
         <div className="stats-grid" style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
+          gridTemplateColumns: '1fr',
           gap: '20px',
           marginBottom: '30px'
         }}>
@@ -299,39 +299,40 @@ const StaffDashboard = () => {
           <div style={{
             background: 'white',
             borderRadius: '16px',
-            padding: '24px',
+            padding: '16px 20px',
             boxShadow: '0 4px 6px rgba(0, 0, 0, 0.05)',
-            border: '1px solid #e5e7eb'
+            border: '1px solid #e5e7eb',
+            marginBottom: '0'
           }}>
             <div style={{
               display: 'flex',
               alignItems: 'center',
               gap: '12px',
-              marginBottom: '16px'
+              marginBottom: '12px'
             }}>
               <div style={{
-                width: '48px',
-                height: '48px',
+                width: '40px',
+                height: '40px',
                 background: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)',
                 borderRadius: '12px',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                fontSize: '20px'
+                fontSize: '18px'
               }}>
                 ✅
               </div>
               <div>
                 <h3 style={{ 
-                  fontSize: '18px', 
+                  fontSize: '16px', 
                   fontWeight: '600', 
                   color: '#1f2937', 
-                  margin: '0 0 4px 0' 
+                  margin: '0 0 2px 0' 
                 }}>
                   Today's Sales
                 </h3>
                 <p style={{ 
-                  fontSize: '14px', 
+                  fontSize: '13px', 
                   color: '#6b7280', 
                   margin: '0' 
                 }}>
@@ -340,15 +341,15 @@ const StaffDashboard = () => {
               </div>
             </div>
             <div style={{
-              fontSize: 'clamp(1.5rem, 3vw, 2rem)',
+              fontSize: 'clamp(1.2rem, 3vw, 1.5rem)',
               fontWeight: '700',
               color: '#1f2937',
-              marginBottom: '8px'
+              marginBottom: '6px'
             }}>
               {formatCurrency(dashboardData.salesActivity.todaySales)}
             </div>
             <div style={{
-              fontSize: '14px',
+              fontSize: '13px',
               color: '#6b7280',
               display: 'flex',
               flexWrap: 'wrap',
@@ -364,39 +365,40 @@ const StaffDashboard = () => {
           <div style={{
             background: 'white',
             borderRadius: '16px',
-            padding: '24px',
+            padding: '16px 20px',
             boxShadow: '0 4px 6px rgba(0, 0, 0, 0.05)',
-            border: '1px solid #e5e7eb'
+            border: '1px solid #e5e7eb',
+            marginBottom: '0'
           }}>
             <div style={{
               display: 'flex',
               alignItems: 'center',
               gap: '12px',
-              marginBottom: '16px'
+              marginBottom: '12px'
             }}>
               <div style={{
-                width: '48px',
-                height: '48px',
+                width: '40px',
+                height: '40px',
                 background: 'linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)',
                 borderRadius: '12px',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                fontSize: '20px'
+                fontSize: '18px'
               }}>
                 📦
               </div>
               <div>
                 <h3 style={{ 
-                  fontSize: '18px', 
+                  fontSize: '16px', 
                   fontWeight: '600', 
                   color: '#1f2937', 
-                  margin: '0 0 4px 0' 
+                  margin: '0 0 2px 0' 
                 }}>
                   Total Products
                 </h3>
                 <p style={{ 
-                  fontSize: '14px', 
+                  fontSize: '13px', 
                   color: '#6b7280', 
                   margin: '0' 
                 }}>
@@ -405,15 +407,15 @@ const StaffDashboard = () => {
               </div>
             </div>
             <div style={{
-              fontSize: 'clamp(1.5rem, 3vw, 2rem)',
+              fontSize: 'clamp(1.2rem, 3vw, 1.5rem)',
               fontWeight: '700',
               color: '#1f2937',
-              marginBottom: '8px'
+              marginBottom: '6px'
             }}>
               {dashboardData.inventoryStats.totalProducts}
             </div>
             <div style={{
-              fontSize: '14px',
+              fontSize: '13px',
               color: '#6b7280',
               display: 'flex',
               alignItems: 'center',
@@ -432,39 +434,40 @@ const StaffDashboard = () => {
           <div style={{
             background: 'white',
             borderRadius: '16px',
-            padding: '24px',
+            padding: '16px 20px',
             boxShadow: '0 4px 6px rgba(0, 0, 0, 0.05)',
-            border: '1px solid #e5e7eb'
+            border: '1px solid #e5e7eb',
+            marginBottom: '0'
           }}>
             <div style={{
               display: 'flex',
               alignItems: 'center',
               gap: '12px',
-              marginBottom: '16px'
+              marginBottom: '12px'
             }}>
               <div style={{
-                width: '48px',
-                height: '48px',
+                width: '40px',
+                height: '40px',
                 background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
                 borderRadius: '12px',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                fontSize: '20px'
+                fontSize: '18px'
               }}>
                 ⚠️
               </div>
               <div>
                 <h3 style={{ 
-                  fontSize: '18px', 
+                  fontSize: '16px', 
                   fontWeight: '600', 
                   color: '#1f2937', 
-                  margin: '0 0 4px 0' 
+                  margin: '0 0 2px 0' 
                 }}>
                   Low Stock Items
                 </h3>
                 <p style={{ 
-                  fontSize: '14px', 
+                  fontSize: '13px', 
                   color: '#6b7280', 
                   margin: '0' 
                 }}>
@@ -473,15 +476,15 @@ const StaffDashboard = () => {
               </div>
             </div>
             <div style={{
-              fontSize: 'clamp(1.5rem, 3vw, 2rem)',
+              fontSize: 'clamp(1.2rem, 3vw, 1.5rem)',
               fontWeight: '700',
               color: '#1f2937',
-              marginBottom: '8px'
+              marginBottom: '6px'
             }}>
               {dashboardData.inventoryStats.lowStock}
             </div>
             <div style={{
-              fontSize: '14px',
+              fontSize: '13px',
               color: '#ef4444'
             }}>
               Need immediate restock
@@ -489,10 +492,22 @@ const StaffDashboard = () => {
           </div>
         </div>
 
+        {/* Responsive grid for larger screens */}
+        <style>{`
+          @media (min-width: 600px) {
+            .stats-grid {
+              grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)) !important;
+            }
+            .dashboard-grid {
+              grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)) !important;
+            }
+          }
+        `}</style>
+
         {/* Dashboard Grid */}
         <div className="dashboard-grid" style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+          gridTemplateColumns: '1fr',
           gap: '24px',
           marginBottom: '30px'
         }}>
