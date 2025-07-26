@@ -978,11 +978,14 @@ const Sales = () => {
                       background: '#10b981',
                       color: 'white',
                       border: 'none',
-                      padding: '10px 16px',
-                      borderRadius: '6px',
-                      fontSize: '14px',
-                      fontWeight: '500',
-                      cursor: 'pointer'
+                      padding: '12px 16px',
+                      borderRadius: '8px',
+                      fontSize: '16px',
+                      fontWeight: '600',
+                      cursor: 'pointer',
+                      minHeight: '44px',
+                      transition: 'all 0.2s ease',
+                      boxShadow: '0 2px 4px rgba(16, 185, 129, 0.2)'
                     }}
                   >
                     Add Item
@@ -1022,10 +1025,14 @@ const Sales = () => {
                                   background: '#dc2626',
                                   color: 'white',
                                   border: 'none',
-                                  padding: '4px 8px',
-                                  borderRadius: '4px',
-                                  fontSize: '12px',
-                                  cursor: 'pointer'
+                                  padding: '12px 16px',
+                                  borderRadius: '8px',
+                                  fontSize: '16px',
+                                  fontWeight: '600',
+                                  cursor: 'pointer',
+                                  minHeight: '44px',
+                                  transition: 'all 0.2s ease',
+                                  boxShadow: '0 2px 4px rgba(220, 38, 38, 0.2)'
                                 }}
                               >
                                 Remove

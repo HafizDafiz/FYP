@@ -65,24 +65,26 @@ const InventoryList = () => {
     return (
         <div>
             <h2>Inventory List</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Name</th><th>Desc</th><th>SKU</th><th>Quantity</th><th>Rate</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {inventories.map(item => (
-                        <tr key={item._id}>
-                            <td>{item.name}</td>
-                            <td>{item.description}</td>
-                            <td>{item.sku}</td>
-                            <td>{item.quantity}</td>
-                            <td>{item.rate}</td>
+            <div className="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Name</th><th>Desc</th><th>SKU</th><th>Quantity</th><th>Rate</th>
                         </tr>
-                    ))}
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        {inventories.map(item => (
+                            <tr key={item._id}>
+                                <td>{item.name}</td>
+                                <td>{item.description}</td>
+                                <td>{item.sku}</td>
+                                <td>{item.quantity}</td>
+                                <td>{item.rate}</td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
         </div>
     )
 }

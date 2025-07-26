@@ -1431,11 +1431,13 @@ const PurchaseOrders = () => {
                     background: '#f3f4f6',
                     color: '#374151',
                     border: '1px solid #d1d5db',
-                    padding: '10px 20px',
-                    borderRadius: '6px',
-                    fontSize: '14px',
-                    fontWeight: '500',
-                    cursor: 'pointer'
+                    padding: '12px 20px',
+                    borderRadius: '8px',
+                    fontSize: '16px',
+                    fontWeight: '600',
+                    cursor: 'pointer',
+                    minHeight: '44px',
+                    transition: 'all 0.2s ease'
                   }}
                 >
                   Cancel
@@ -1446,11 +1448,14 @@ const PurchaseOrders = () => {
                     background: '#3b82f6',
                     color: 'white',
                     border: 'none',
-                    padding: '10px 20px',
-                    borderRadius: '6px',
-                    fontSize: '14px',
-                    fontWeight: '500',
-                    cursor: 'pointer'
+                    padding: '12px 20px',
+                    borderRadius: '8px',
+                    fontSize: '16px',
+                    fontWeight: '600',
+                    cursor: 'pointer',
+                    minHeight: '44px',
+                    transition: 'all 0.2s ease',
+                    boxShadow: '0 2px 4px rgba(59, 130, 246, 0.2)'
                   }}
                 >
                   Receive Items
