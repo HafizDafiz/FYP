@@ -119,7 +119,7 @@ function MainContent({ user }) {
               </ProtectedRoute>
             } />
             <Route path="/documents" element={
-              <ProtectedRoute>
+              <ProtectedRoute requiredRole="admin">
                 <Documents />
               </ProtectedRoute>
             } />
