@@ -482,72 +482,86 @@ const StockTaking = () => {
             <thead>
               <tr style={{ backgroundColor: '#f9fafb' }}>
                 <th style={{ 
-                  padding: 'clamp(12px, 2vw, 16px) clamp(16px, 3vw, 24px)', 
+                  padding: '12px 16px', 
                   textAlign: 'left', 
-                  fontWeight: '600', 
-                  color: '#374151', 
-                  fontSize: 'clamp(12px, 2vw, 14px)',
+                  fontSize: '12px', 
+                  fontWeight: '500', 
+                  color: '#6b7280',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.05em',
                   position: 'sticky',
                   left: 0,
                   background: '#f9fafb',
                   zIndex: 10
                 }}>
-                  Product Name
+                  PRODUCT NAME
                 </th>
                 <th style={{ 
-                  padding: 'clamp(12px, 2vw, 16px) clamp(16px, 3vw, 24px)', 
+                  padding: '12px 16px', 
                   textAlign: 'left', 
-                  fontWeight: '600', 
-                  color: '#374151', 
-                  fontSize: 'clamp(12px, 2vw, 14px)' 
+                  fontSize: '12px', 
+                  fontWeight: '500', 
+                  color: '#6b7280',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.05em'
                 }}>
                   SKU
                 </th>
                 <th style={{ 
-                  padding: 'clamp(12px, 2vw, 16px) clamp(16px, 3vw, 24px)', 
+                  padding: '12px 16px', 
                   textAlign: 'center', 
-                  fontWeight: '600', 
-                  color: '#374151', 
-                  fontSize: 'clamp(12px, 2vw, 14px)' 
+                  fontSize: '12px', 
+                  fontWeight: '500', 
+                  color: '#6b7280',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.05em'
                 }}>
-                  Current Stock
+                  CURRENT STOCK
                 </th>
                 <th style={{ 
-                  padding: 'clamp(12px, 2vw, 16px) clamp(16px, 3vw, 24px)', 
+                  padding: '12px 16px', 
                   textAlign: 'center', 
-                  fontWeight: '600', 
-                  color: '#374151', 
-                  fontSize: 'clamp(12px, 2vw, 14px)' 
+                  fontSize: '12px', 
+                  fontWeight: '500', 
+                  color: '#6b7280',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.05em'
                 }}>
-                  Adjusted Stock
+                  ADJUSTED STOCK
                 </th>
                 <th style={{ 
-                  padding: 'clamp(12px, 2vw, 16px) clamp(16px, 3vw, 24px)', 
+                  padding: '12px 16px', 
                   textAlign: 'center', 
-                  fontWeight: '600', 
-                  color: '#374151', 
-                  fontSize: 'clamp(12px, 2vw, 14px)' 
+                  fontSize: '12px', 
+                  fontWeight: '500', 
+                  color: '#6b7280',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.05em'
                 }}>
-                  Difference
+                  DIFFERENCE
                 </th>
                 <th style={{ 
-                  padding: 'clamp(12px, 2vw, 16px) clamp(16px, 3vw, 24px)', 
+                  padding: '12px 16px', 
                   textAlign: 'center', 
-                  fontWeight: '600', 
-                  color: '#374151', 
-                  fontSize: 'clamp(12px, 2vw, 14px)',
+                  fontSize: '12px', 
+                  fontWeight: '500', 
+                  color: '#6b7280',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.05em',
                   minWidth: '140px'
                 }}>
-                  Status
+                  STATUS
                 </th>
                 <th style={{ 
-                  padding: 'clamp(12px, 2vw, 16px) clamp(16px, 3vw, 24px)', 
+                  padding: '12px 16px', 
                   textAlign: 'center', 
-                  fontWeight: '600', 
-                  color: '#374151', 
-                  fontSize: 'clamp(12px, 2vw, 14px)' 
+                  fontSize: '12px', 
+                  fontWeight: '500', 
+                  color: '#6b7280',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.05em'
                 }}>
-                  Actions
+                  ACTIONS
                 </th>
               </tr>
             </thead>

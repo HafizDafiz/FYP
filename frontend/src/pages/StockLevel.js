@@ -551,33 +551,83 @@ const StockLevel = () => {
           <table style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead>
               <tr style={{ backgroundColor: '#f9fafb' }}>
-                <th style={{ padding: '16px 24px', textAlign: 'left', fontWeight: '600', color: '#374151', fontSize: '14px' }}>
-                  Product Name
-                </th>
-                <th style={{ padding: '16px 24px', textAlign: 'left', fontWeight: '600', color: '#374151', fontSize: '14px' }}>
-                  SKU
-                </th>
-                <th style={{ padding: '16px 24px', textAlign: 'center', fontWeight: '600', color: '#374151', fontSize: '14px' }}>
-                  Current Stock
-                </th>
-                <th style={{ padding: '16px 24px', textAlign: 'center', fontWeight: '600', color: '#374151', fontSize: '14px' }}>
-                  Stock Level
-                </th>
-                <th style={{ padding: '16px 24px', textAlign: 'center', fontWeight: '600', color: '#374151', fontSize: '14px' }}>
-                  Reorder Point
+                <th style={{ 
+                  padding: '12px 16px', 
+                  textAlign: 'left', 
+                  fontSize: '12px', 
+                  fontWeight: '500', 
+                  color: '#6b7280',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.05em'
+                }}>
+                  PRODUCT NAME
                 </th>
                 <th style={{ 
-                  padding: '16px 24px', 
+                  padding: '12px 16px', 
+                  textAlign: 'left', 
+                  fontSize: '12px', 
+                  fontWeight: '500', 
+                  color: '#6b7280',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.05em'
+                }}>
+                  SKU
+                </th>
+                <th style={{ 
+                  padding: '12px 16px', 
                   textAlign: 'center', 
-                  fontWeight: '600', 
-                  color: '#374151', 
-                  fontSize: '14px',
+                  fontSize: '12px', 
+                  fontWeight: '500', 
+                  color: '#6b7280',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.05em'
+                }}>
+                  CURRENT STOCK
+                </th>
+                <th style={{ 
+                  padding: '12px 16px', 
+                  textAlign: 'center', 
+                  fontSize: '12px', 
+                  fontWeight: '500', 
+                  color: '#6b7280',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.05em'
+                }}>
+                  STOCK LEVEL
+                </th>
+                <th style={{ 
+                  padding: '12px 16px', 
+                  textAlign: 'center', 
+                  fontSize: '12px', 
+                  fontWeight: '500', 
+                  color: '#6b7280',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.05em'
+                }}>
+                  REORDER POINT
+                </th>
+                <th style={{ 
+                  padding: '12px 16px', 
+                  textAlign: 'center', 
+                  fontSize: '12px', 
+                  fontWeight: '500', 
+                  color: '#6b7280',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.05em',
                   minWidth: '140px'
                 }}>
-                  Status
+                  STATUS
                 </th>
-                <th style={{ padding: '16px 24px', textAlign: 'center', fontWeight: '600', color: '#374151', fontSize: '14px' }}>
-                  Value
+                <th style={{ 
+                  padding: '12px 16px', 
+                  textAlign: 'center', 
+                  fontSize: '12px', 
+                  fontWeight: '500', 
+                  color: '#6b7280',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.05em'
+                }}>
+                  VALUE
                 </th>
               </tr>
             </thead>

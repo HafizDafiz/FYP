@@ -640,7 +640,7 @@ const Sales = () => {
                     textTransform: 'uppercase',
                     letterSpacing: '0.05em'
                   }}>
-                    Order Number
+                    ORDER NUMBER
                   </th>
                   <th style={{ 
                     padding: '12px 16px', 
@@ -651,7 +651,7 @@ const Sales = () => {
                     textTransform: 'uppercase',
                     letterSpacing: '0.05em'
                   }}>
-                    Customer
+                    CUSTOMER
                   </th>
                   <th style={{ 
                     padding: '12px 16px', 
@@ -662,7 +662,7 @@ const Sales = () => {
                     textTransform: 'uppercase',
                     letterSpacing: '0.05em'
                   }}>
-                    Items
+                    ITEMS
                   </th>
                   <th style={{ 
                     padding: '12px 16px', 
@@ -673,7 +673,7 @@ const Sales = () => {
                     textTransform: 'uppercase',
                     letterSpacing: '0.05em'
                   }}>
-                    Total
+                    TOTAL
                   </th>
                   <th style={{ 
                     padding: '12px 16px', 
@@ -684,7 +684,7 @@ const Sales = () => {
                     textTransform: 'uppercase',
                     letterSpacing: '0.05em'
                   }}>
-                    Status
+                    STATUS
                   </th>
                   <th style={{ 
                     padding: '12px 16px', 
@@ -695,7 +695,7 @@ const Sales = () => {
                     textTransform: 'uppercase',
                     letterSpacing: '0.05em'
                   }}>
-                    Order Date
+                    ORDER DATE
                   </th>
                   <th style={{ 
                     padding: '12px 16px', 
@@ -706,7 +706,7 @@ const Sales = () => {
                     textTransform: 'uppercase',
                     letterSpacing: '0.05em'
                   }}>
-                    Actions
+                    ACTIONS
                   </th>
                 </tr>
               </thead>

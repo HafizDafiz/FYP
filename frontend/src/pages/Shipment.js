@@ -436,32 +436,104 @@ const Shipment = () => {
           <table style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead>
               <tr style={{ backgroundColor: '#f9fafb' }}>
-                <th style={{ padding: '16px 24px', textAlign: 'left', fontWeight: '600', color: '#374151', fontSize: '14px' }}>
-                  Shipment #
+                <th style={{ 
+                  padding: '12px 16px', 
+                  textAlign: 'left', 
+                  fontSize: '12px', 
+                  fontWeight: '500', 
+                  color: '#6b7280',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.05em'
+                }}>
+                  SHIPMENT #
                 </th>
-                <th style={{ padding: '16px 24px', textAlign: 'left', fontWeight: '600', color: '#374151', fontSize: '14px' }}>
-                  Sales Order
+                <th style={{ 
+                  padding: '12px 16px', 
+                  textAlign: 'left', 
+                  fontSize: '12px', 
+                  fontWeight: '500', 
+                  color: '#6b7280',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.05em'
+                }}>
+                  SALES ORDER
                 </th>
-                <th style={{ padding: '16px 24px', textAlign: 'left', fontWeight: '600', color: '#374151', fontSize: '14px' }}>
-                  Customer
+                <th style={{ 
+                  padding: '12px 16px', 
+                  textAlign: 'left', 
+                  fontSize: '12px', 
+                  fontWeight: '500', 
+                  color: '#6b7280',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.05em'
+                }}>
+                  CUSTOMER
                 </th>
-                <th style={{ padding: '16px 24px', textAlign: 'left', fontWeight: '600', color: '#374151', fontSize: '14px' }}>
-                  Carrier
+                <th style={{ 
+                  padding: '12px 16px', 
+                  textAlign: 'left', 
+                  fontSize: '12px', 
+                  fontWeight: '500', 
+                  color: '#6b7280',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.05em'
+                }}>
+                  CARRIER
                 </th>
-                <th style={{ padding: '16px 24px', textAlign: 'left', fontWeight: '600', color: '#374151', fontSize: '14px' }}>
-                  Tracking #
+                <th style={{ 
+                  padding: '12px 16px', 
+                  textAlign: 'left', 
+                  fontSize: '12px', 
+                  fontWeight: '500', 
+                  color: '#6b7280',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.05em'
+                }}>
+                  TRACKING #
                 </th>
-                <th style={{ padding: '16px 24px', textAlign: 'center', fontWeight: '600', color: '#374151', fontSize: '14px' }}>
-                  Status
+                <th style={{ 
+                  padding: '12px 16px', 
+                  textAlign: 'center', 
+                  fontSize: '12px', 
+                  fontWeight: '500', 
+                  color: '#6b7280',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.05em'
+                }}>
+                  STATUS
                 </th>
-                <th style={{ padding: '16px 24px', textAlign: 'center', fontWeight: '600', color: '#374151', fontSize: '14px' }}>
-                  Priority
+                <th style={{ 
+                  padding: '12px 16px', 
+                  textAlign: 'center', 
+                  fontSize: '12px', 
+                  fontWeight: '500', 
+                  color: '#6b7280',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.05em'
+                }}>
+                  PRIORITY
                 </th>
-                <th style={{ padding: '16px 24px', textAlign: 'center', fontWeight: '600', color: '#374151', fontSize: '14px' }}>
-                  Est. Delivery
+                <th style={{ 
+                  padding: '12px 16px', 
+                  textAlign: 'center', 
+                  fontSize: '12px', 
+                  fontWeight: '500', 
+                  color: '#6b7280',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.05em'
+                }}>
+                  EST. DELIVERY
                 </th>
-                <th style={{ padding: '16px 24px', textAlign: 'center', fontWeight: '600', color: '#374151', fontSize: '14px' }}>
-                  Actions
+                <th style={{ 
+                  padding: '12px 16px', 
+                  textAlign: 'center', 
+                  fontSize: '12px', 
+                  fontWeight: '500', 
+                  color: '#6b7280',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.05em'
+                }}>
+                  ACTIONS
                 </th>
               </tr>
             </thead>
