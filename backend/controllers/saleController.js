@@ -1,5 +1,6 @@
 const Inventory = require('../models/inventoryModel');
 const SaleOrder = require('../models/saleModel');
+const { logAction } = require('./auditLogController');
 const mongoose = require('mongoose');
 
 // GET all sales orders
@@ -132,6 +133,14 @@ const createSalesOrder = async (req, res) => {
         await session.commitTransaction();
         
         console.log('Created new sales order:', salesOrder.orderNumber);
+        
+        // Log the action
+        await logAction(createdBy, 'Create Sale', {
+            entityType: 'Sale',
+            entityId: salesOrder._id,
+            entityName: salesOrder.orderNumber,
+            description: `Created sales order: ${salesOrder.orderNumber} for ${customerName} (Total: $${total})`
+        });
         
         // Populate the response
         const populatedOrder = await SaleOrder.findById(salesOrder._id)

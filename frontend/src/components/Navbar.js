@@ -285,6 +285,24 @@ const Navbar = () => {
                     </Link>
                   </li>
                 )}
+                {user.role === 'admin' && (
+                  <li>
+                    <Link 
+                      to="/user-management" 
+                      className={isActiveRoute('/user-management') ? 'active' : ''}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '12px',
+                        fontSize: '16px'
+                      }}
+                      onClick={closeMobileMenu}
+                    >
+                      <span style={{ fontSize: '20px' }}>👥</span>
+                      User Management
+                    </Link>
+                  </li>
+                )}
               </ul>
               <button 
                 onClick={() => {

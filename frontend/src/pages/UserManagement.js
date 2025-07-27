@@ -1,0 +1,1323 @@
+import { useState, useEffect, useCallback } from 'react';
+import { useAuthContext } from '../hooks/useAuthContext';
+import Modal from 'react-modal';
+import ScrollableTableHint from '../components/ScrollableTableHint';
+
+const UserManagement = () => {
+  const { user } = useAuthContext();
+  const [users, setUsers] = useState([]);
+  const [auditLogs, setAuditLogs] = useState([]);
+  const [userStats, setUserStats] = useState({});
+  const [auditStats, setAuditStats] = useState({});
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [activeTab, setActiveTab] = useState('users');
+  
+  // User management states
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [roleFilter, setRoleFilter] = useState('all');
+  
+  // Audit log states
+  const [auditSearchTerm, setAuditSearchTerm] = useState('');
+  const [actionFilter, setActionFilter] = useState('all');
+  const [dateFilter, setDateFilter] = useState('7'); // days
+  const [selectedUserId, setSelectedUserId] = useState('all');
+  
+  // Form states
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    password: '',
+    role: 'staff'
+  });
+
+  const [pagination, setPagination] = useState({
+    currentPage: 1,
+    totalPages: 1,
+    totalCount: 0
+  });
+
+  const [auditPagination, setAuditPagination] = useState({
+    currentPage: 1,
+    totalPages: 1,
+    totalCount: 0
+  });
+
+  const fetchUsers = useCallback(async () => {
+    if (!user || user.role !== 'admin') {
+      setError('Access denied. Admin role required.');
+      setLoading(false);
+      return;
+    }
+
+    try {
+      const apiUrl = process.env.REACT_APP_API_URL;
+      const queryParams = new URLSearchParams({
+        page: pagination.currentPage,
+        limit: 20,
+        ...(searchTerm && { search: searchTerm }),
+        ...(roleFilter !== 'all' && { role: roleFilter })
+      });
+
+      const response = await fetch(`${apiUrl}/api/user-management/users?${queryParams}`, {
+        headers: {
+          'Authorization': `Bearer ${user.token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setError(data.error || 'Failed to fetch users.');
+        setUsers([]);
+      } else {
+        setUsers(data.users);
+        setPagination(data.pagination);
+        setError(null);
+      }
+    } catch (err) {
+      console.error('Fetch error:', err);
+      setError('Something went wrong while fetching users.');
+      setUsers([]);
+    } finally {
+      setLoading(false);
+    }
+  }, [user, pagination.currentPage, searchTerm, roleFilter]);
+
+  const fetchUserStats = useCallback(async () => {
+    try {
+      const apiUrl = process.env.REACT_APP_API_URL;
+      const response = await fetch(`${apiUrl}/api/user-management/users/stats`, {
+        headers: {
+          'Authorization': `Bearer ${user.token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+        setUserStats(data);
+      }
+    } catch (err) {
+      console.error('Error fetching user stats:', err);
+    }
+  }, [user]);
+
+  const fetchAuditLogs = useCallback(async () => {
+    if (!user || user.role !== 'admin') return;
+
+    try {
+      const apiUrl = process.env.REACT_APP_API_URL;
+      const queryParams = new URLSearchParams({
+        page: auditPagination.currentPage,
+        limit: 30,
+        ...(auditSearchTerm && { search: auditSearchTerm }),
+        ...(actionFilter !== 'all' && { action: actionFilter }),
+        ...(selectedUserId !== 'all' && { userId: selectedUserId })
+      });
+
+      // Add date filter
+      if (dateFilter !== 'all') {
+        const days = parseInt(dateFilter);
+        const endDate = new Date();
+        const startDate = new Date();
+        startDate.setDate(startDate.getDate() - days);
+        
+        queryParams.append('startDate', startDate.toISOString());
+        queryParams.append('endDate', endDate.toISOString());
+      }
+
+      const response = await fetch(`${apiUrl}/api/user-management/audit-logs?${queryParams}`, {
+        headers: {
+          'Authorization': `Bearer ${user.token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setAuditLogs(data.auditLogs);
+        setAuditPagination(data.pagination);
+      }
+    } catch (err) {
+      console.error('Error fetching audit logs:', err);
+    }
+  }, [user, auditPagination.currentPage, auditSearchTerm, actionFilter, dateFilter, selectedUserId]);
+
+  const fetchAuditStats = useCallback(async () => {
+    try {
+      const apiUrl = process.env.REACT_APP_API_URL;
+      const response = await fetch(`${apiUrl}/api/user-management/audit-logs/stats?days=30`, {
+        headers: {
+          'Authorization': `Bearer ${user.token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+        setAuditStats(data);
+      }
+    } catch (err) {
+      console.error('Error fetching audit stats:', err);
+    }
+  }, [user]);
+
+  useEffect(() => {
+    if (activeTab === 'users') {
+      fetchUsers();
+      fetchUserStats();
+    } else if (activeTab === 'audit') {
+      fetchAuditLogs();
+      fetchAuditStats();
+    }
+  }, [activeTab, fetchUsers, fetchUserStats, fetchAuditLogs, fetchAuditStats]);
+
+  const handleCreateUser = async (e) => {
+    e.preventDefault();
+    if (!user || user.role !== 'admin') return;
+
+    try {
+      const apiUrl = process.env.REACT_APP_API_URL;
+      const response = await fetch(`${apiUrl}/api/user-management/users`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${user.token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData)
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setError(data.error || 'Failed to create user.');
+      } else {
+        setShowCreateModal(false);
+        setFormData({ name: '', email: '', password: '', role: 'staff' });
+        fetchUsers();
+        setError(null);
+      }
+    } catch (err) {
+      console.error('Create error:', err);
+      setError('Something went wrong while creating user.');
+    }
+  };
+
+  const handleUpdateUser = async (e) => {
+    e.preventDefault();
+    if (!user || user.role !== 'admin' || !selectedUser) return;
+
+    try {
+      const apiUrl = process.env.REACT_APP_API_URL;
+      const updateData = { ...formData };
+      if (!updateData.password) {
+        delete updateData.password;
+      }
+
+      const response = await fetch(`${apiUrl}/api/user-management/users/${selectedUser._id}`, {
+        method: 'PATCH',
+        headers: {
+          'Authorization': `Bearer ${user.token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(updateData)
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setError(data.error || 'Failed to update user.');
+      } else {
+        setShowEditModal(false);
+        setSelectedUser(null);
+        setFormData({ name: '', email: '', password: '', role: 'staff' });
+        fetchUsers();
+        setError(null);
+      }
+    } catch (err) {
+      console.error('Update error:', err);
+      setError('Something went wrong while updating user.');
+    }
+  };
+
+  const handleDeleteUser = async (userId) => {
+    if (!user || user.role !== 'admin') return;
+    if (!window.confirm('Are you sure you want to delete this user?')) return;
+
+    try {
+      const apiUrl = process.env.REACT_APP_API_URL;
+      const response = await fetch(`${apiUrl}/api/user-management/users/${userId}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${user.token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setError(data.error || 'Failed to delete user.');
+      } else {
+        fetchUsers();
+        setError(null);
+      }
+    } catch (err) {
+      console.error('Delete error:', err);
+      setError('Something went wrong while deleting user.');
+    }
+  };
+
+  const openEditModal = (userToEdit) => {
+    setSelectedUser(userToEdit);
+    setFormData({
+      name: userToEdit.name,
+      email: userToEdit.email,
+      password: '',
+      role: userToEdit.role
+    });
+    setShowEditModal(true);
+  };
+
+  const formatTimestamp = (timestamp) => {
+    return new Date(timestamp).toLocaleString();
+  };
+
+  const getActionColor = (action) => {
+    const colors = {
+      'Login': '#10b981',
+      'Logout': '#6b7280',
+      'Create User': '#3b82f6',
+      'Update User': '#f59e0b',
+      'Delete User': '#ef4444',
+      'Create Product': '#10b981',
+      'Update Product': '#f59e0b',
+      'Delete Product': '#ef4444',
+      'Create Sale': '#8b5cf6',
+      'Update Sale': '#f59e0b',
+      'Create Purchase Order': '#06b6d4',
+      'Update Purchase Order': '#f59e0b',
+      'Approve Purchase Order': '#10b981',
+      'Receive Items': '#10b981'
+    };
+    return colors[action] || '#6b7280';
+  };
+
+  if (loading && activeTab === 'users') {
+    return (
+      <main className="main-content" style={{ background: '#f8fafc', minHeight: '100vh', padding: '20px' }}>
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '400px' }}>
+          <div style={{ 
+            display: 'flex', 
+            flexDirection: 'column', 
+            alignItems: 'center', 
+            gap: '16px' 
+          }}>
+            <div style={{ 
+              width: '40px', 
+              height: '40px', 
+              border: '4px solid #e5e7eb', 
+              borderTop: '4px solid #3b82f6', 
+              borderRadius: '50%',
+              animation: 'spin 1s linear infinite' 
+            }} />
+            <div style={{ fontSize: '16px', color: '#6b7280' }}>Loading user management...</div>
+          </div>
+        </div>
+      </main>
+    );
+  }
+
+  return (
+    <main className="main-content" style={{ background: '#f8fafc', minHeight: '100vh', padding: '20px' }}>
+      <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
+        {/* Header */}
+        <div style={{ 
+          display: 'flex', 
+          justifyContent: 'space-between', 
+          alignItems: 'flex-start',
+          marginBottom: '24px',
+          background: 'white',
+          padding: 'clamp(16px, 3vw, 20px)',
+          borderRadius: '8px',
+          boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
+          flexWrap: 'wrap',
+          gap: '16px'
+        }}>
+          <div style={{ flex: '1', minWidth: '200px' }}>
+            <h1 style={{ 
+              fontSize: 'clamp(20px, 4vw, 24px)', 
+              fontWeight: '600', 
+              color: '#1f2937',
+              margin: '0 0 8px 0'
+            }}>
+              User Management
+            </h1>
+            <p style={{ 
+              fontSize: '14px', 
+              color: '#6b7280',
+              margin: '0'
+            }}>
+              Manage system users and track user activities
+            </p>
+          </div>
+        </div>
+
+        {/* Tab Navigation */}
+        <div style={{ 
+          background: 'white',
+          borderRadius: '8px',
+          boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
+          marginBottom: '20px',
+          overflow: 'hidden'
+        }}>
+          <div style={{ display: 'flex', borderBottom: '1px solid #e5e7eb' }}>
+            <button
+              onClick={() => setActiveTab('users')}
+              style={{
+                flex: 1,
+                padding: '16px 20px',
+                background: activeTab === 'users' ? '#3b82f6' : 'white',
+                color: activeTab === 'users' ? 'white' : '#6b7280',
+                border: 'none',
+                fontSize: '16px',
+                fontWeight: '500',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease'
+              }}
+            >
+              👥 Users ({userStats.totalUsers || 0})
+            </button>
+            <button
+              onClick={() => setActiveTab('audit')}
+              style={{
+                flex: 1,
+                padding: '16px 20px',
+                background: activeTab === 'audit' ? '#3b82f6' : 'white',
+                color: activeTab === 'audit' ? 'white' : '#6b7280',
+                border: 'none',
+                fontSize: '16px',
+                fontWeight: '500',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease'
+              }}
+            >
+              📋 Audit Log ({auditStats.totalLogs || 0})
+            </button>
+          </div>
+        </div>
+
+        {/* Error Message */}
+        {error && (
+          <div style={{ 
+            background: '#fef2f2', 
+            border: '1px solid #fecaca', 
+            color: '#dc2626',
+            padding: '12px 16px',
+            borderRadius: '6px',
+            marginBottom: '20px'
+          }}>
+            {error}
+          </div>
+        )}
+
+        {/* Users Tab */}
+        {activeTab === 'users' && (
+          <div>
+            {/* User Stats Cards */}
+            <div style={{ 
+              display: 'grid', 
+              gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', 
+              gap: '16px',
+              marginBottom: '20px'
+            }}>
+              <div style={{ 
+                background: 'white', 
+                padding: '20px', 
+                borderRadius: '8px',
+                boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)'
+              }}>
+                <div style={{ fontSize: '14px', color: '#6b7280', marginBottom: '8px' }}>Total Users</div>
+                <div style={{ fontSize: '24px', fontWeight: '600', color: '#1f2937' }}>
+                  {userStats.totalUsers || 0}
+                </div>
+              </div>
+              <div style={{ 
+                background: 'white', 
+                padding: '20px', 
+                borderRadius: '8px',
+                boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)'
+              }}>
+                <div style={{ fontSize: '14px', color: '#6b7280', marginBottom: '8px' }}>Admin Users</div>
+                <div style={{ fontSize: '24px', fontWeight: '600', color: '#dc2626' }}>
+                  {userStats.adminUsers || 0}
+                </div>
+              </div>
+              <div style={{ 
+                background: 'white', 
+                padding: '20px', 
+                borderRadius: '8px',
+                boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)'
+              }}>
+                <div style={{ fontSize: '14px', color: '#6b7280', marginBottom: '8px' }}>Staff Users</div>
+                <div style={{ fontSize: '24px', fontWeight: '600', color: '#3b82f6' }}>
+                  {userStats.staffUsers || 0}
+                </div>
+              </div>
+            </div>
+
+            {/* User Controls */}
+            <div style={{ 
+              background: 'white',
+              padding: '16px 20px',
+              borderRadius: '8px',
+              boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
+              marginBottom: '20px'
+            }}>
+              <div style={{ display: 'flex', gap: '16px', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'space-between' }}>
+                <div style={{ display: 'flex', gap: '16px', alignItems: 'center', flexWrap: 'wrap', flex: 1 }}>
+                  <div style={{ flex: 1, minWidth: '200px' }}>
+                    <input
+                      type="text"
+                      placeholder="Search users..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      style={{
+                        width: '100%',
+                        padding: '12px 16px',
+                        border: '2px solid #d1d5db',
+                        borderRadius: '8px',
+                        fontSize: '16px',
+                        outline: 'none',
+                        minHeight: '44px',
+                        transition: 'border-color 0.3s ease'
+                      }}
+                      onFocus={(e) => e.target.style.borderColor = '#312F56'}
+                      onBlur={(e) => e.target.style.borderColor = '#d1d5db'}
+                    />
+                  </div>
+                  <div>
+                    <select
+                      value={roleFilter}
+                      onChange={(e) => setRoleFilter(e.target.value)}
+                      style={{
+                        padding: '12px 16px',
+                        border: '2px solid #d1d5db',
+                        borderRadius: '8px',
+                        fontSize: '16px',
+                        outline: 'none',
+                        minHeight: '44px',
+                        minWidth: '120px'
+                      }}
+                    >
+                      <option value="all">All Roles</option>
+                      <option value="admin">Admin</option>
+                      <option value="staff">Staff</option>
+                    </select>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setShowCreateModal(true)}
+                  style={{
+                    background: '#10b981',
+                    color: 'white',
+                    border: 'none',
+                    padding: '12px 20px',
+                    borderRadius: '8px',
+                    fontSize: '16px',
+                    fontWeight: '600',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    transition: 'all 0.2s ease',
+                    minHeight: '44px',
+                    boxShadow: '0 2px 4px rgba(16, 185, 129, 0.2)'
+                  }}
+                >
+                  + Add User
+                </button>
+              </div>
+            </div>
+
+            {/* Users Table */}
+            <div style={{ 
+              background: 'white', 
+              borderRadius: '8px',
+              boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
+              overflow: 'hidden'
+            }}>
+              {users.length === 0 ? (
+                <div style={{ 
+                  padding: '60px 20px',
+                  textAlign: 'center',
+                  color: '#6b7280'
+                }}>
+                  <div style={{ fontSize: '48px', marginBottom: '16px' }}>👥</div>
+                  <h3 style={{ fontSize: '18px', fontWeight: '500', marginBottom: '8px' }}>
+                    No users found
+                  </h3>
+                  <p style={{ fontSize: '14px', marginBottom: '20px' }}>
+                    {searchTerm || roleFilter !== 'all' ? 'Try adjusting your search or filters.' : 'Get started by creating your first user.'}
+                  </p>
+                </div>
+              ) : (
+                <>
+                  <ScrollableTableHint />
+                  <div className="table-container" style={{ 
+                    overflowX: 'auto',
+                    WebkitOverflowScrolling: 'touch'
+                  }}>
+                    <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '600px' }}>
+                      <thead>
+                        <tr style={{ background: '#f9fafb', borderBottom: '1px solid #e5e7eb' }}>
+                        <th style={{ 
+                          padding: '12px 16px', 
+                          textAlign: 'left', 
+                          fontSize: '12px', 
+                          fontWeight: '500', 
+                          color: '#6b7280',
+                          textTransform: 'uppercase',
+                          letterSpacing: '0.05em'
+                        }}>
+                          Name
+                        </th>
+                        <th style={{ 
+                          padding: '12px 16px', 
+                          textAlign: 'left', 
+                          fontSize: '12px', 
+                          fontWeight: '500', 
+                          color: '#6b7280',
+                          textTransform: 'uppercase',
+                          letterSpacing: '0.05em'
+                        }}>
+                          Email
+                        </th>
+                        <th style={{ 
+                          padding: '12px 16px', 
+                          textAlign: 'center', 
+                          fontSize: '12px', 
+                          fontWeight: '500', 
+                          color: '#6b7280',
+                          textTransform: 'uppercase',
+                          letterSpacing: '0.05em'
+                        }}>
+                          Role
+                        </th>
+                        <th style={{ 
+                          padding: '12px 16px', 
+                          textAlign: 'center', 
+                          fontSize: '12px', 
+                          fontWeight: '500', 
+                          color: '#6b7280',
+                          textTransform: 'uppercase',
+                          letterSpacing: '0.05em'
+                        }}>
+                          Actions
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {users.map((userItem, index) => (
+                        <tr key={userItem._id} style={{ 
+                          borderBottom: index < users.length - 1 ? '1px solid #f3f4f6' : 'none',
+                          transition: 'background-color 0.2s'
+                        }}
+                        onMouseOver={(e) => e.currentTarget.style.background = '#f9fafb'}
+                        onMouseOut={(e) => e.currentTarget.style.background = 'transparent'}
+                        >
+                          <td style={{ padding: '16px', fontSize: '14px', color: '#1f2937', fontWeight: '500' }}>
+                            {userItem.name}
+                          </td>
+                          <td style={{ padding: '16px', fontSize: '14px', color: '#6b7280' }}>
+                            {userItem.email}
+                          </td>
+                          <td style={{ padding: '16px', textAlign: 'center' }}>
+                            <span style={{
+                              padding: '4px 8px',
+                              borderRadius: '12px',
+                              fontSize: '12px',
+                              fontWeight: '500',
+                              background: userItem.role === 'admin' ? '#fee2e2' : '#eff6ff',
+                              color: userItem.role === 'admin' ? '#dc2626' : '#2563eb'
+                            }}>
+                              {userItem.role}
+                            </span>
+                          </td>
+                          <td style={{ padding: '16px', textAlign: 'center' }}>
+                            <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
+                              <button
+                                onClick={() => openEditModal(userItem)}
+                                style={{
+                                  background: '#f59e0b',
+                                  color: 'white',
+                                  border: 'none',
+                                  padding: '6px 12px',
+                                  borderRadius: '4px',
+                                  fontSize: '12px',
+                                  cursor: 'pointer',
+                                  fontWeight: '500'
+                                }}
+                              >
+                                Edit
+                              </button>
+                              {userItem._id !== user._id && (
+                                <button
+                                  onClick={() => handleDeleteUser(userItem._id)}
+                                  style={{
+                                    background: '#ef4444',
+                                    color: 'white',
+                                    border: 'none',
+                                    padding: '6px 12px',
+                                    borderRadius: '4px',
+                                    fontSize: '12px',
+                                    cursor: 'pointer',
+                                    fontWeight: '500'
+                                  }}
+                                >
+                                  Delete
+                                </button>
+                              )}
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+                </>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Audit Log Tab */}
+        {activeTab === 'audit' && (
+          <div>
+            {/* Audit Stats Cards */}
+            <div style={{ 
+              display: 'grid', 
+              gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', 
+              gap: '16px',
+              marginBottom: '20px'
+            }}>
+              <div style={{ 
+                background: 'white', 
+                padding: '20px', 
+                borderRadius: '8px',
+                boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)'
+              }}>
+                <div style={{ fontSize: '14px', color: '#6b7280', marginBottom: '8px' }}>Total Logs</div>
+                <div style={{ fontSize: '24px', fontWeight: '600', color: '#1f2937' }}>
+                  {auditStats.totalLogs || 0}
+                </div>
+              </div>
+              <div style={{ 
+                background: 'white', 
+                padding: '20px', 
+                borderRadius: '8px',
+                boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)'
+              }}>
+                <div style={{ fontSize: '14px', color: '#6b7280', marginBottom: '8px' }}>Recent Activity (30d)</div>
+                <div style={{ fontSize: '24px', fontWeight: '600', color: '#3b82f6' }}>
+                  {auditStats.recentLogs || 0}
+                </div>
+              </div>
+            </div>
+
+            {/* Audit Log Controls */}
+            <div style={{ 
+              background: 'white',
+              padding: '16px 20px',
+              borderRadius: '8px',
+              boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
+              marginBottom: '20px'
+            }}>
+              <div style={{ display: 'flex', gap: '16px', alignItems: 'center', flexWrap: 'wrap' }}>
+                <div style={{ flex: 1, minWidth: '200px' }}>
+                  <input
+                    type="text"
+                    placeholder="Search audit logs..."
+                    value={auditSearchTerm}
+                    onChange={(e) => setAuditSearchTerm(e.target.value)}
+                    style={{
+                      width: '100%',
+                      padding: '12px 16px',
+                      border: '2px solid #d1d5db',
+                      borderRadius: '8px',
+                      fontSize: '16px',
+                      outline: 'none',
+                      minHeight: '44px'
+                    }}
+                  />
+                </div>
+                <div>
+                  <select
+                    value={actionFilter}
+                    onChange={(e) => setActionFilter(e.target.value)}
+                    style={{
+                      padding: '12px 16px',
+                      border: '2px solid #d1d5db',
+                      borderRadius: '8px',
+                      fontSize: '16px',
+                      outline: 'none',
+                      minHeight: '44px',
+                      minWidth: '150px'
+                    }}
+                  >
+                    <option value="all">All Actions</option>
+                    <option value="Login">Login</option>
+                    <option value="Logout">Logout</option>
+                    <option value="Create User">Create User</option>
+                    <option value="Update User">Update User</option>
+                    <option value="Delete User">Delete User</option>
+                    <option value="Create Product">Create Product</option>
+                    <option value="Update Product">Update Product</option>
+                    <option value="Delete Product">Delete Product</option>
+                    <option value="Create Sale">Create Sale</option>
+                    <option value="Create Purchase Order">Create Purchase Order</option>
+                  </select>
+                </div>
+                <div>
+                  <select
+                    value={dateFilter}
+                    onChange={(e) => setDateFilter(e.target.value)}
+                    style={{
+                      padding: '12px 16px',
+                      border: '2px solid #d1d5db',
+                      borderRadius: '8px',
+                      fontSize: '16px',
+                      outline: 'none',
+                      minHeight: '44px',
+                      minWidth: '120px'
+                    }}
+                  >
+                    <option value="all">All Time</option>
+                    <option value="1">Last Day</option>
+                    <option value="7">Last Week</option>
+                    <option value="30">Last Month</option>
+                    <option value="90">Last 3 Months</option>
+                  </select>
+                </div>
+                <div>
+                  <select
+                    value={selectedUserId}
+                    onChange={(e) => setSelectedUserId(e.target.value)}
+                    style={{
+                      padding: '12px 16px',
+                      border: '2px solid #d1d5db',
+                      borderRadius: '8px',
+                      fontSize: '16px',
+                      outline: 'none',
+                      minHeight: '44px',
+                      minWidth: '150px'
+                    }}
+                  >
+                    <option value="all">All Users</option>
+                    {users.map(userItem => (
+                      <option key={userItem._id} value={userItem._id}>
+                        {userItem.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            {/* Audit Logs Table */}
+            <div style={{ 
+              background: 'white', 
+              borderRadius: '8px',
+              boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
+              overflow: 'hidden'
+            }}>
+              {auditLogs.length === 0 ? (
+                <div style={{ 
+                  padding: '60px 20px',
+                  textAlign: 'center',
+                  color: '#6b7280'
+                }}>
+                  <div style={{ fontSize: '48px', marginBottom: '16px' }}>📋</div>
+                  <h3 style={{ fontSize: '18px', fontWeight: '500', marginBottom: '8px' }}>
+                    No audit logs found
+                  </h3>
+                  <p style={{ fontSize: '14px' }}>
+                    Try adjusting your search or filters.
+                  </p>
+                </div>
+              ) : (
+                <>
+                  <ScrollableTableHint />
+                  <div className="table-container" style={{ 
+                    overflowX: 'auto',
+                    WebkitOverflowScrolling: 'touch'
+                  }}>
+                  <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '800px' }}>
+                    <thead>
+                      <tr style={{ background: '#f9fafb', borderBottom: '1px solid #e5e7eb' }}>
+                        <th style={{ 
+                          padding: '12px 16px', 
+                          textAlign: 'left', 
+                          fontSize: '12px', 
+                          fontWeight: '500', 
+                          color: '#6b7280',
+                          textTransform: 'uppercase',
+                          letterSpacing: '0.05em'
+                        }}>
+                          Timestamp
+                        </th>
+                        <th style={{ 
+                          padding: '12px 16px', 
+                          textAlign: 'left', 
+                          fontSize: '12px', 
+                          fontWeight: '500', 
+                          color: '#6b7280',
+                          textTransform: 'uppercase',
+                          letterSpacing: '0.05em'
+                        }}>
+                          User
+                        </th>
+                        <th style={{ 
+                          padding: '12px 16px', 
+                          textAlign: 'left', 
+                          fontSize: '12px', 
+                          fontWeight: '500', 
+                          color: '#6b7280',
+                          textTransform: 'uppercase',
+                          letterSpacing: '0.05em'
+                        }}>
+                          Action
+                        </th>
+                        <th style={{ 
+                          padding: '12px 16px', 
+                          textAlign: 'left', 
+                          fontSize: '12px', 
+                          fontWeight: '500', 
+                          color: '#6b7280',
+                          textTransform: 'uppercase',
+                          letterSpacing: '0.05em'
+                        }}>
+                          Details
+                        </th>
+                        <th style={{ 
+                          padding: '12px 16px', 
+                          textAlign: 'center', 
+                          fontSize: '12px', 
+                          fontWeight: '500', 
+                          color: '#6b7280',
+                          textTransform: 'uppercase',
+                          letterSpacing: '0.05em'
+                        }}>
+                          Status
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {auditLogs.map((log, index) => (
+                        <tr key={log._id} style={{ 
+                          borderBottom: index < auditLogs.length - 1 ? '1px solid #f3f4f6' : 'none',
+                          transition: 'background-color 0.2s'
+                        }}
+                        onMouseOver={(e) => e.currentTarget.style.background = '#f9fafb'}
+                        onMouseOut={(e) => e.currentTarget.style.background = 'transparent'}
+                        >
+                          <td style={{ padding: '16px', fontSize: '14px', color: '#6b7280' }}>
+                            {formatTimestamp(log.timestamp)}
+                          </td>
+                          <td style={{ padding: '16px', fontSize: '14px', color: '#1f2937' }}>
+                            <div style={{ fontWeight: '500' }}>{log.userName}</div>
+                            <div style={{ fontSize: '12px', color: '#6b7280' }}>{log.userEmail}</div>
+                            <div style={{ fontSize: '11px', color: '#6b7280', textTransform: 'uppercase' }}>
+                              {log.userRole}
+                            </div>
+                          </td>
+                          <td style={{ padding: '16px', fontSize: '14px' }}>
+                            <span style={{
+                              padding: '4px 8px',
+                              borderRadius: '12px',
+                              fontSize: '12px',
+                              fontWeight: '500',
+                              background: `${getActionColor(log.action)}20`,
+                              color: getActionColor(log.action)
+                            }}>
+                              {log.action}
+                            </span>
+                          </td>
+                          <td style={{ padding: '16px', fontSize: '14px', color: '#6b7280' }}>
+                            {log.entityName && (
+                              <div style={{ fontWeight: '500', color: '#1f2937' }}>{log.entityName}</div>
+                            )}
+                            {log.details && (
+                              <div style={{ fontSize: '12px', marginTop: '2px' }}>
+                                {log.details.length > 100 ? `${log.details.substring(0, 100)}...` : log.details}
+                              </div>
+                            )}
+                          </td>
+                          <td style={{ padding: '16px', textAlign: 'center' }}>
+                            <span style={{
+                              padding: '4px 8px',
+                              borderRadius: '12px',
+                              fontSize: '12px',
+                              fontWeight: '500',
+                              background: log.success ? '#dcfce7' : '#fee2e2',
+                              color: log.success ? '#166534' : '#dc2626'
+                            }}>
+                              {log.success ? 'Success' : 'Failed'}
+                            </span>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+                </>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Pagination */}
+        {((activeTab === 'users' && pagination.totalPages > 1) || (activeTab === 'audit' && auditPagination.totalPages > 1)) && (
+          <div style={{ 
+            display: 'flex', 
+            justifyContent: 'center', 
+            alignItems: 'center', 
+            gap: '12px',
+            marginTop: '20px',
+            padding: '20px',
+            background: 'white',
+            borderRadius: '8px',
+            boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)'
+          }}>
+            <button
+              onClick={() => {
+                if (activeTab === 'users') {
+                  setPagination(prev => ({ ...prev, currentPage: prev.currentPage - 1 }));
+                } else {
+                  setAuditPagination(prev => ({ ...prev, currentPage: prev.currentPage - 1 }));
+                }
+              }}
+              disabled={activeTab === 'users' ? !pagination.hasPrevPage : !auditPagination.hasPrevPage}
+              style={{
+                padding: '8px 16px',
+                border: '1px solid #d1d5db',
+                borderRadius: '6px',
+                background: 'white',
+                color: '#374151',
+                cursor: 'pointer',
+                fontSize: '14px'
+              }}
+            >
+              Previous
+            </button>
+            <span style={{ fontSize: '14px', color: '#6b7280' }}>
+              Page {activeTab === 'users' ? pagination.currentPage : auditPagination.currentPage} of {activeTab === 'users' ? pagination.totalPages : auditPagination.totalPages}
+            </span>
+            <button
+              onClick={() => {
+                if (activeTab === 'users') {
+                  setPagination(prev => ({ ...prev, currentPage: prev.currentPage + 1 }));
+                } else {
+                  setAuditPagination(prev => ({ ...prev, currentPage: prev.currentPage + 1 }));
+                }
+              }}
+              disabled={activeTab === 'users' ? !pagination.hasNextPage : !auditPagination.hasNextPage}
+              style={{
+                padding: '8px 16px',
+                border: '1px solid #d1d5db',
+                borderRadius: '6px',
+                background: 'white',
+                color: '#374151',
+                cursor: 'pointer',
+                fontSize: '14px'
+              }}
+            >
+              Next
+            </button>
+          </div>
+        )}
+      </div>
+
+      {/* Create User Modal */}
+      <Modal
+        isOpen={showCreateModal}
+        onRequestClose={() => setShowCreateModal(false)}
+        contentLabel="Create User"
+        style={{
+          overlay: { backgroundColor: 'rgba(0,0,0,0.5)', zIndex: 1000 },
+          content: {
+            maxWidth: '500px',
+            margin: 'auto',
+            borderRadius: '8px',
+            padding: '32px',
+            inset: '40px',
+          },
+        }}
+        ariaHideApp={false}
+      >
+        <h2 style={{ fontSize: '20px', fontWeight: '600', marginBottom: '20px' }}>Create New User</h2>
+        <form onSubmit={handleCreateUser}>
+          <div style={{ marginBottom: '16px' }}>
+            <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', marginBottom: '6px' }}>
+              Name *
+            </label>
+            <input
+              type="text"
+              value={formData.name}
+              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              required
+              style={{
+                width: '100%',
+                padding: '12px',
+                border: '1px solid #d1d5db',
+                borderRadius: '6px',
+                fontSize: '14px',
+                outline: 'none'
+              }}
+            />
+          </div>
+          <div style={{ marginBottom: '16px' }}>
+            <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', marginBottom: '6px' }}>
+              Email *
+            </label>
+            <input
+              type="email"
+              value={formData.email}
+              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+              required
+              style={{
+                width: '100%',
+                padding: '12px',
+                border: '1px solid #d1d5db',
+                borderRadius: '6px',
+                fontSize: '14px',
+                outline: 'none'
+              }}
+            />
+          </div>
+          <div style={{ marginBottom: '16px' }}>
+            <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', marginBottom: '6px' }}>
+              Password *
+            </label>
+            <input
+              type="password"
+              value={formData.password}
+              onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+              required
+              style={{
+                width: '100%',
+                padding: '12px',
+                border: '1px solid #d1d5db',
+                borderRadius: '6px',
+                fontSize: '14px',
+                outline: 'none'
+              }}
+            />
+            <div style={{ fontSize: '12px', color: '#6b7280', marginTop: '4px' }}>
+              Must contain at least 8 characters, 1 uppercase, 1 lowercase, 1 number, and 1 symbol.
+            </div>
+          </div>
+          <div style={{ marginBottom: '20px' }}>
+            <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', marginBottom: '6px' }}>
+              Role *
+            </label>
+            <select
+              value={formData.role}
+              onChange={(e) => setFormData({ ...formData, role: e.target.value })}
+              required
+              style={{
+                width: '100%',
+                padding: '12px',
+                border: '1px solid #d1d5db',
+                borderRadius: '6px',
+                fontSize: '14px',
+                outline: 'none'
+              }}
+            >
+              <option value="staff">Staff</option>
+              <option value="admin">Admin</option>
+            </select>
+          </div>
+          <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
+            <button
+              type="button"
+              onClick={() => setShowCreateModal(false)}
+              style={{
+                padding: '12px 20px',
+                border: '1px solid #d1d5db',
+                borderRadius: '6px',
+                background: 'white',
+                color: '#374151',
+                fontSize: '14px',
+                cursor: 'pointer'
+              }}
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              style={{
+                padding: '12px 20px',
+                border: 'none',
+                borderRadius: '6px',
+                background: '#10b981',
+                color: 'white',
+                fontSize: '14px',
+                fontWeight: '500',
+                cursor: 'pointer'
+              }}
+            >
+              Create User
+            </button>
+          </div>
+        </form>
+      </Modal>
+
+      {/* Edit User Modal */}
+      <Modal
+        isOpen={showEditModal}
+        onRequestClose={() => setShowEditModal(false)}
+        contentLabel="Edit User"
+        style={{
+          overlay: { backgroundColor: 'rgba(0,0,0,0.5)', zIndex: 1000 },
+          content: {
+            maxWidth: '500px',
+            margin: 'auto',
+            borderRadius: '8px',
+            padding: '32px',
+            inset: '40px',
+          },
+        }}
+        ariaHideApp={false}
+      >
+        <h2 style={{ fontSize: '20px', fontWeight: '600', marginBottom: '20px' }}>Edit User</h2>
+        <form onSubmit={handleUpdateUser}>
+          <div style={{ marginBottom: '16px' }}>
+            <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', marginBottom: '6px' }}>
+              Name *
+            </label>
+            <input
+              type="text"
+              value={formData.name}
+              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              required
+              style={{
+                width: '100%',
+                padding: '12px',
+                border: '1px solid #d1d5db',
+                borderRadius: '6px',
+                fontSize: '14px',
+                outline: 'none'
+              }}
+            />
+          </div>
+          <div style={{ marginBottom: '16px' }}>
+            <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', marginBottom: '6px' }}>
+              Email *
+            </label>
+            <input
+              type="email"
+              value={formData.email}
+              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+              required
+              style={{
+                width: '100%',
+                padding: '12px',
+                border: '1px solid #d1d5db',
+                borderRadius: '6px',
+                fontSize: '14px',
+                outline: 'none'
+              }}
+            />
+          </div>
+          <div style={{ marginBottom: '16px' }}>
+            <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', marginBottom: '6px' }}>
+              New Password (leave blank to keep current)
+            </label>
+            <input
+              type="password"
+              value={formData.password}
+              onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+              style={{
+                width: '100%',
+                padding: '12px',
+                border: '1px solid #d1d5db',
+                borderRadius: '6px',
+                fontSize: '14px',
+                outline: 'none'
+              }}
+            />
+          </div>
+          <div style={{ marginBottom: '20px' }}>
+            <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', marginBottom: '6px' }}>
+              Role *
+            </label>
+            <select
+              value={formData.role}
+              onChange={(e) => setFormData({ ...formData, role: e.target.value })}
+              required
+              disabled={selectedUser && selectedUser._id === user._id}
+              style={{
+                width: '100%',
+                padding: '12px',
+                border: '1px solid #d1d5db',
+                borderRadius: '6px',
+                fontSize: '14px',
+                outline: 'none',
+                opacity: selectedUser && selectedUser._id === user._id ? 0.5 : 1
+              }}
+            >
+              <option value="staff">Staff</option>
+              <option value="admin">Admin</option>
+            </select>
+            {selectedUser && selectedUser._id === user._id && (
+              <div style={{ fontSize: '12px', color: '#6b7280', marginTop: '4px' }}>
+                You cannot change your own role.
+              </div>
+            )}
+          </div>
+          <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
+            <button
+              type="button"
+              onClick={() => setShowEditModal(false)}
+              style={{
+                padding: '12px 20px',
+                border: '1px solid #d1d5db',
+                borderRadius: '6px',
+                background: 'white',
+                color: '#374151',
+                fontSize: '14px',
+                cursor: 'pointer'
+              }}
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              style={{
+                padding: '12px 20px',
+                border: 'none',
+                borderRadius: '6px',
+                background: '#f59e0b',
+                color: 'white',
+                fontSize: '14px',
+                fontWeight: '500',
+                cursor: 'pointer'
+              }}
+            >
+              Update User
+            </button>
+          </div>
+        </form>
+      </Modal>
+    </main>
+  );
+};
+
+export default UserManagement;

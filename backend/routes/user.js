@@ -1,11 +1,11 @@
 const express = require('express');
-
-
+const requireAuth = require('../middleware/requireAuth');
 
 // controller functions
 const {
     loginUser,
-    signupUser
+    signupUser,
+    logoutUser
 } = require('../controllers/userController');
 
 const router = express.Router();
@@ -16,5 +16,7 @@ router.post('/login', loginUser);
 // signup route
 router.post('/signup', signupUser);
 
+// logout route (requires auth for audit logging)
+router.post('/logout', requireAuth, logoutUser);
 
 module.exports = router;

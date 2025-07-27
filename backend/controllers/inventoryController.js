@@ -1,4 +1,5 @@
 const Inventory = require('../models/inventoryModel');
+const { logAction } = require('./auditLogController');
 const mongoose = require('mongoose');
 
 // GET all inventory items (shared among all users - from products collection)
@@ -75,10 +76,27 @@ const createInventory = async (req, res) => {
       quantity,
       user_id,
     });
+    
+    // Log the action
+    await logAction(req.user._id, 'Create Product', {
+      entityType: 'Product',
+      entityId: inventory._id,
+      entityName: inventory.name,
+      description: `Created product: ${inventory.name} (SKU: ${inventory.sku})`
+    });
+    
     console.log('Created new product:', inventory);
     res.status(200).json(inventory);
   } catch (error) {
     console.error('Error creating product:', error);
+    
+    // Log failed action
+    await logAction(req.user._id, 'Create Product', {
+      description: `Failed to create product: ${name}`,
+      success: false,
+      errorMessage: error.message
+    });
+    
     res.status(400).json({ error: error.message });
   }
 };
@@ -96,6 +114,15 @@ const deleteInventory = async (req, res) => {
     if (!inventory) {
       return res.status(400).json({ error: 'Inventory item not found' });
     }
+    
+    // Log the action
+    await logAction(req.user._id, 'Delete Product', {
+      entityType: 'Product',
+      entityId: inventory._id,
+      entityName: inventory.name,
+      description: `Deleted product: ${inventory.name} (SKU: ${inventory.sku})`
+    });
+    
     res.status(200).json(inventory);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -125,6 +152,30 @@ const updateInventory = async (req, res) => {
       updatedData,
       { new: true, runValidators: true }
     );
+
+    // Log the action
+    const changes = {
+      before: {
+        name: existingInventory.name,
+        sku: existingInventory.sku,
+        quantity: existingInventory.quantity,
+        rate: existingInventory.rate
+      },
+      after: {
+        name: inventory.name,
+        sku: inventory.sku,
+        quantity: inventory.quantity,
+        rate: inventory.rate
+      }
+    };
+
+    await logAction(req.user._id, 'Update Product', {
+      entityType: 'Product',
+      entityId: inventory._id,
+      entityName: inventory.name,
+      description: `Updated product: ${inventory.name}`,
+      changes
+    });
 
     res.status(200).json(inventory);
   } catch (error) {

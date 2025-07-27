@@ -21,6 +21,7 @@ import Sales from './pages/Sales';
 import Shipment from './pages/Shipment';
 import Reports from './pages/Reports';
 import Documents from './pages/Documents';
+import UserManagement from './pages/UserManagement';
 
 function App() {
   const { user } = useAuthContext();
@@ -121,6 +122,11 @@ function MainContent({ user }) {
             <Route path="/documents" element={
               <ProtectedRoute requiredRole="admin">
                 <Documents />
+              </ProtectedRoute>
+            } />
+            <Route path="/user-management" element={
+              <ProtectedRoute requiredRole="admin">
+                <UserManagement />
               </ProtectedRoute>
             } />
             {/* Redirect unknown routes to dashboard */}

@@ -1,6 +1,7 @@
 const PurchaseOrder = require('../models/purchaseOrderModel');
 const Inventory = require('../models/inventoryModel');
 const ReceivingReceipt = require('../models/receivingReceiptModel');
+const { logAction } = require('./auditLogController');
 const mongoose = require('mongoose');
 
 // GET all purchase orders
@@ -149,6 +150,14 @@ const createPurchaseOrder = async (req, res) => {
         await session.commitTransaction();
         
         console.log('Created new purchase order:', purchaseOrder.poNumber);
+        
+        // Log the action
+        await logAction(createdBy, 'Create Purchase Order', {
+            entityType: 'PurchaseOrder',
+            entityId: purchaseOrder._id,
+            entityName: purchaseOrder.poNumber,
+            description: `Created purchase order: ${purchaseOrder.poNumber} for ${vendorName} (Total: $${total})`
+        });
         
         // Populate the response
         const populatedOrder = await PurchaseOrder.findById(purchaseOrder._id)

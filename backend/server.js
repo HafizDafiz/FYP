@@ -14,6 +14,7 @@ const userRoutes = require('./routes/user');
 const dashboardRoutes = require('./routes/dashboard');
 const reportsRoutes = require('./routes/reports');
 const documentsRoutes = require('./routes/documents');
+const userManagementRoutes = require('./routes/userManagement');
 
 const requireAuth = require('./middleware/requireAuth');
 
@@ -37,6 +38,7 @@ app.use(requireAuth);
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/reports', reportsRoutes);
 app.use('/api/documents', documentsRoutes);
+app.use('/api/user-management', userManagementRoutes);
 app.use('/api/purchases', purchaseRoutes);
 app.use('/api/purchase-orders', purchaseOrderRoutes);
 app.use('/api/receiving-receipts', receivingReceiptRoutes);
