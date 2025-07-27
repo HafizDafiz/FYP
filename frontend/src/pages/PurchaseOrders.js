@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuthContext } from '../hooks/useAuthContext';
 import Modal from 'react-modal';
 

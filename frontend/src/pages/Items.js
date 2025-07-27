@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import InventoryDetails from '../components/InventoryDetails';
 import { useAuthContext } from '../hooks/useAuthContext';

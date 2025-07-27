@@ -203,7 +203,7 @@
 // };
 
 // export default PurchaseForm;
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 const PurchaseForm = () => {
   const [form, setForm] = useState({
