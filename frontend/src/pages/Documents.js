@@ -175,31 +175,6 @@ const Documents = () => {
     }
   };
 
-  // Archive/unarchive document
-  const toggleArchive = async (documentId) => {
-    if (!user) return;
-
-    try {
-      const apiUrl = process.env.REACT_APP_API_URL;
-      const response = await fetch(`${apiUrl}/api/documents/${documentId}/archive`, {
-        method: 'PATCH',
-        headers: {
-          'Authorization': `Bearer ${user.token}`
-        }
-      });
-
-      if (response.ok) {
-        fetchDocuments(currentPage);
-        fetchStats();
-      } else {
-        setError('Failed to archive document');
-      }
-    } catch (error) {
-      console.error('Error archiving document:', error);
-      setError('Error archiving document');
-    }
-  };
-
   // Handle filter changes
   const handleFilterChange = (field, value) => {
     setFilters(prev => ({
@@ -656,23 +631,6 @@ const Documents = () => {
                           title="Download"
                         >
                           📥
-                        </button>
-
-                        {/* Archive Button */}
-                        <button
-                          onClick={() => toggleArchive(doc._id)}
-                          style={{
-                            background: '#ed8936',
-                            color: 'white',
-                            border: 'none',
-                            padding: '6px 12px',
-                            borderRadius: '4px',
-                            cursor: 'pointer',
-                            fontSize: '12px'
-                          }}
-                          title="Archive"
-                        >
-                          📦
                         </button>
 
                         {/* Delete Button (Admin Only) */}
