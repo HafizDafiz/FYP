@@ -19,7 +19,7 @@ const Signup = () => {
   return (
     <div style={{
       minHeight: "100vh",
-      background: "linear-gradient(135deg, #FFCC5D 0%, #FDB94E 100%)",
+      background: "#FFC04D",
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
@@ -34,19 +34,16 @@ const Signup = () => {
       }}>
         {/* Logo Section */}
         <div style={{ marginBottom: "30px", textAlign: "center" }}>
-          <h1 style={{
-            fontFamily: 'Poppins',
-            fontSize: "clamp(2.5rem, 10vw, 4.5rem)",
-            fontWeight: 600,
-            color: "white",
-            WebkitTextStroke: "2px #2E3192",
-            textShadow: "2px 2px 4px rgba(0,0,0,0.3)",
-            margin: 0,
-            lineHeight: "1",
-            letterSpacing: "-1px"
-          }}>
-            Quantix
-          </h1>
+          <img 
+            src="/Quantix_Title.svg" 
+            alt="Quantix" 
+            style={{
+              maxWidth: "100%",
+              height: "auto",
+              width: "clamp(300px, 70vw, 500px)",
+              filter: "drop-shadow(2px 2px 4px rgba(0,0,0,0.2))"
+            }}
+          />
         </div>
 
         {/* Signup Form */}
