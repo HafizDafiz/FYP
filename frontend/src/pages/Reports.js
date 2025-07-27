@@ -101,7 +101,7 @@ const Reports = () => {
       doc.setFont('helvetica', 'normal');
       doc.text(`Total Stock Added: ${reportData.summary.totalStockAdded} items`, 20, yPosition);
       yPosition += 7;
-      doc.text(`Total Sales Amount: $${reportData.summary.totalSalesAmount.toFixed(2)}`, 20, yPosition);
+      doc.text(`Total Sales Amount: S$${reportData.summary.totalSalesAmount.toFixed(2)}`, 20, yPosition);
       yPosition += 7;
       doc.text(`Total Items Sold: ${reportData.summary.totalItemsSold}`, 20, yPosition);
       yPosition += 7;

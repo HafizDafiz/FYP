@@ -36,7 +36,7 @@ export const generateSimplePDF = (reportData, startDate, endDate, userName) => {
     doc.setFont('helvetica', 'normal');
     doc.text(`Total Stock Added: ${reportData.summary.totalStockAdded} items`, 20, yPosition);
     yPosition += 7;
-    doc.text(`Total Sales Amount: $${reportData.summary.totalSalesAmount.toFixed(2)}`, 20, yPosition);
+    doc.text(`Total Sales Amount: S$${reportData.summary.totalSalesAmount.toFixed(2)}`, 20, yPosition);
     yPosition += 7;
     doc.text(`Total Items Sold: ${reportData.summary.totalItemsSold}`, 20, yPosition);
     yPosition += 7;
@@ -103,7 +103,7 @@ export const generateSimplePDF = (reportData, startDate, endDate, userName) => {
           yPosition = 20;
         }
         const totalItems = sale.items ? sale.items.reduce((sum, item) => sum + (item.quantity || 0), 0) : 0;
-        doc.text(`• Order: ${sale.orderNumber || 'N/A'} - Customer: ${sale.customerName || 'Unknown'} - Items: ${totalItems} - Total: $${(sale.total || 0).toFixed(2)} - Date: ${new Date(sale.saleDate).toLocaleDateString()}`, 20, yPosition);
+        doc.text(`• Order: ${sale.orderNumber || 'N/A'} - Customer: ${sale.customerName || 'Unknown'} - Items: ${totalItems} - Total: S$${(sale.total || 0).toFixed(2)} - Date: ${new Date(sale.saleDate).toLocaleDateString()}`, 20, yPosition);
         yPosition += 6;
       });
     }

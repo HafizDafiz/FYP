@@ -235,7 +235,7 @@ const AddItem = () => {
                   color: '#374151',
                   marginBottom: '8px'
                 }}>
-                  Price *
+                  Price (SGD) *
                 </label>
                 <input
                   type="number"

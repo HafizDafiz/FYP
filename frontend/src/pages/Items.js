@@ -14,6 +14,20 @@ const Item = () => {
   const [sortOrder, setSortOrder] = useState('asc');
   const [showOptionsDropdown, setShowOptionsDropdown] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  const [showCreateForm, setShowCreateForm] = useState(false);
+
+  // Form states
+  const [formData, setFormData] = useState({
+    name: '',
+    sku: '',
+    type: 'goods',
+    description: '',
+    rate: '',
+    quantity: ''
+  });
+  const [formError, setFormError] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [successMessage, setSuccessMessage] = useState(null);
 
   useEffect(() => {
     const fetchInventory = async () => {
@@ -55,7 +69,79 @@ const Item = () => {
   }, [user]);
 
   const handleAddItem = () => {
-    navigate('/inventory/add-item');
+    setShowCreateForm(true);
+    setFormError(null);
+    setSuccessMessage(null);
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setFormError(null);
+
+    try {
+      const apiUrl = process.env.REACT_APP_API_URL;
+      const response = await fetch(`${apiUrl}/api/inventory/items`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${user.token}`
+        },
+        body: JSON.stringify({
+          ...formData,
+          rate: parseFloat(formData.rate),
+          quantity: parseInt(formData.quantity)
+        })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setFormError(data.error || 'Failed to add item');
+      } else {
+        // Successfully added item, update the list and close form
+        setItems(prev => [...prev, data]);
+        setSuccessMessage(`Item "${data.name}" has been added successfully!`);
+        setShowCreateForm(false);
+        setFormData({
+          name: '',
+          sku: '',
+          type: 'goods',
+          description: '',
+          rate: '',
+          quantity: ''
+        });
+        // Clear success message after 3 seconds
+        setTimeout(() => setSuccessMessage(null), 3000);
+      }
+    } catch (err) {
+      console.error('Error adding item:', err);
+      setFormError('Something went wrong while adding the item');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleCancelForm = () => {
+    setShowCreateForm(false);
+    setFormError(null);
+    setSuccessMessage(null);
+    setFormData({
+      name: '',
+      sku: '',
+      type: 'goods',
+      description: '',
+      rate: '',
+      quantity: ''
+    });
   };
 
   const handleSort = (field) => {
@@ -169,6 +255,7 @@ const Item = () => {
           <div className="items-actions" style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
             <button
               onClick={handleAddItem}
+              className="add-item-btn"
               style={{
                 background: '#3b82f6',
                 color: 'white',
@@ -189,7 +276,7 @@ const Item = () => {
               onMouseOut={(e) => e.target.style.transform = 'translateY(0)'}
             >
               <span style={{ fontSize: '16px' }}>+</span>
-              Add Item
+              <span>Add Item</span>
             </button>
             <div style={{ position: 'relative' }}>
               <button
@@ -360,6 +447,24 @@ const Item = () => {
           </div>
         </div>
 
+        {/* Success Message */}
+        {successMessage && (
+          <div style={{ 
+            background: '#f0fdf4', 
+            border: '1px solid #bbf7d0', 
+            color: '#166534',
+            padding: '12px 16px',
+            borderRadius: '6px',
+            marginBottom: '20px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px'
+          }}>
+            <span style={{ fontSize: '16px' }}>✓</span>
+            {successMessage}
+          </div>
+        )}
+
         {/* Error Message */}
         {error && (
           <div style={{ 
@@ -377,6 +482,325 @@ const Item = () => {
         {/* Items Table */}
         <InventoryDetails items={filteredAndSortedItems} />
       </div>
+
+      {/* Add Item Modal */}
+      {showCreateForm && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          background: 'rgba(0, 0, 0, 0.5)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 50
+        }}>
+          <div style={{
+            background: 'white',
+            padding: 'clamp(20px, 4vw, 30px)',
+            borderRadius: '8px',
+            width: '90%',
+            maxWidth: '600px',
+            maxHeight: '90vh',
+            overflowY: 'auto'
+          }}>
+            <div style={{ 
+              display: 'flex', 
+              justifyContent: 'space-between', 
+              alignItems: 'center', 
+              marginBottom: '20px' 
+            }}>
+              <h2 style={{ 
+                fontSize: 'clamp(18px, 3vw, 20px)', 
+                fontWeight: '600', 
+                color: '#1f2937', 
+                margin: 0 
+              }}>
+                Add New Item
+              </h2>
+              <button
+                onClick={handleCancelForm}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  fontSize: '20px',
+                  cursor: 'pointer',
+                  color: '#6b7280'
+                }}
+              >
+                ×
+              </button>
+            </div>
+
+            <form onSubmit={handleSubmit}>
+              <div style={{ 
+                display: 'grid', 
+                gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
+                gap: '16px',
+                marginBottom: '20px'
+              }}>
+                {/* Product Name */}
+                <div>
+                  <label style={{
+                    display: 'block',
+                    fontSize: '14px',
+                    fontWeight: '500',
+                    color: '#374151',
+                    marginBottom: '4px'
+                  }}>
+                    Product Name *
+                  </label>
+                  <input
+                    type="text"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleInputChange}
+                    required
+                    placeholder="Enter product name"
+                    style={{
+                      width: '100%',
+                      padding: '8px 12px',
+                      border: '1px solid #d1d5db',
+                      borderRadius: '6px',
+                      fontSize: '14px',
+                      outline: 'none',
+                      boxSizing: 'border-box'
+                    }}
+                    onFocus={(e) => e.target.style.borderColor = '#3b82f6'}
+                    onBlur={(e) => e.target.style.borderColor = '#d1d5db'}
+                  />
+                </div>
+
+                {/* SKU */}
+                <div>
+                  <label style={{
+                    display: 'block',
+                    fontSize: '14px',
+                    fontWeight: '500',
+                    color: '#374151',
+                    marginBottom: '4px'
+                  }}>
+                    SKU *
+                  </label>
+                  <input
+                    type="text"
+                    name="sku"
+                    value={formData.sku}
+                    onChange={handleInputChange}
+                    required
+                    placeholder="Enter SKU"
+                    style={{
+                      width: '100%',
+                      padding: '8px 12px',
+                      border: '1px solid #d1d5db',
+                      borderRadius: '6px',
+                      fontSize: '14px',
+                      outline: 'none',
+                      boxSizing: 'border-box'
+                    }}
+                    onFocus={(e) => e.target.style.borderColor = '#3b82f6'}
+                    onBlur={(e) => e.target.style.borderColor = '#d1d5db'}
+                  />
+                </div>
+
+                {/* Type */}
+                <div>
+                  <label style={{
+                    display: 'block',
+                    fontSize: '14px',
+                    fontWeight: '500',
+                    color: '#374151',
+                    marginBottom: '4px'
+                  }}>
+                    Type *
+                  </label>
+                  <select
+                    name="type"
+                    value={formData.type}
+                    onChange={handleInputChange}
+                    required
+                    style={{
+                      width: '100%',
+                      padding: '8px 12px',
+                      border: '1px solid #d1d5db',
+                      borderRadius: '6px',
+                      fontSize: '14px',
+                      outline: 'none',
+                      boxSizing: 'border-box',
+                      background: 'white'
+                    }}
+                    onFocus={(e) => e.target.style.borderColor = '#3b82f6'}
+                    onBlur={(e) => e.target.style.borderColor = '#d1d5db'}
+                  >
+                    <option value="goods">Goods</option>
+                    <option value="service">Service</option>
+                  </select>
+                </div>
+
+                {/* Rate */}
+                <div>
+                  <label style={{
+                    display: 'block',
+                    fontSize: '14px',
+                    fontWeight: '500',
+                    color: '#374151',
+                    marginBottom: '4px'
+                  }}>
+                    Rate (SGD) *
+                  </label>
+                  <input
+                    type="number"
+                    name="rate"
+                    value={formData.rate}
+                    onChange={handleInputChange}
+                    required
+                    placeholder="0.00"
+                    step="0.01"
+                    min="0"
+                    style={{
+                      width: '100%',
+                      padding: '8px 12px',
+                      border: '1px solid #d1d5db',
+                      borderRadius: '6px',
+                      fontSize: '14px',
+                      outline: 'none',
+                      boxSizing: 'border-box'
+                    }}
+                    onFocus={(e) => e.target.style.borderColor = '#3b82f6'}
+                    onBlur={(e) => e.target.style.borderColor = '#d1d5db'}
+                  />
+                </div>
+
+                {/* Quantity */}
+                <div>
+                  <label style={{
+                    display: 'block',
+                    fontSize: '14px',
+                    fontWeight: '500',
+                    color: '#374151',
+                    marginBottom: '4px'
+                  }}>
+                    Initial Quantity *
+                  </label>
+                  <input
+                    type="number"
+                    name="quantity"
+                    value={formData.quantity}
+                    onChange={handleInputChange}
+                    required
+                    placeholder="0"
+                    min="0"
+                    style={{
+                      width: '100%',
+                      padding: '8px 12px',
+                      border: '1px solid #d1d5db',
+                      borderRadius: '6px',
+                      fontSize: '14px',
+                      outline: 'none',
+                      boxSizing: 'border-box'
+                    }}
+                    onFocus={(e) => e.target.style.borderColor = '#3b82f6'}
+                    onBlur={(e) => e.target.style.borderColor = '#d1d5db'}
+                  />
+                </div>
+              </div>
+
+              {/* Description */}
+              <div style={{ marginBottom: '20px' }}>
+                <label style={{
+                  display: 'block',
+                  fontSize: '14px',
+                  fontWeight: '500',
+                  color: '#374151',
+                  marginBottom: '4px'
+                }}>
+                  Description
+                </label>
+                <textarea
+                  name="description"
+                  value={formData.description}
+                  onChange={handleInputChange}
+                  placeholder="Enter product description (optional)"
+                  rows="3"
+                  style={{
+                    width: '100%',
+                    padding: '8px 12px',
+                    border: '1px solid #d1d5db',
+                    borderRadius: '6px',
+                    fontSize: '14px',
+                    outline: 'none',
+                    boxSizing: 'border-box',
+                    resize: 'vertical',
+                    fontFamily: 'inherit'
+                  }}
+                  onFocus={(e) => e.target.style.borderColor = '#3b82f6'}
+                  onBlur={(e) => e.target.style.borderColor = '#d1d5db'}
+                />
+              </div>
+
+              {/* Form Error */}
+              {formError && (
+                <div style={{ 
+                  background: '#fef2f2', 
+                  border: '1px solid #fecaca', 
+                  color: '#dc2626',
+                  padding: '12px 16px',
+                  borderRadius: '6px',
+                  marginBottom: '16px',
+                  fontSize: '14px'
+                }}>
+                  {formError}
+                </div>
+              )}
+
+              {/* Submit Buttons */}
+              <div style={{ 
+                display: 'flex', 
+                gap: '12px', 
+                justifyContent: 'flex-end',
+                flexWrap: 'wrap'
+              }}>
+                <button
+                  type="button"
+                  onClick={handleCancelForm}
+                  style={{
+                    background: '#f9fafb',
+                    border: '1px solid #d1d5db',
+                    color: '#374151',
+                    padding: '8px 16px',
+                    borderRadius: '6px',
+                    fontSize: '14px',
+                    fontWeight: '500',
+                    cursor: 'pointer',
+                    minWidth: '80px'
+                  }}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  style={{
+                    background: isSubmitting ? '#9ca3af' : '#3b82f6',
+                    color: 'white',
+                    border: 'none',
+                    padding: '8px 16px',
+                    borderRadius: '6px',
+                    fontSize: '14px',
+                    fontWeight: '600',
+                    cursor: isSubmitting ? 'not-allowed' : 'pointer',
+                    minWidth: '100px'
+                  }}
+                >
+                  {isSubmitting ? 'Adding...' : 'Add Item'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
       {/* Overlay for dropdown */}
       {showOptionsDropdown && (

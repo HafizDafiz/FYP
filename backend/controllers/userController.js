@@ -1,9 +1,8 @@
-const { recompileSchema } = require('../models/inventoryModel');
 const User = require('../models/userModel');
 const jwt = require('jsonwebtoken')
 
 const createToken = (_id, role) => {
-    return jwt.sign({ _id, recompileSchema}, process.env.SECRET, { expiresIn: '3d' })
+    return jwt.sign({ _id, role}, process.env.SECRET, { expiresIn: '3d' })
 }
 // login user
 const loginUser = async (req, res) => {

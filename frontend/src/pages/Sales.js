@@ -1052,7 +1052,7 @@ const Sales = () => {
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
                   <div>
                     <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', color: '#374151', marginBottom: '4px' }}>
-                      Tax ($)
+                      Tax (S$)
                     </label>
                     <input
                       type="number"
@@ -1072,7 +1072,7 @@ const Sales = () => {
                   </div>
                   <div>
                     <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', color: '#374151', marginBottom: '4px' }}>
-                      Discount ($)
+                      Discount (S$)
                     </label>
                     <input
                       type="number"
@@ -1099,7 +1099,7 @@ const Sales = () => {
                   textAlign: 'right' 
                 }}>
                   <div style={{ fontSize: '18px', fontWeight: '600', color: '#1f2937' }}>
-                    Total: ${calculateOrderTotal().toFixed(2)}
+                    Total: S$${calculateOrderTotal().toFixed(2)}
                   </div>
                 </div>
               </div>
@@ -1214,7 +1214,7 @@ const Sales = () => {
               <strong>Order Number:</strong> {orderDetail.orderNumber || 'N/A'}<br />
               <strong>Date:</strong> {orderDetail.createdAt ? new Date(orderDetail.createdAt).toLocaleString() : 'N/A'}<br />
               <strong>Status:</strong> {orderDetail.status || 'N/A'}<br />
-              <strong>Total:</strong> ${orderDetail.total ? orderDetail.total.toFixed(2) : '0.00'}
+              <strong>Total:</strong> S$${orderDetail.total ? orderDetail.total.toFixed(2) : '0.00'}
             </div>
             <div style={{ marginBottom: 16 }}>
               <strong>Customer:</strong> {orderDetail.customerName || 'N/A'}<br />
@@ -1246,10 +1246,10 @@ const Sales = () => {
               </table>
             </div>
             <div style={{ marginBottom: 16 }}>
-              <strong>Subtotal:</strong> ${orderDetail.subtotal ? orderDetail.subtotal.toFixed(2) : '0.00'}<br />
-              <strong>Tax:</strong> ${orderDetail.tax ? orderDetail.tax.toFixed(2) : '0.00'}<br />
-              <strong>Discount:</strong> ${orderDetail.discount ? orderDetail.discount.toFixed(2) : '0.00'}<br />
-              <strong>Total:</strong> ${orderDetail.total ? orderDetail.total.toFixed(2) : '0.00'}
+              <strong>Subtotal:</strong> S$${orderDetail.subtotal ? orderDetail.subtotal.toFixed(2) : '0.00'}<br />
+              <strong>Tax:</strong> S$${orderDetail.tax ? orderDetail.tax.toFixed(2) : '0.00'}<br />
+              <strong>Discount:</strong> S$${orderDetail.discount ? orderDetail.discount.toFixed(2) : '0.00'}<br />
+              <strong>Total:</strong> S$${orderDetail.total ? orderDetail.total.toFixed(2) : '0.00'}
             </div>
             <div style={{ marginBottom: 16 }}>
               <strong>Notes:</strong> {orderDetail.notes || 'N/A'}
