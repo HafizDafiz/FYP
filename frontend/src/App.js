@@ -45,9 +45,10 @@ function MainContent({ user }) {
       {!hideNavbar && <Navbar />}
       {!hideNavbar && <div className="topbar"></div>}        <div className="pages">
           <Routes>
-            <Route path="/" element={<Dashboard />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/signup" element={<Signup />} />
+            <Route path="/login" element={!user ? <Login /> : <Navigate to="/" />} />
+            <Route path="/signup" element={!user ? <Signup /> : <Navigate to="/" />} />
+            <Route path="/" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+            <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
             <Route path="/login" element={<Login />} />
             <Route path="/staff-dashboard" element={
               <ProtectedRoute requiredRole="staff">

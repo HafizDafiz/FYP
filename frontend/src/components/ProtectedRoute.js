@@ -2,7 +2,12 @@ import { Navigate } from 'react-router-dom';
 import { useAuthContext } from '../hooks/useAuthContext';
 
 const ProtectedRoute = ({ children, requiredRole = null }) => {
-  const { user } = useAuthContext();
+  const { user, isLoading } = useAuthContext();
+
+  // Show nothing while checking authentication
+  if (isLoading) {
+    return null;
+  }
 
   // If no user is logged in, redirect to login
   if (!user) {
