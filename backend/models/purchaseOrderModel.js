@@ -172,6 +172,10 @@ const purchaseOrderSchema = new mongoose.Schema({
         enum: ['Pending', 'Partially Received', 'Fully Received'],
         default: 'Pending'
     },
+    receivingNotes: {
+        type: String,
+        required: false
+    },
     
     // Tracking and History
     trackingNumber: {

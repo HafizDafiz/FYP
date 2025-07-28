@@ -22,6 +22,21 @@ const PurchaseReceives = () => {
     notes: ''
   });
 
+  // Mapping from purchase order carrier keys to display names
+  const carrierMapping = {
+    'pickup': 'Vendor Pickup',
+    'local-delivery': 'Local Delivery (Same Day)',
+    'singpost-standard': 'SingPost Standard',
+    'singpost-express': 'SingPost Express',
+    'dhl-express': 'DHL Express',
+    'fedex-international': 'FedEx International',
+    'ups-express': 'UPS Express',
+    'ninja-van': 'Ninja Van',
+    'shopee-express': 'Shopee Express',
+    'grab-express': 'Grab Express',
+    'lalamove': 'Lalamove'
+  };
+
   useEffect(() => {
     fetchPurchaseOrders();
   }, [user]);
@@ -67,6 +82,9 @@ const PurchaseReceives = () => {
   const handleReceiveItems = (order) => {
     setSelectedOrder(order);
     
+    // Map carrier key to display name for auto-population
+    const mappedCarrier = order.carrier ? (carrierMapping[order.carrier] || order.carrier) : '';
+    
     // Initialize receiving data with order items
     const initialReceivingData = {
       receivedItems: order.items.map(item => ({
@@ -81,7 +99,7 @@ const PurchaseReceives = () => {
         notes: ''
       })),
       trackingNumber: order.trackingNumber || '',
-      carrier: order.carrier || '',
+      carrier: mappedCarrier,
       actualDelivery: order.actualDelivery ? new Date(order.actualDelivery).toISOString().split('T')[0] : '',
       notes: ''
     };
@@ -105,6 +123,15 @@ const PurchaseReceives = () => {
 
     try {
       const apiUrl = process.env.REACT_APP_API_URL;
+      console.log('Making request to:', `${apiUrl}/api/purchase-orders/${selectedOrder._id}/receive`);
+      console.log('Request body:', {
+        receivedItems: itemsToReceive,
+        trackingNumber: receivingData.trackingNumber,
+        carrier: receivingData.carrier,
+        actualDelivery: receivingData.actualDelivery,
+        notes: receivingData.notes
+      });
+      
       const response = await fetch(`${apiUrl}/api/purchase-orders/${selectedOrder._id}/receive`, {
         method: 'PATCH',
         headers: {
@@ -121,9 +148,11 @@ const PurchaseReceives = () => {
       });
 
       const data = await response.json();
+      console.log('Response status:', response.status);
+      console.log('Response data:', data);
 
       if (!response.ok) {
-        setError(data.error || 'Failed to receive items.');
+        setError(data.error || `Failed to receive items. Status: ${response.status}`);
       } else {
         setShowReceiveModal(false);
         setSelectedOrder(null);
@@ -139,7 +168,7 @@ const PurchaseReceives = () => {
       }
     } catch (err) {
       console.error('Receive error:', err);
-      setError('Something went wrong while receiving items.');
+      setError(`Something went wrong while receiving items: ${err.message}`);
     }
   };
 
@@ -760,14 +789,24 @@ const PurchaseReceives = () => {
                       className="purchase-receives-modal-select"
                     >
                       <option value="">Select carrier</option>
-                      <option value="DHL">DHL</option>
-                      <option value="FedEx">FedEx</option>
-                      <option value="UPS">UPS</option>
-                      <option value="USPS">USPS</option>
-                      <option value="Local Delivery">Local Delivery</option>
-                      <option value="Pickup">Pickup</option>
+                      <option value="Vendor Pickup">Vendor Pickup</option>
+                      <option value="Local Delivery (Same Day)">Local Delivery (Same Day)</option>
+                      <option value="SingPost Standard">SingPost Standard</option>
+                      <option value="SingPost Express">SingPost Express</option>
+                      <option value="DHL Express">DHL Express</option>
+                      <option value="FedEx International">FedEx International</option>
+                      <option value="UPS Express">UPS Express</option>
+                      <option value="Ninja Van">Ninja Van</option>
+                      <option value="Shopee Express">Shopee Express</option>
+                      <option value="Grab Express">Grab Express</option>
+                      <option value="Lalamove">Lalamove</option>
                       <option value="Other">Other</option>
                     </select>
+                    {selectedOrder && selectedOrder.carrier && (
+                      <div style={{ fontSize: '12px', color: '#6b7280', marginTop: '4px' }}>
+                        💡 Auto-populated from purchase order. You can change if actual carrier differs.
+                      </div>
+                    )}
                   </div>
                   <div className="purchase-receives-modal-form-group">
                     <label className="purchase-receives-modal-label">

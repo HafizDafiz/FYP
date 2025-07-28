@@ -27,6 +27,8 @@ const Sales = () => {
     items: [],
     tax: 0,
     discount: 0,
+    shippingCost: 0,
+    carrier: '',
     expectedDelivery: '',
     notes: ''
   });
@@ -41,6 +43,49 @@ const Sales = () => {
   const [detailLoading, setDetailLoading] = useState(false);
   const [detailError, setDetailError] = useState(null);
   const [scrollPosition, setScrollPosition] = useState(0);
+
+  // Shipping carriers and their estimated costs (in SGD)
+  const shippingOptions = {
+    'pickup': { name: 'Customer Pickup', baseCost: 0, weightMultiplier: 0 },
+    'local-delivery': { name: 'Local Delivery (Same Day)', baseCost: 8.50, weightMultiplier: 0 },
+    'singpost-standard': { name: 'SingPost Standard', baseCost: 2.50, weightMultiplier: 1.20 },
+    'singpost-express': { name: 'SingPost Express', baseCost: 5.80, weightMultiplier: 1.50 },
+    'dhl-express': { name: 'DHL Express', baseCost: 15.00, weightMultiplier: 2.80 },
+    'fedex-international': { name: 'FedEx International', baseCost: 18.50, weightMultiplier: 3.20 },
+    'ups-express': { name: 'UPS Express', baseCost: 16.80, weightMultiplier: 2.95 },
+    'ninja-van': { name: 'Ninja Van', baseCost: 3.50, weightMultiplier: 0.80 },
+    'shopee-express': { name: 'Shopee Express', baseCost: 2.90, weightMultiplier: 0.70 },
+    'grab-express': { name: 'Grab Express', baseCost: 12.00, weightMultiplier: 0 },
+    'lalamove': { name: 'Lalamove', baseCost: 9.50, weightMultiplier: 0 }
+  };
+
+  // Calculate shipping cost based on carrier and order weight
+  const calculateShippingCost = (carrier, orderItems = []) => {
+    if (!carrier || !shippingOptions[carrier]) return 0;
+    
+    const option = shippingOptions[carrier];
+    
+    // Estimate total weight (assuming 0.5kg per item as default)
+    const totalWeight = orderItems.reduce((weight, item) => weight + (item.quantity * 0.5), 0);
+    
+    return option.baseCost + (totalWeight * option.weightMultiplier);
+  };
+
+  // Handle carrier selection
+  const handleCarrierChange = (selectedCarrier) => {
+    const shippingCost = calculateShippingCost(selectedCarrier, formData.items);
+    setFormData({ 
+      ...formData, 
+      carrier: selectedCarrier,
+      shippingCost: shippingCost
+    });
+  };
+
+  // Calculate 9% tax automatically
+  const calculateTax = (items) => {
+    const subtotal = items.reduce((sum, item) => sum + (item.quantity * item.unitPrice), 0);
+    return subtotal * 0.09; // 9% tax
+  };
 
   useEffect(() => {
     fetchSalesOrders();
@@ -133,6 +178,8 @@ const Sales = () => {
           items: [],
           tax: 0,
           discount: 0,
+          shippingCost: 0,
+          carrier: '',
           expectedDelivery: '',
           notes: ''
         });
@@ -158,12 +205,12 @@ const Sales = () => {
     }
 
     const existingItemIndex = formData.items.findIndex(item => item.productId === selectedProduct);
+    let updatedItems;
     
     if (existingItemIndex >= 0) {
       // Update existing item
-      const updatedItems = [...formData.items];
+      updatedItems = [...formData.items];
       updatedItems[existingItemIndex].quantity += selectedQuantity;
-      setFormData({ ...formData, items: updatedItems });
     } else {
       // Add new item
       const newItem = {
@@ -173,8 +220,21 @@ const Sales = () => {
         quantity: selectedQuantity,
         unitPrice: product.rate
       };
-      setFormData({ ...formData, items: [...formData.items, newItem] });
+      updatedItems = [...formData.items, newItem];
     }
+
+    // Recalculate shipping cost if carrier is selected
+    const newShippingCost = formData.carrier ? calculateShippingCost(formData.carrier, updatedItems) : 0;
+    
+    // Calculate 9% tax automatically
+    const newTax = calculateTax(updatedItems);
+    
+    setFormData({ 
+      ...formData, 
+      items: updatedItems,
+      shippingCost: newShippingCost,
+      tax: newTax
+    });
 
     setSelectedProduct('');
     setSelectedQuantity(1);
@@ -183,7 +243,19 @@ const Sales = () => {
 
   const removeItemFromOrder = (index) => {
     const updatedItems = formData.items.filter((_, i) => i !== index);
-    setFormData({ ...formData, items: updatedItems });
+    
+    // Recalculate shipping cost if carrier is selected
+    const newShippingCost = formData.carrier ? calculateShippingCost(formData.carrier, updatedItems) : 0;
+    
+    // Calculate 9% tax automatically
+    const newTax = calculateTax(updatedItems);
+    
+    setFormData({ 
+      ...formData, 
+      items: updatedItems,
+      shippingCost: newShippingCost,
+      tax: newTax
+    });
   };
 
   const updateOrderStatus = async (orderId, status) => {
@@ -281,7 +353,7 @@ const Sales = () => {
 
   const calculateOrderTotal = () => {
     const subtotal = formData.items.reduce((sum, item) => sum + (item.quantity * item.unitPrice), 0);
-    return subtotal + (formData.tax || 0) - (formData.discount || 0);
+    return subtotal + (formData.tax || 0) + (formData.shippingCost || 0) - (formData.discount || 0);
   };
 
   // Fetch order detail by ID
@@ -905,6 +977,35 @@ const Sales = () => {
                 </div>
                 <div style={{ marginTop: '12px' }}>
                   <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', color: '#374151', marginBottom: '4px' }}>
+                    Shipping Carrier
+                  </label>
+                  <select
+                    value={formData.carrier}
+                    onChange={(e) => handleCarrierChange(e.target.value)}
+                    style={{
+                      width: '100%',
+                      padding: '8px 12px',
+                      border: '1px solid #d1d5db',
+                      borderRadius: '6px',
+                      fontSize: '14px',
+                      outline: 'none'
+                    }}
+                  >
+                    <option value="">Select shipping method</option>
+                    {Object.entries(shippingOptions).map(([key, option]) => (
+                      <option key={key} value={key}>
+                        {option.name} - S${option.baseCost.toFixed(2)}{option.weightMultiplier > 0 ? ' + weight' : ''}
+                      </option>
+                    ))}
+                  </select>
+                  {formData.carrier && (
+                    <div style={{ marginTop: '8px', fontSize: '12px', color: '#6b7280' }}>
+                      Estimated shipping cost: S${formData.shippingCost.toFixed(2)}
+                    </div>
+                  )}
+                </div>
+                <div style={{ marginTop: '12px' }}>
+                  <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', color: '#374151', marginBottom: '4px' }}>
                     Address
                   </label>
                   <textarea
@@ -1049,24 +1150,26 @@ const Sales = () => {
               {/* Order Summary */}
               <div style={{ marginBottom: '20px' }}>
                 <h3 style={{ fontSize: '16px', fontWeight: '500', color: '#1f2937', marginBottom: '12px' }}>Order Summary</h3>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px' }}>
                   <div>
                     <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', color: '#374151', marginBottom: '4px' }}>
-                      Tax (S$)
+                      Tax (S$) - 9% Auto-calculated
                     </label>
                     <input
                       type="number"
                       min="0"
                       step="0.01"
                       value={formData.tax}
-                      onChange={(e) => setFormData({ ...formData, tax: parseFloat(e.target.value) || 0 })}
+                      readOnly
                       style={{
                         width: '100%',
                         padding: '8px 12px',
                         border: '1px solid #d1d5db',
                         borderRadius: '6px',
                         fontSize: '14px',
-                        outline: 'none'
+                        outline: 'none',
+                        backgroundColor: '#f9fafb',
+                        color: '#6b7280'
                       }}
                     />
                   </div>
@@ -1090,16 +1193,59 @@ const Sales = () => {
                       }}
                     />
                   </div>
+                  <div>
+                    <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', color: '#374151', marginBottom: '4px' }}>
+                      Shipping (S$)
+                    </label>
+                    <input
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      value={formData.shippingCost}
+                      onChange={(e) => setFormData({ ...formData, shippingCost: parseFloat(e.target.value) || 0 })}
+                      style={{
+                        width: '100%',
+                        padding: '8px 12px',
+                        border: '1px solid #d1d5db',
+                        borderRadius: '6px',
+                        fontSize: '14px',
+                        outline: 'none',
+                        backgroundColor: formData.carrier ? '#f9fafb' : 'white'
+                      }}
+                      placeholder={formData.carrier ? 'Auto-calculated' : 'Manual entry'}
+                    />
+                  </div>
                 </div>
                 <div style={{ 
                   marginTop: '12px', 
                   padding: '12px', 
                   background: '#f9fafb', 
-                  borderRadius: '6px',
-                  textAlign: 'right' 
+                  borderRadius: '6px'
                 }}>
-                  <div style={{ fontSize: '18px', fontWeight: '600', color: '#1f2937' }}>
-                    Total: S$${calculateOrderTotal().toFixed(2)}
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
+                    <span style={{ fontSize: '14px', color: '#6b7280' }}>Subtotal:</span>
+                    <span style={{ fontSize: '14px', color: '#6b7280' }}>
+                      S${formData.items.reduce((sum, item) => sum + (item.quantity * item.unitPrice), 0).toFixed(2)}
+                    </span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
+                    <span style={{ fontSize: '14px', color: '#6b7280' }}>Tax:</span>
+                    <span style={{ fontSize: '14px', color: '#6b7280' }}>S${(formData.tax || 0).toFixed(2)}</span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
+                    <span style={{ fontSize: '14px', color: '#6b7280' }}>Shipping:</span>
+                    <span style={{ fontSize: '14px', color: '#6b7280' }}>S${(formData.shippingCost || 0).toFixed(2)}</span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                    <span style={{ fontSize: '14px', color: '#6b7280' }}>Discount:</span>
+                    <span style={{ fontSize: '14px', color: '#6b7280' }}>-S${(formData.discount || 0).toFixed(2)}</span>
+                  </div>
+                  <hr style={{ margin: '8px 0', border: 'none', borderTop: '1px solid #e5e7eb' }} />
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <span style={{ fontSize: '18px', fontWeight: '600', color: '#1f2937' }}>Total:</span>
+                    <span style={{ fontSize: '18px', fontWeight: '600', color: '#1f2937' }}>
+                      S${calculateOrderTotal().toFixed(2)}
+                    </span>
                   </div>
                 </div>
               </div>
@@ -1248,6 +1394,10 @@ const Sales = () => {
             <div style={{ marginBottom: 16 }}>
               <strong>Subtotal:</strong> S$${orderDetail.subtotal ? orderDetail.subtotal.toFixed(2) : '0.00'}<br />
               <strong>Tax:</strong> S$${orderDetail.tax ? orderDetail.tax.toFixed(2) : '0.00'}<br />
+              <strong>Shipping:</strong> S$${orderDetail.shippingCost ? orderDetail.shippingCost.toFixed(2) : '0.00'}
+              {orderDetail.carrier && (
+                <span style={{ color: '#6b7280', fontSize: '14px' }}> ({orderDetail.carrier})</span>
+              )}<br />
               <strong>Discount:</strong> S$${orderDetail.discount ? orderDetail.discount.toFixed(2) : '0.00'}<br />
               <strong>Total:</strong> S$${orderDetail.total ? orderDetail.total.toFixed(2) : '0.00'}
             </div>

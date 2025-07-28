@@ -69,6 +69,15 @@ const saleOrderSchema = new mongoose.Schema({
         default: 0,
         min: 0
     },
+    shippingCost: {
+        type: Number,
+        default: 0,
+        min: 0
+    },
+    carrier: {
+        type: String,
+        required: false
+    },
     total: {
         type: Number,
         required: true,

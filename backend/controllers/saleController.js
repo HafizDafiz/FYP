@@ -53,7 +53,9 @@ const createSalesOrder = async (req, res) => {
         customerAddress, 
         items, 
         tax, 
-        discount, 
+        discount,
+        shippingCost,
+        carrier,
         expectedDelivery,
         notes 
     } = req.body;
@@ -110,7 +112,8 @@ const createSalesOrder = async (req, res) => {
         // Calculate totals
         const taxAmount = tax || 0;
         const discountAmount = discount || 0;
-        const total = subtotal + taxAmount - discountAmount;
+        const shippingAmount = shippingCost || 0;
+        const total = subtotal + taxAmount + shippingAmount - discountAmount;
         
         // Create sales order
         const salesOrder = new SaleOrder({
@@ -122,6 +125,8 @@ const createSalesOrder = async (req, res) => {
             subtotal,
             tax: taxAmount,
             discount: discountAmount,
+            shippingCost: shippingAmount,
+            carrier,
             total,
             expectedDelivery: expectedDelivery ? new Date(expectedDelivery) : null,
             notes,

@@ -59,6 +59,7 @@ const createPurchaseOrder = async (req, res) => {
         tax, 
         discount, 
         shippingCost,
+        carrier,
         expectedDelivery,
         notes,
         internalNotes,
@@ -128,6 +129,7 @@ const createPurchaseOrder = async (req, res) => {
             tax: taxAmount,
             discount: discountAmount,
             shippingCost: shippingAmount,
+            carrier,
             total,
             expectedDelivery: expectedDelivery ? new Date(expectedDelivery) : null,
             notes,
@@ -262,7 +264,10 @@ const approvePurchaseOrder = async (req, res) => {
 // RECEIVE items from purchase order
 const receiveItems = async (req, res) => {
     const { id } = req.params;
-    const { receivedItems, trackingNumber, carrier, actualDelivery } = req.body;
+    const { receivedItems, trackingNumber, carrier, actualDelivery, notes } = req.body;
+    
+    console.log('Receive items request for PO:', id);
+    console.log('Request body:', req.body);
     
     if (!mongoose.Types.ObjectId.isValid(id)) {
         return res.status(400).json({ error: 'Invalid purchase order ID' });
@@ -279,8 +284,13 @@ const receiveItems = async (req, res) => {
         
         // Update received quantities and inventory
         for (const receivedItem of receivedItems) {
+            console.log('Processing received item:', receivedItem);
             const orderItem = purchaseOrder.items.id(receivedItem.itemId);
+            console.log('Found order item:', orderItem);
+            
             if (!orderItem) {
+                console.error('Item not found in purchase order:', receivedItem.itemId);
+                console.error('Available items:', purchaseOrder.items.map(item => ({ id: item._id, name: item.productName })));
                 throw new Error(`Item not found in purchase order: ${receivedItem.itemId}`);
             }
             
@@ -301,10 +311,11 @@ const receiveItems = async (req, res) => {
                 const newProduct = new Inventory({
                     name: orderItem.productName,
                     sku: orderItem.sku,
+                    type: 'Product', // Required field
                     description: orderItem.description || '',
                     quantity: receivedItem.quantityReceived,
                     rate: orderItem.unitPrice,
-                    createdBy: req.user._id
+                    user_id: req.user._id.toString()
                 });
                 
                 await newProduct.save({ session });
@@ -316,6 +327,7 @@ const receiveItems = async (req, res) => {
         if (trackingNumber) purchaseOrder.trackingNumber = trackingNumber;
         if (carrier) purchaseOrder.carrier = carrier;
         if (actualDelivery) purchaseOrder.actualDelivery = new Date(actualDelivery);
+        if (notes) purchaseOrder.receivingNotes = notes;
         
         // Update receiving status
         const totalOrdered = purchaseOrder.items.reduce((sum, item) => sum + item.quantity, 0);
